@@ -130,7 +130,7 @@ providing information about the state of a repo:
     GIT_PS1_SHOWCOLORHINTS=1
     GIT_PS1_SHOWSTASHSTATE=1
     GIT_PS1_SHOWUPSTREAM="auto"
-    PROMPT_COMMAND='__git_ps1 "" "\h:\W \u\\\$ " "[%s]\n'
+    PROMPT_COMMAND='__git_ps1 "" "\h:\W \u\\\$ " "[%s]\n"'
 
 .. image:: /_static/color_git_prompt.png
     :width: 600px
