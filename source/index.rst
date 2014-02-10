@@ -16,7 +16,7 @@ This documentation contains lectures and assignment outlines for the 8-week
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    lectures/index
    assignments/index
