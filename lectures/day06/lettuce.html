@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Behavior Driven Development with Lettuce &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 06 Lectures" href="index.html" />
+    <link rel="next" title="Assignments" href="../../assignments/index.html" />
+    <link rel="prev" title="Day 06 Lectures" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 06 Lectures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 06 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="behavior-driven-development-with-lettuce">
+<h1>Behavior Driven Development with Lettuce<a class="headerlink" href="#behavior-driven-development-with-lettuce" title="Permalink to this headline">¶</a></h1>
+<p>You&#8217;ve created a github repository for a project called FizzBuzz, as part of
+a previous assignment.</p>
+<p>We&#8217;re going to use that project as an example of how we can use the Python
+package <a class="reference external" href="http://lettuce.it">lettuce</a> to incorporate <a class="reference external" href="http://en.wikipedia.org/wiki/Behavior-driven_development">behavior driven development</a>.</p>
+<div class="section" id="practice-safe-development">
+<h2>Practice Safe Development<a class="headerlink" href="#practice-safe-development" title="Permalink to this headline">¶</a></h2>
+<p>Because <tt class="docutils literal"><span class="pre">lettuce</span></tt> is not in the standard library, we&#8217;re going to follow best
+practices and use <a class="reference external" href="http://virtualenv.org">virtualenv</a> to create a sandbox for this project.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you have already set up a virtualenv for your fizzbuzz project,
+you can skip this up until the point where we install lettuce below.</p>
+</div>
+<p>First, make sure you&#8217;re in your fizzbuzz repository:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span><span class="nb">cd</span> /path/to/fizzbuzz/repository
+<span class="o">[</span><span class="nv">master</span><span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span><span class="nb">pwd</span>
+/Users/cewing/projects/fizzbuzz
+</pre></div>
+</div>
+<p>Next, we create a virtualenv using <tt class="docutils literal"><span class="pre">mkvirtualenv</span></tt> provided by <a class="reference external" href="http://virtualenvwrapper.readthedocs.org">virtualenvwrapper</a>:</p>
+<div class="highlight-bash"><div class="highlight"><pre>[master=]
+heffalump:fizzbuzz cewing$ mkvirtualenv fizzbuzz
+New python executable in fizzbuzz/bin/python
+Installing setuptools, pip...done.
+[fizzbuzz]
+[master=]
+heffalump:fizzbuzz cewing$
+</pre></div>
+</div>
+</div>
+<div class="section" id="setting-our-project">
+<h2>Setting Our Project<a class="headerlink" href="#setting-our-project" title="Permalink to this headline">¶</a></h2>
+<p>Now, our virtualenv is set up and active. Since we&#8217;ve already got a &#8220;project&#8221;
+directory&#8211;our existing repository&#8211;we are going to use the
+<tt class="docutils literal"><span class="pre">setvirtualenvproject</span></tt> command to associate this new virtualenv with our
+existing repository directory.</p>
+<p>The command takes two arguments, the path to the virtualenv, and the path to
+the project directory. Both these arguments must be <strong>full, absolute path
+names</strong>.</p>
+<p>It&#8217;s a pain to type out those pathnames, luckily, <tt class="docutils literal"><span class="pre">bash</span></tt> (or whatever shell
+you are using) can come to the rescue.</p>
+<p>First, when a virtualenv is active, it sets an environmental variable
+<tt class="docutils literal"><span class="pre">VIRTUAL_ENV</span></tt> which holds the path to the active virtualenv:</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:fizzbuzz cewing<span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$VIRTUAL_ENV</span>
+/Users/cewing/virtualenvs/fizzbuzz
+</pre></div>
+</div>
+<p>Second, the <tt class="docutils literal"><span class="pre">pwd</span></tt> command will print our current working directory, which is
+the project directory we want. If we surround this bash command with backticks,
+the output will be substituted into a shell expression.</p>
+<div class="highlight-bash"><div class="highlight"><pre>source
+
+[fizzbuzz]
+[master=]
+heffalump:fizzbuzz cewing$ pwd
+/Users/cewing/projects/fizzbuzz
+[fizzbuzz]
+[master=]
+heffalump:fizzbuzz cewing$ setvirtualenvproject $VIRTUAL_ENV `pwd`
+Setting project for fizzbuzz to /Users/cewing/projects/fizzbuzz
+[fizzbuzz]
+[master=]
+heffalump:fizzbuzz cewing$
+</pre></div>
+</div>
+<p>Excellent.  Now, when we <tt class="docutils literal"><span class="pre">workon</span></tt> fizzbuzz, we&#8217;ll <em>both</em> activate the
+environment and automatically move to this directory.</p>
+<p>Time Saved!!!</p>
+</div>
+<div class="section" id="install-lettuce">
+<h2>Install Lettuce<a class="headerlink" href="#install-lettuce" title="Permalink to this headline">¶</a></h2>
+<p>Now, we&#8217;re ready to go ahead and install lettuce:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span><span class="nv">master</span><span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span>pip install lettuce
+Downloading/unpacking lettuce
+  ...
+
+Successfully installed lettuce sure fuzzywuzzy nose rednose python-termstyle
+Cleaning up...
+<span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span><span class="nv">master</span><span class="o">=]</span>
+</pre></div>
+</div>
+<p>Once that&#8217;s finished, we should find that we have a new command available in
+our shell: <tt class="docutils literal"><span class="pre">lettuce</span></tt>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span><span class="nv">master</span><span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span>which lettuce
+/Users/cewing/virtualenvs/fizzbuzz/bin/lettuce
+</pre></div>
+</div>
+</div>
+<div class="section" id="lettuce-setup">
+<h2>Lettuce Setup<a class="headerlink" href="#lettuce-setup" title="Permalink to this headline">¶</a></h2>
+<p>There&#8217;s a nice walkthrough for lettuce <a class="reference external" href="http://lettuce.it/tutorial/simple.html#tutorial-simple">on the website</a>. If you&#8217;re starting
+totally from scratch, try it out.</p>
+<p>We aren&#8217;t.</p>
+<p>The basic gist of the walkthrough tells us that <tt class="docutils literal"><span class="pre">lettuce</span></tt> works by
+convention. To have lettuce tests, you have to set up an appropriate directory
+structure in your Python project.</p>
+<p>We&#8217;ll create a directory called <tt class="docutils literal"><span class="pre">features</span></tt>.  And in it we&#8217;ll create two
+files: <tt class="docutils literal"><span class="pre">fizzbuzz.feature</span></tt> and <tt class="docutils literal"><span class="pre">steps.py</span></tt>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span><span class="nv">master</span><span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span>mkdir features
+<span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span><span class="nv">master</span><span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span>touch features/fizzbuzz.feature
+<span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span><span class="nv">master</span><span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span>touch features/steps.py
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">&lt;name&gt;.feature</span></tt> file is where we&#8217;ll create our BDD tests.  The name of
+the file is arbitrary, the extension is not.</p>
+<p>The <tt class="docutils literal"><span class="pre">&lt;name&gt;.py</span></tt> file is where we will create the Python code that implements
+steps in our BDD tests.  Again, the name is arbitrary, and <tt class="docutils literal"><span class="pre">lettuce</span></tt> will
+scan for any <tt class="docutils literal"><span class="pre">.py</span></tt> files that contain step definitions.</p>
+</div>
+<div class="section" id="write-a-scenario">
+<h2>Write a Scenario<a class="headerlink" href="#write-a-scenario" title="Permalink to this headline">¶</a></h2>
+<p>Our example here is a bit artificial, in that we are adding BDD tests <em>after</em>
+we&#8217;ve already written the Python.  To make things a bit more realistic, comment
+out the function bodies for the two functions in your fizzbuzz.py file. Each
+function should look like this (where <tt class="docutils literal"><span class="pre">function</span> <span class="pre">name</span></tt> is of course replaced
+by the actual names in your fizzbuzz Python file).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">function_name</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Now we can assume we have yet to implement the fizzbuzz function.</p>
+<p>If we wanted to express the fizzbuzz game as a user story, it might go
+something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>As a user, when I call fizzbuzz with the number 5, I see &#39;Buzz&#39;.
+</pre></div>
+</div>
+<p>Expressed in BDD form, this translates to something like this:</p>
+<blockquote>
+<div>Given the number 5, when I call fizzbuzz, then I see the output &#8216;Buzz&#8217;</div></blockquote>
+<p>Let&#8217;s add this &#8216;Scenario&#8217; to our BDD tests:</p>
+<div class="highlight-cucumber"><div class="highlight"><pre><span class="k">Feature:</span><span class="nf"> Simple FizzBuzz</span>
+<span class="nf">    Implement a simple version of the FizzBuzz game</span>
+
+<span class="nf">    </span><span class="k">Scenario:</span><span class="nf"> FizzBuzz of 5</span>
+<span class="k">        Given </span><span class="nf">the number </span><span class="s">5</span><span class="nf"></span>
+<span class="nf">        </span><span class="k">When </span><span class="nf">I call FizzBuzz</span>
+<span class="nf">        </span><span class="k">Then </span><span class="nf">I see the output Buzz</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="implement-the-steps">
+<h2>Implement The Steps<a class="headerlink" href="#implement-the-steps" title="Permalink to this headline">¶</a></h2>
+<p>We have three steps.  Lettuce will match our steps to Python functions using
+the text we set in the scenario, so we need to create three steps.</p>
+<p>Steps are defined as Python functions decorated with the <tt class="docutils literal"><span class="pre">&#64;step</span></tt> decorator
+factory from lettuce. The decorator factory takes a single argument which is
+the text used for the step in scenarios. Variable values are matched by regular
+expression.</p>
+<p>Let&#8217;s implement the first step first.  In <tt class="docutils literal"><span class="pre">steps.py</span></tt> add the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lettuce</span> <span class="kn">import</span> <span class="n">step</span>
+<span class="kn">from</span> <span class="nn">lettuce</span> <span class="kn">import</span> <span class="n">world</span>
+
+<span class="kn">from</span> <span class="nn">fizzbuzz</span> <span class="kn">import</span> <span class="n">fizzbuzz</span>
+
+
+<span class="nd">@step</span><span class="p">(</span><span class="s">&#39;the number (\d+)&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">the_number</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+    <span class="n">world</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we can see that the <tt class="docutils literal"><span class="pre">&#64;step</span></tt> decorator is passed the argument &#8220;the number
+(d+)&#8221;.  How does that match? The secret is that there are a few &#8216;magic&#8217; words
+in <tt class="docutils literal"><span class="pre">lettuce</span></tt>. When the test parser sees <tt class="docutils literal"><span class="pre">Given</span></tt>, <tt class="docutils literal"><span class="pre">When</span></tt> or <tt class="docutils literal"><span class="pre">Then</span></tt> it
+uses these to determine that the following text on the line is a step. That
+text is what is considered for the match.</p>
+<p>The regular expression <tt class="docutils literal"><span class="pre">(\d+)</span></tt> will match a sequence of one or more digits,
+and the value it finds will be passed to the function decorated by <tt class="docutils literal"><span class="pre">&#64;step</span></tt>.</p>
+<p>Also notice that the Python function decorated by <tt class="docutils literal"><span class="pre">&#64;step</span></tt> takes <em>two</em>
+arguments. The first will always be the step itself. The second comes from the
+matched regular expression.</p>
+<p>How do you expect you might handle a step like this:</p>
+<div class="highlight-cucumber"><div class="highlight"><pre><span class="k">Given </span><span class="nf">the numbers </span><span class="s">5</span><span class="nf"> and </span><span class="s">7</span><span class="nf"></span>
+</pre></div>
+</div>
+<p>What would the argument passed to the <tt class="docutils literal"><span class="pre">&#64;step</span></tt> decorator look like? How many
+arguments would the Python function need to expect?</p>
+<p>Let&#8217;s go ahead and add two more steps for the remaining parts of our scenario:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@step</span><span class="p">(</span><span class="s">&#39;when I call fizzbuzz&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">call_fizzbuzz</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+    <span class="n">world</span><span class="o">.</span><span class="n">fb</span> <span class="o">=</span> <span class="n">fizzbuzz</span><span class="p">(</span><span class="n">world</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+
+<span class="nd">@step</span><span class="p">(</span><span class="s">&#39;I see the output (\w+)&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">expected</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">world</span><span class="o">.</span><span class="n">fb</span> <span class="o">==</span> <span class="n">expected</span><span class="p">,</span> <span class="s">&quot;Got </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">expected</span>
+</pre></div>
+</div>
+<p>Once you&#8217;ve done this, you should be able to run your BDD tests from the
+command line:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span>master *<span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span>lettuce
+
+Feature: Simple FizzBuzz                          <span class="c"># features/fizzbuzz.feature:1</span>
+  Implement a simple version of the FizzBuzz game <span class="c"># features/fizzbuzz.feature:2</span>
+
+  Scenario: FizzBuzz of 5                         <span class="c"># features/fizzbuzz.feature:4</span>
+    Given the number 5                            <span class="c"># features/steps.py:8</span>
+    When I call FizzBuzz                          <span class="c"># features/steps.py:13</span>
+    Then I see the output Buzz                    <span class="c"># features/steps.py:18</span>
+    Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+      File <span class="s2">&quot;/Users/cewing/virtualenvs/fizzbuzz/lib/python2.7/site-packages/lettuce/core.py&quot;</span>, line 144, in __call__
+        <span class="nv">ret</span> <span class="o">=</span> self.function<span class="o">(</span>self.step, *args, **kw<span class="o">)</span>
+      File <span class="s2">&quot;/Users/cewing/projects/fizzbuzz/features/steps.py&quot;</span>, line 19, in compare
+        assert world.fb <span class="o">==</span> expected, <span class="s2">&quot;Got %s&quot;</span> % world.fb
+    AssertionError: Got None
+
+1 feature <span class="o">(</span>0 passed<span class="o">)</span>
+1 scenario <span class="o">(</span>0 passed<span class="o">)</span>
+3 steps <span class="o">(</span>1 failed, 2 passed<span class="o">)</span>
+</pre></div>
+</div>
+<p>You can see, the tests report that we&#8217;ve run 1 feature, 1 scenario and 3 steps.
+They also tell us that one of our steps failed. And they kindly provide a
+traceback that shows us where in our steps things went awry.</p>
+<p>Excellent.  Now we can uncomment our code for the fizzbuzz function, and re-run
+the test:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span>master *<span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span>lettuce
+
+Feature: Simple FizzBuzz                          <span class="c"># features/fizzbuzz.feature:1</span>
+  Implement a simple version of the FizzBuzz game <span class="c"># features/fizzbuzz.feature:2</span>
+
+  Scenario: FizzBuzz of 5                         <span class="c"># features/fizzbuzz.feature:4</span>
+    Given the number 5                            <span class="c"># features/steps.py:8</span>
+    When I call FizzBuzz                          <span class="c"># features/steps.py:13</span>
+    Then I see the output Buzz                    <span class="c"># features/steps.py:18</span>
+
+1 feature <span class="o">(</span>1 passed<span class="o">)</span>
+1 scenario <span class="o">(</span>1 passed<span class="o">)</span>
+3 steps <span class="o">(</span>3 passed<span class="o">)</span>
+</pre></div>
+</div>
+<p>Wonderful!  Our first passing BDD test!</p>
+</div>
+<div class="section" id="iterating-over-multiple-calls">
+<h2>Iterating Over Multiple Calls<a class="headerlink" href="#iterating-over-multiple-calls" title="Permalink to this headline">¶</a></h2>
+<p>But it really isn&#8217;t enough to just test with one value. FizzBuzz is a dynamic
+process that returns different values depending on what you pass in. We should
+cover at least a reasonable range of alternative possibilities.</p>
+<p>We could write a new scenario for each different value we want to pass in. But
+that would mean re-writing the same lines over and over with only two
+variations. Not very programmerish.</p>
+<p>Luckily, there&#8217;s a solution. With the syntax supported by <tt class="docutils literal"><span class="pre">lettuce</span></tt> we can
+replace the <em>specific</em> numbers in our current scenario with <em>placeholders</em>.
+Then we can provide a set of data for the scenario to use, and <tt class="docutils literal"><span class="pre">lettuce</span></tt> will
+automatically plug in our values and run the same scenario over and over for
+us. Update <tt class="docutils literal"><span class="pre">fizzbuzz.feature</span></tt> like so:</p>
+<div class="highlight-cucmber"><div class="highlight"><pre>Scenario Outline: FizzBuzz [just enough]
+    Given the number &lt;input&gt;
+    When I call FizzBuzz
+    Then I see the output &lt;output&gt;
+
+Examples:
+| input | output   |
+| 0     | 0        |
+| 1     | 1        |
+| 3     | Fizz     |
+| 5     | Buzz     |
+| 6     | Fizz     |
+| 10    | Buzz     |
+| 15    | FizzBuzz |
+</pre></div>
+</div>
+<p>We&#8217;ve changed our <em>scenario</em> into a <strong>Scenario Outline</strong>. This lets <tt class="docutils literal"><span class="pre">lettuce</span></tt>
+know that we expect this scenario to be run multiple times.</p>
+<p>We also replaced the specific input <tt class="docutils literal"><span class="pre">5</span></tt> and output <tt class="docutils literal"><span class="pre">Buzz</span></tt> with
+placeholders, marked by angle brackets.</p>
+<p>Finally, we provided a table of example data for our outline to use. The first
+row of the table contains the names of our placeholders, and then each row
+represents a set of values to be used for one iteration.</p>
+<p>Now when we run the tests again, we can see that we get more passes through the
+scenario automatically:</p>
+<div class="highlight-cucumber"><div class="highlight"><pre><span class="nf">[fizzbuzz]</span>
+<span class="nf">[master=]</span>
+<span class="nf">heffalump:fizzbuzz cewing$ lettuce</span>
+
+<span class="k">Feature:</span><span class="nf"> Simple FizzBuzz                          # features/fizzbuzz.feature:1</span>
+<span class="nf">  Implement a simple version of the FizzBuzz game # features/fizzbuzz.feature:2</span>
+
+<span class="nf">  </span><span class="k">Scenario Outline:</span><span class="nf"> FizzBuzz [just enough]        # features/fizzbuzz.feature:4</span>
+<span class="k">    Given </span><span class="nf">the number </span><span class="nv">&lt;input&gt;</span><span class="nf">                      </span><span class="c"># features/steps.py:8</span><span class="nf"></span>
+<span class="nf">    </span><span class="k">When </span><span class="nf">I call FizzBuzz                          </span><span class="c"># features/steps.py:13</span><span class="nf"></span>
+<span class="nf">    </span><span class="k">Then </span><span class="nf">I see the output </span><span class="nv">&lt;output&gt;</span><span class="nf">                </span><span class="c"># features/steps.py:18</span><span class="nf"></span>
+
+<span class="nf">  </span><span class="k">Examples:</span>
+<span class="k">    |</span><span class="nv"> input</span><span class="k"> |</span><span class="nv"> output</span><span class="k">   |</span><span class="nf"></span>
+<span class="k">    |</span><span class="s"> 0</span><span class="k">     |</span><span class="s"> 0</span><span class="k">        |</span><span class="nf"></span>
+<span class="k">    |</span><span class="s"> 1</span><span class="k">     |</span><span class="s"> 1</span><span class="k">        |</span><span class="nf"></span>
+<span class="k">    |</span><span class="s"> 3</span><span class="k">     |</span><span class="s"> Fizz</span><span class="k">     |</span><span class="nf"></span>
+<span class="k">    |</span><span class="s"> 5</span><span class="k">     |</span><span class="s"> Buzz</span><span class="k">     |</span><span class="nf"></span>
+<span class="k">    |</span><span class="s"> 6</span><span class="k">     |</span><span class="s"> Fizz</span><span class="k">     |</span><span class="nf"></span>
+<span class="k">    |</span><span class="s"> 10</span><span class="k">    |</span><span class="s"> Buzz</span><span class="k">     |</span><span class="nf"></span>
+<span class="k">    |</span><span class="s"> 15</span><span class="k">    |</span><span class="s"> FizzBuzz</span><span class="k"> |</span>
+
+<span class="s">1</span><span class="nf"> feature (</span><span class="s">1</span><span class="nf"> passed)</span>
+<span class="s">7</span><span class="nf"> scenarios (</span><span class="s">7</span><span class="nf"> passed)</span>
+<span class="s">21</span><span class="nf"> steps (</span><span class="s">21</span><span class="nf"> passed)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>We&#8217;ve written one scenario that covers our simple implementation of FizzBuzz.
+But the assignment had a second implementation. That version was supposed to be
+extensible with additional numbers and the values that should be printed in
+their place.  For example, if the number 7 was supplied, the value &#8216;Sizz&#8217;
+should be returned.</p>
+<p>You may also wish to read more of <a class="reference external" href="http://lettuce.it">the documentation</a> for <tt class="docutils literal"><span class="pre">lettuce</span></tt> and see
+if you can&#8217;t figure out how to add a new scenario and new steps that will cover
+that version of the game.</p>
+<p>To complete this task you&#8217;ll need to learn a bit more about the syntax of the
+language you are using to write these tests.  It&#8217;s called <tt class="docutils literal"><span class="pre">Gherkin</span></tt> (the
+first implementation was called <tt class="docutils literal"><span class="pre">cucumber</span></tt>). There is a very nice outline of
+<a class="reference external" href="http://docs.behat.org/guides/1.gherkin.html">the features of Gherkin syntax</a> you can read to learn more.</p>
+<p>You should be aware that not <strong>all</strong> the features of the <tt class="docutils literal"><span class="pre">Gherkin</span></tt> syntax are
+supported by <tt class="docutils literal"><span class="pre">lettuce.</span></tt> Moreover, some features are supported in alternate
+forms, for example, <tt class="docutils literal"><span class="pre">Gherkin</span></tt> backgrounds are implemented as hooks in
+<tt class="docutils literal"><span class="pre">lettuce</span></tt>.</p>
+<p>Happy testing!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Behavior Driven Development with Lettuce</a><ul>
+<li><a class="reference internal" href="#practice-safe-development">Practice Safe Development</a></li>
+<li><a class="reference internal" href="#setting-our-project">Setting Our Project</a></li>
+<li><a class="reference internal" href="#install-lettuce">Install Lettuce</a></li>
+<li><a class="reference internal" href="#lettuce-setup">Lettuce Setup</a></li>
+<li><a class="reference internal" href="#write-a-scenario">Write a Scenario</a></li>
+<li><a class="reference internal" href="#implement-the-steps">Implement The Steps</a></li>
+<li><a class="reference internal" href="#iterating-over-multiple-calls">Iterating Over Multiple Calls</a></li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Day 06 Lectures</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../assignments/index.html"
+                        title="next chapter">Assignments</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day06/lettuce.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 06 Lectures"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 06 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

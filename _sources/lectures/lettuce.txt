@@ -1,0 +1,124 @@
+****************************************
+Behavior Driven Development with Lettuce
+****************************************
+
+You've created a github repository for a project called FizzBuzz, as part of
+a previous assignment.
+
+We're going to use that project as an example of how we can use the Python
+package `lettuce`_ to incorporate `behavior driven development`_.
+
+.. _lettuce: http://lettuce.it
+.. _behavior driven development: http://en.wikipedia.org/wiki/Behavior-driven_development
+
+Practice Safe Development
+=========================
+
+Because ``lettuce`` is not in the standard library, we're going to follow best
+practices and use `virtualenv`_ to create a sandbox for this project.
+
+.. _virtualenv: http://virtualenv.org
+
+.. note:: If you have already set up a virtualenv for your fizzbuzz project,
+          you can skip this up until the point where we install lettuce below.
+
+
+First, make sure you're in your fizzbuzz repository:
+
+.. code-block:: bash
+
+    $ cd /path/to/fizzbuzz/repository
+    [master=]
+    heffalump:fizzbuzz cewing$ pwd
+    /Users/cewing/projects/fizzbuzz
+
+Next, we create a virtualenv using ``mkvirtualenv`` provided by `virtualenvwrapper`_:
+
+.. _virtualenvwrapper: http://virtualenvwrapper.readthedocs.org
+
+.. code-block:: bash
+
+    [master=]
+    heffalump:fizzbuzz cewing$ mkvirtualenv fizzbuzz
+    New python executable in fizzbuzz/bin/python
+    Installing setuptools, pip...done.
+    [fizzbuzz]
+    [master=]
+    heffalump:fizzbuzz cewing$
+
+
+Setting Our Project
+===================
+
+Now, our virtualenv is set up and active. Since we've already got a "project"
+directory--our existing repository--we are going to use the
+``setvirtualenvproject`` command to associate this new virtualenv with our
+existing repository directory. 
+
+The command takes two arguments, the path to the virtualenv, and the path to
+the project directory. Both these arguments must be **full, absolute path
+names**.
+
+It's a pain to type out those pathnames, luckily, ``bash`` (or whatever shell
+you are using) can come to the rescue.
+
+First, when a virtualenv is active, it sets an environmental variable
+``VIRTUAL_ENV`` which holds the path to the active virtualenv:
+
+.. code-block:: bash
+
+    heffalump:fizzbuzz cewing$ echo $VIRTUAL_ENV
+    /Users/cewing/virtualenvs/fizzbuzz
+
+Second, the ``pwd`` command will print our current working directory, which is
+the project directory we want. If we surround this bash command with backticks,
+the output will be substituted into a shell expression.
+
+.. code-block:: bash
+
+    source
+
+    [fizzbuzz]
+    [master=]
+    heffalump:fizzbuzz cewing$ pwd
+    /Users/cewing/projects/fizzbuzz
+    [fizzbuzz]
+    [master=]
+    heffalump:fizzbuzz cewing$ setvirtualenvproject $VIRTUAL_ENV `pwd`
+    Setting project for fizzbuzz to /Users/cewing/projects/fizzbuzz
+    [fizzbuzz]
+    [master=]
+    heffalump:fizzbuzz cewing$
+
+Excellent.  Now, when we ``workon`` fizzbuzz, we'll *both* activate the
+environment and automatically move to this directory.
+
+Time Saved!!!
+
+Install Lettuce
+===============
+
+Now, we're ready to go ahead and install lettuce:
+
+.. code-block:: bash
+
+    [fizzbuzz]
+    [master=]
+    heffalump:fizzbuzz cewing$ pip install lettuce
+    Downloading/unpacking lettuce
+      ...
+
+    Successfully installed lettuce sure fuzzywuzzy nose rednose python-termstyle
+    Cleaning up...
+    [fizzbuzz]
+    [master=]
+
+Once that's finished, we should find that we have a new command available in
+our shell: ``lettuce``:
+
+.. code-block:: bash
+
+    [fizzbuzz]
+    [master=]
+    heffalump:fizzbuzz cewing$ which lettuce
+    /Users/cewing/virtualenvs/fizzbuzz/bin/lettuce
