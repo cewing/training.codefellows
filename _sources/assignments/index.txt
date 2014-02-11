@@ -10,3 +10,4 @@ Contents:
    :maxdepth: 2
 
    day01/index
+   day06/index

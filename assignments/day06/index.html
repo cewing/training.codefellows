@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Day 06 Lectures &mdash; training.codefellows 1.0 documentation</title>
+    <title>Day 06 Assignments &mdash; training.codefellows 1.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
-    <link rel="up" title="Lectures" href="../index.html" />
-    <link rel="next" title="TCP/IP and Sockets" href="sockets.html" />
-    <link rel="prev" title="Shell Customizations for Python Development" href="../day01/shell.html" /> 
+    <link rel="up" title="Assignments" href="../index.html" />
+    <link rel="next" title="Behavior Driven Development with Lettuce" href="lettuce.html" />
+    <link rel="prev" title="Turning Sublime Text Into a Lightweight Python IDE" href="../day01/sublime_as_ide.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,13 +36,13 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="sockets.html" title="TCP/IP and Sockets"
+          <a href="lettuce.html" title="Behavior Driven Development with Lettuce"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../day01/shell.html" title="Shell Customizations for Python Development"
+          <a href="../day01/sublime_as_ide.html" title="Turning Sublime Text Into a Lightweight Python IDE"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
-          <li><a href="../index.html" accesskey="U">Lectures</a> &raquo;</li> 
+          <li><a href="../index.html" accesskey="U">Assignments</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,19 +51,25 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="day-06-lectures">
-<h1>Day 06 Lectures<a class="headerlink" href="#day-06-lectures" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="day-06-assignments">
+<h1>Day 06 Assignments<a class="headerlink" href="#day-06-assignments" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="sockets.html">TCP/IP and Sockets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="sockets.html#computer-communications">Computer Communications</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sockets.html#sockets">Sockets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sockets.html#socket-families">Socket Families</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sockets.html#socket-types">Socket Types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sockets.html#socket-protocols">Socket Protocols</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sockets.html#address-information">Address Information</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sockets.html#communicating">Communicating</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sockets.html#exercises">Exercises</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lettuce.html">Behavior Driven Development with Lettuce</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lettuce.html#practice-safe-development">Practice Safe Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lettuce.html#setting-our-project">Setting Our Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lettuce.html#install-lettuce">Install Lettuce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lettuce.html#lettuce-setup">Lettuce Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lettuce.html#write-a-scenario">Write a Scenario</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lettuce.html#implement-the-steps">Implement The Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lettuce.html#iterating-over-multiple-calls">Iterating Over Multiple Calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lettuce.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="socket_exercise.html">Socket Communications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="socket_exercise.html#client-communications">Client Communications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="socket_exercise.html#server-side">Server Side</a></li>
+<li class="toctree-l2"><a class="reference internal" href="socket_exercise.html#getting-the-flow">Getting the Flow</a></li>
 </ul>
 </li>
 </ul>
@@ -77,14 +83,14 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../day01/shell.html"
-                        title="previous chapter">Shell Customizations for Python Development</a></p>
+  <p class="topless"><a href="../day01/sublime_as_ide.html"
+                        title="previous chapter">Turning Sublime Text Into a Lightweight Python IDE</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="sockets.html"
-                        title="next chapter">TCP/IP and Sockets</a></p>
+  <p class="topless"><a href="lettuce.html"
+                        title="next chapter">Behavior Driven Development with Lettuce</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="../../_sources/lectures/day06/index.txt"
+    <li><a href="../../_sources/assignments/day06/index.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -111,13 +117,13 @@
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="sockets.html" title="TCP/IP and Sockets"
+          <a href="lettuce.html" title="Behavior Driven Development with Lettuce"
              >next</a> |</li>
         <li class="right" >
-          <a href="../day01/shell.html" title="Shell Customizations for Python Development"
+          <a href="../day01/sublime_as_ide.html" title="Turning Sublime Text Into a Lightweight Python IDE"
              >previous</a> |</li>
         <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
-          <li><a href="../index.html" >Lectures</a> &raquo;</li> 
+          <li><a href="../index.html" >Assignments</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
