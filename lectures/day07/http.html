@@ -1,0 +1,479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Understanding the HTTP Protocol &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 07 Lectures" href="index.html" />
+    <link rel="next" title="Assignments" href="../../assignments/index.html" />
+    <link rel="prev" title="Network Protocols in Python" href="protocols.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="protocols.html" title="Network Protocols in Python"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 07 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="understanding-the-http-protocol">
+<h1>Understanding the HTTP Protocol<a class="headerlink" href="#understanding-the-http-protocol" title="Permalink to this headline">¶</a></h1>
+<p>We&#8217;ve seen a number of network protocols so far.</p>
+<p>Each of them consisted of a set of allowed commands and possible responses,
+<em>messages</em> that are passed from client to server and then from server to
+client.</p>
+<p>In each protocol we&#8217;ve seen so far, these commands and responses have been
+<em>delimited</em></p>
+<p>And for each of the protocols we&#8217;ve seen so far, that delimiter has been
+consistent: &lt;CRLF&gt;</p>
+<p>A further consistency is shared between these protocols. In each case we&#8217;ve
+seen so far, the <em>client</em> is responsible for initiating the interaction. The
+<em>server</em> is passive until it receives some sort of request.</p>
+<div class="section" id="the-http-protocol">
+<h2>The HTTP Protocol<a class="headerlink" href="#the-http-protocol" title="Permalink to this headline">¶</a></h2>
+<p>HTTP is no different</p>
+<p>HTTP is also message-centered, with two-way communications we call <em>requests</em>
+and <em>responses</em>.</p>
+<ul class="simple">
+<li>Requests (Asking for information)</li>
+<li>Responses (Providing answers)</li>
+</ul>
+<p>HTTP Request (Ask for information):</p>
+<div class="highlight-python"><div class="highlight"><pre>GET /index.html HTTP/1.1
+Host: www.example.com
+&lt;CRLF&gt;
+</pre></div>
+</div>
+<p>HTTP Response (Provide answers):</p>
+<div class="highlight-python"><div class="highlight"><pre>HTTP/1.1 200 OK
+Date: Mon, 23 May 2005 22:38:34 GMT
+Server: Apache/1.3.3.7 (Unix) (Red-Hat/Linux)
+Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT
+Etag: &quot;3f80f-1b6-3e1cb03b&quot;
+Accept-Ranges:  none
+Content-Length: 438
+Connection: close
+Content-Type: text/html; charset=UTF-8
+&lt;CRLF&gt;
+&lt;438 bytes of content&gt;
+</pre></div>
+</div>
+<div class="section" id="http-req-resp-format">
+<h3>HTTP Req/Resp Format<a class="headerlink" href="#http-req-resp-format" title="Permalink to this headline">¶</a></h3>
+<p>Both share a common basic format:</p>
+<ul class="simple">
+<li>Line separators are &lt;CRLF&gt; (familiar, no?)</li>
+<li>A <em>required</em> initial line (a command or a response code)</li>
+<li>A <em>(mostly) optional</em> set of headers, one per line</li>
+<li>A blank line</li>
+<li>An <em>optional</em> body</li>
+</ul>
+<p>Let&#8217;s look at each a bit more closely.</p>
+</div>
+</div>
+<div class="section" id="http-requests">
+<h2>HTTP Requests<a class="headerlink" href="#http-requests" title="Permalink to this headline">¶</a></h2>
+<p>In HTTP 1.0, the only required line in an HTTP request looks like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>GET /path/to/index.html HTTP/1.0
+&lt;CRLF&gt;
+</pre></div>
+</div>
+<p>As virtual hosting grew more common, that was not enough, so HTTP 1.1 adds a
+single required <em>header</em>, <strong>Host</strong>:</p>
+<blockquote>
+<div>GET /path/to/index.html HTTP/1.1
+Host: www.mysite1.com:80
+&lt;CRLF&gt;</div></blockquote>
+<p>Every HTTP request <strong>must</strong> begin with a single line, broken by whitespace into
+three parts:</p>
+<div class="highlight-python"><div class="highlight"><pre>GET /path/to/index.html HTTP/1.1
+</pre></div>
+</div>
+<p>The three parts are the <em>method</em>, the <em>URI</em>, and the <em>protocol</em></p>
+<p>Let&#8217;s look at each in turn.</p>
+<div class="section" id="http-methods">
+<h3>HTTP Methods<a class="headerlink" href="#http-methods" title="Permalink to this headline">¶</a></h3>
+<p><strong>GET</strong> <tt class="docutils literal"><span class="pre">/path/to/index.html</span> <span class="pre">HTTP/1.1</span></tt></p>
+<ul>
+<li><p class="first">Every HTTP request must start with a <em>method</em></p>
+</li>
+<li><p class="first">There are four main HTTP methods:</p>
+<blockquote>
+<div><ul class="simple">
+<li>GET</li>
+<li>POST</li>
+<li>PUT</li>
+<li>DELETE</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">There are others, notably HEAD, but you won&#8217;t see them too much</p>
+</li>
+</ul>
+<p>These four methods can be mapped to the four basic steps (<em>CRUD</em>) of persistent
+storage:</p>
+<ul class="simple">
+<li>POST = Create</li>
+<li>GET = Read</li>
+<li>PUT = Update</li>
+<li>DELETE = Delete</li>
+</ul>
+</div>
+<div class="section" id="safe-unsafe">
+<h3>Safe &lt;&#8211;&gt; Unsafe<a class="headerlink" href="#safe-unsafe" title="Permalink to this headline">¶</a></h3>
+<p>HTTP methods can be categorized as <strong>safe</strong> or <strong>unsafe</strong>, based on whether
+they might <em>change something</em> on the server:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Safe HTTP Methods</dt>
+<dd><ul class="first last simple">
+<li>GET</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Unsafe HTTP Methods</dt>
+<dd><ul class="first last simple">
+<li>POST</li>
+<li>PUT</li>
+<li>DELETE</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>This is a <em>normative</em> distinction, which is to say <strong>be careful</strong></p>
+</div>
+<div class="section" id="idempotent-non-idempotent">
+<h3>Idempotent &lt;&#8211;&gt; Non-Idempotent<a class="headerlink" href="#idempotent-non-idempotent" title="Permalink to this headline">¶</a></h3>
+<p>HTTP methods can be categorized as <strong>idempotent</strong>, based on whether a given
+request will <em>always</em> have the same result:</p>
+<ul>
+<li><dl class="first docutils">
+<dt>Idempotent HTTP Methods</dt>
+<dd><ul class="first last simple">
+<li>GET</li>
+<li>PUT</li>
+<li>DELETE</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Non-Idempotent HTTP Methods</dt>
+<dd><ul class="first last simple">
+<li>POST</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Again, <em>normative</em>. The developer is responsible for ensuring that it is true.</p>
+</div>
+<div class="section" id="http-requests-uri">
+<h3>HTTP Requests: URI<a class="headerlink" href="#http-requests-uri" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">GET</span></tt> <strong>/path/to/index.html</strong> <tt class="docutils literal"><span class="pre">HTTP/1.1</span></tt></p>
+<ul class="simple">
+<li>Every HTTP request must include a <strong>URI</strong> used to determine the <strong>resource</strong> to
+be returned</li>
+<li>URI??
+<a class="reference external" href="http://stackoverflow.com/questions/176264/whats-the-difference-between-a-uri-and-a-url/1984225#1984225">http://stackoverflow.com/questions/176264/whats-the-difference-between-a-uri-and-a-url/1984225#1984225</a></li>
+<li>In static systems, the URI maps directly to a filesystem location on the
+server.</li>
+<li>In dynamic systems, it may still do so (PHP, CGI)<ul>
+<li>It may also be used to determine what code object should be used to build a
+response</li>
+</ul>
+</li>
+<li>Static or dynamic, we call whatever that end point might be a <em>resource</em></li>
+<li>Resource?  Files (html, img, .js, .css), but also:<ul>
+<li>Dynamic scripts</li>
+<li>Raw data</li>
+<li>API endpoints</li>
+</ul>
+</li>
+</ul>
+<p>In any server application, this job of connecting the URI requested to the
+appropriate end point is very important.</p>
+</div>
+</div>
+<div class="section" id="http-responses">
+<h2>HTTP Responses<a class="headerlink" href="#http-responses" title="Permalink to this headline">¶</a></h2>
+<p>In both HTTP 1.0 and 1.1, a proper response consists of an intial line,
+followed by optional headers, a single blank line, and then optionally a
+response body:</p>
+<div class="highlight-python"><div class="highlight"><pre>HTTP/1.1 200 OK
+Content-Type: text/plain
+&lt;CRLF&gt;
+this is a pretty minimal response
+</pre></div>
+</div>
+<p>As with requests, the initial line of the response is strictly formatted,
+divided by whitespace into a <em>response code</em> and an <em>explanation</em></p>
+<div class="section" id="http-response-codes">
+<h3>HTTP Response Codes<a class="headerlink" href="#http-response-codes" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">HTTP/1.1</span></tt> <strong>200 OK</strong></p>
+<p>All HTTP responses must include a <strong>response code</strong> indicating the outcome of
+the request.</p>
+<ul class="simple">
+<li>1xx (HTTP 1.1 only) - Informational message</li>
+<li>2xx - Success of some kind</li>
+<li>3xx - Redirection of some kind</li>
+<li>4xx - Client Error of some kind</li>
+<li>5xx - Server Error of some kind</li>
+</ul>
+<p>The response code is a machine-readable number. The explanation that follows is
+meant as a way to make the responses more human-friendly.</p>
+</div>
+<div class="section" id="common-response-codes">
+<h3>Common Response Codes<a class="headerlink" href="#common-response-codes" title="Permalink to this headline">¶</a></h3>
+<p>There are certain HTTP response codes you are likely to see (and use) most
+often:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">200</span> <span class="pre">OK</span></tt> - Everything is good</li>
+<li><tt class="docutils literal"><span class="pre">301</span> <span class="pre">Moved</span> <span class="pre">Permanently</span></tt> - You should update your link</li>
+<li><tt class="docutils literal"><span class="pre">304</span> <span class="pre">Not</span> <span class="pre">Modified</span></tt> - You should load this from cache</li>
+<li><tt class="docutils literal"><span class="pre">404</span> <span class="pre">Not</span> <span class="pre">Found</span></tt> - You&#8217;ve asked for something that doesn&#8217;t exist</li>
+<li><tt class="docutils literal"><span class="pre">500</span> <span class="pre">Internal</span> <span class="pre">Server</span> <span class="pre">Error</span></tt> - Something bad happened</li>
+</ul>
+<p>Do not be afraid to use other, less common codes in building good apps. There
+are a lot of them for a reason. See
+<a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html</a></p>
+</div>
+<div class="section" id="http-headers">
+<h3>HTTP Headers<a class="headerlink" href="#http-headers" title="Permalink to this headline">¶</a></h3>
+<p>After the required initial line of a response, the HTTP protocol allows the
+server to send additional information to the client in the form of <strong>headers</strong></p>
+<p>In fact, both requests and responses can contain headers. So a client can also
+use them to send extra data to the server.</p>
+<p>Headers take the form <tt class="docutils literal"><span class="pre">&lt;Name&gt;:</span> <span class="pre">&lt;Value&gt;</span></tt></p>
+<ul class="simple">
+<li>HTTP 1.0 has 16 valid headers, 1.1 has 46</li>
+<li>Any number of spaces or tabs may separate the <em>name</em> from the <em>value</em></li>
+<li>If a header line starts with spaces or tabs, it is considered part of the
+<em>value</em> for the previous header</li>
+<li>Header <em>names</em> are <strong>not</strong> case-sensitive, but <em>values</em> may be</li>
+</ul>
+<p>It&#8217;s well worth being familiar with the possible headers for HTTP.  You can
+<a class="reference external" href="http://www.cs.tut.fi/~jkorpela/http.html">read more about them here</a>.</p>
+<blockquote>
+<div></div></blockquote>
+</div>
+<div class="section" id="common-http-response-headers">
+<h3>Common HTTP Response Headers<a class="headerlink" href="#common-http-response-headers" title="Permalink to this headline">¶</a></h3>
+<p>There are a couple of headers we&#8217;ll talk about immediately, because they are
+so common.</p>
+<p>The first is the <tt class="docutils literal"><span class="pre">Content-Type</span></tt> header. It tells the client how to treat the
+data that is being returned in the body of the response.</p>
+<ul class="simple">
+<li>it uses <strong>mime-type</strong> (Multi-purpose Internet Mail Extensions)</li>
+<li>foo.jpeg - <tt class="docutils literal"><span class="pre">Content-Type:</span> <span class="pre">image/jpeg</span></tt></li>
+<li>foo.png - <tt class="docutils literal"><span class="pre">Content-Type:</span> <span class="pre">image/png</span></tt></li>
+<li>bar.txt - <tt class="docutils literal"><span class="pre">Content-Type:</span> <span class="pre">text/plain</span></tt></li>
+<li>baz.html - <tt class="docutils literal"><span class="pre">Content-Type:</span> <span class="pre">text/html</span></tt></li>
+</ul>
+<p>There are <em>many</em> <a class="reference external" href="http://www.webmaster-toolkit.com/mime-types.shtml:">mime-type identifiers</a>.</p>
+<p>The Python standard library provides a module that helps in determining the
+mimetype of a given file. It&#8217;s called <tt class="docutils literal"><span class="pre">mimetypes</span></tt>.</p>
+<p>Using it, you can guess the mime-type of a file based on the filename or map a
+file extension to a type:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">textfile</span> <span class="o">=</span> <span class="s">&quot;/path/to/textfile.txt&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">textfile</span><span class="p">)</span>
+<span class="go">(&#39;text/plain&#39;, None)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">textfile</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">text_extension</span>
+<span class="go">(&#39;/path/to/textfile&#39;, &#39;.txt&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mimetypes</span><span class="o">.</span><span class="n">types_map</span><span class="p">[</span><span class="n">text_extension</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+<span class="go">&#39;text/plain&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imagefile</span> <span class="o">=</span> <span class="s">&quot;/path/to/imagefile.png&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mimetypes</span><span class="o">.</span><span class="n">guess_type</span><span class="p">(</span><span class="n">imagefile</span><span class="p">)</span>
+<span class="go">(&#39;image/png&#39;, None)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">imagefile</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_extension</span>
+<span class="go">(&#39;/path/to/imagefile&#39;, &#39;.png&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mimetypes</span><span class="o">.</span><span class="n">types_map</span><span class="p">[</span><span class="n">image_extension</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+<span class="go">&#39;image/png&#39;</span>
+</pre></div>
+</div>
+<p>Another common HTTP header is the <tt class="docutils literal"><span class="pre">Date</span></tt> header. It represents the date and
+time that a response was generated.</p>
+<p>The value for this header must be expressed in GMT, not local time, and has a
+very particular format:</p>
+<div class="highlight-python"><div class="highlight"><pre>Fri, 12 Feb 2010 16:23:03 GMT
+</pre></div>
+</div>
+<p>The Python standard library also provides a way of getting exactly this format.
+Since the format is almost exactly the same as that required for email headers,
+this method is found in a slightly unexpected module:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">email.utils</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">email</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">formatdate</span><span class="p">(</span><span class="n">usegmt</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="go">&#39;Fri, 12 Feb 2010 16:23:03 GMT&#39;</span>
+</pre></div>
+</div>
+<p>A third common HTTP header is the <tt class="docutils literal"><span class="pre">Content-Length</span></tt> header, used to inform the
+client just how much data to expect in the body of a response.</p>
+<p>Since HTTP does not specify a delimiter for a response body (unlike the SMTP,
+POP3 and IMAP protocols), this header is particularly important.</p>
+<p>The value for the header should correspond to the number of bytes of data that
+will be returned. For binary files like images calculating this value is quite
+straightforward:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;Mars1.jpg&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_handle</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">mars_image</span> <span class="o">=</span> <span class="n">file_handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mars_image</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">length</span>
+<span class="go">1161387</span>
+</pre></div>
+</div>
+<p>However, when text is involved it gets a bit more complicated. Best practice in
+Python is to keep text that you are working with as <tt class="docutils literal"><span class="pre">unicode</span></tt> objects:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">body</span> <span class="o">=</span> <span class="s">u&#39;éclaire&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+<span class="go">7</span>
+</pre></div>
+</div>
+<p>Remember though that a socket can <strong>only</strong> transmit bytes, not decoded unicode
+objects, so in Python you must be sure that the content of the response body
+you send has been encoded:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">bytes</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+<span class="go">8</span>
+</pre></div>
+</div>
+<p>Notice that the length of the encoded byte string is <em>longer</em> than the decoded
+unicode string. This is because the encoded form of the <tt class="docutils literal"><span class="pre">é</span></tt> character is
+actually <em>two bytes</em> in length.</p>
+<p>When sending text back to a client, it is best practice to include information
+about what <em>codec</em> was used to encode the bytes you send.</p>
+<p>It&#8217;s tempting to think of the <tt class="docutils literal"><span class="pre">Content-Encoding</span></tt> header as the proper place
+to send this data, but in fact that is used to inform the client of
+<em>compressed</em> data (.zip or similar).</p>
+<p>Instead, the correct way to inform the client of the encoding used is to append
+a <tt class="docutils literal"><span class="pre">charset</span> <span class="pre">&lt;name&gt;</span></tt> value to the <tt class="docutils literal"><span class="pre">Content-Type</span></tt> header:</p>
+<div class="highlight-python"><div class="highlight"><pre>Content-Type: text/plain; charset=utf-8
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Understanding the HTTP Protocol</a><ul>
+<li><a class="reference internal" href="#the-http-protocol">The HTTP Protocol</a><ul>
+<li><a class="reference internal" href="#http-req-resp-format">HTTP Req/Resp Format</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#http-requests">HTTP Requests</a><ul>
+<li><a class="reference internal" href="#http-methods">HTTP Methods</a></li>
+<li><a class="reference internal" href="#safe-unsafe">Safe &lt;&#8211;&gt; Unsafe</a></li>
+<li><a class="reference internal" href="#idempotent-non-idempotent">Idempotent &lt;&#8211;&gt; Non-Idempotent</a></li>
+<li><a class="reference internal" href="#http-requests-uri">HTTP Requests: URI</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#http-responses">HTTP Responses</a><ul>
+<li><a class="reference internal" href="#http-response-codes">HTTP Response Codes</a></li>
+<li><a class="reference internal" href="#common-response-codes">Common Response Codes</a></li>
+<li><a class="reference internal" href="#http-headers">HTTP Headers</a></li>
+<li><a class="reference internal" href="#common-http-response-headers">Common HTTP Response Headers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="protocols.html"
+                        title="previous chapter">Network Protocols in Python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../assignments/index.html"
+                        title="next chapter">Assignments</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day07/http.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="protocols.html" title="Network Protocols in Python"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 07 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Network Protocols in Python &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 07 Lectures" href="index.html" />
+    <link rel="next" title="Understanding the HTTP Protocol" href="http.html" />
+    <link rel="prev" title="Day 07 Lectures" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="http.html" title="Understanding the HTTP Protocol"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 07 Lectures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 07 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="network-protocols-in-python">
+<h1>Network Protocols in Python<a class="headerlink" href="#network-protocols-in-python" title="Permalink to this headline">¶</a></h1>
+<p>During this walkthrough we&#8217;ll learn the basics of network protocols.</p>
+<p>We&#8217;ll take a look at sample interactions in common network protocols and
+compare and contrast them. Doing so can often help us to understand in what
+situations one protocol would be more appropriate than another.</p>
+<p>Finally, we&#8217;ll interact with one of these protocols using a Python
+implementation from the standard library. These library implementations will
+help you to use a protocol without needing to remember the exact specifics of
+each.</p>
+<div class="section" id="what-is-a-protocol">
+<h2>What is a Protocol?<a class="headerlink" href="#what-is-a-protocol" title="Permalink to this headline">¶</a></h2>
+<p>a set of rules or conventions governing communications</p>
+<div class="section" id="protocols-irl">
+<h3>Protocols IRL<a class="headerlink" href="#protocols-irl" title="Permalink to this headline">¶</a></h3>
+<p>Life has lots of sets of rules for how to do things.</p>
+<ul class="simple">
+<li>What do you say when you get on the elevator?</li>
+<li>What do you do on a first date?</li>
+<li>What do you wear to a job interview?</li>
+<li>What do (and don&#8217;t) you talk about at a dinner party?</li>
+<li>...?</li>
+</ul>
+<a class="reference internal image-reference" href="../../_images/icup.png"><img alt="../../_images/icup.png" class="align-center" src="../../_images/icup.png" style="width: 58%;" /></a>
+<p><a class="reference external" href="http://blog.xkcd.com/2009/09/02/urinal-protocol-vulnerability/">http://blog.xkcd.com/2009/09/02/urinal-protocol-vulnerability/</a></p>
+</div>
+<div class="section" id="protocols-in-computers">
+<h3>Protocols In Computers<a class="headerlink" href="#protocols-in-computers" title="Permalink to this headline">¶</a></h3>
+<p>Digital life has lots of rules too:</p>
+<dl class="class">
+<dt id="incremental">
+<em class="property">class </em><tt class="descname">incremental</tt><a class="headerlink" href="#incremental" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<ul class="simple">
+<li>how to say hello</li>
+<li>how to identify yourself</li>
+<li>how to ask for information</li>
+<li>how to provide answers</li>
+<li>how to say goodbye</li>
+</ul>
+</div>
+</div>
+<div class="section" id="protocol-examples">
+<h2>Protocol Examples<a class="headerlink" href="#protocol-examples" title="Permalink to this headline">¶</a></h2>
+<p>What does this look like in practice?</p>
+<ul class="simple">
+<li>SMTP (Simple Message Transfer Protocol)
+<a class="reference external" href="http://tools.ietf.org/html/rfc5321#appendix-D">http://tools.ietf.org/html/rfc5321#appendix-D</a></li>
+<li>POP3 (Post Office Protocol)
+<a class="reference external" href="http://www.faqs.org/docs/artu/ch05s03.html">http://www.faqs.org/docs/artu/ch05s03.html</a></li>
+<li>IMAP (Internet Message Access Protocol)
+<a class="reference external" href="http://www.faqs.org/docs/artu/ch05s03.html">http://www.faqs.org/docs/artu/ch05s03.html</a></li>
+<li>HTTP (Hyper-Text Transfer Protocol)
+<a class="reference external" href="http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol">http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol</a></li>
+</ul>
+<div class="section" id="the-smtp-protocol">
+<h3>The SMTP Protocol<a class="headerlink" href="#the-smtp-protocol" title="Permalink to this headline">¶</a></h3>
+<p>SMTP (Say hello and identify yourself):</p>
+<div class="highlight-python"><div class="highlight"><pre>S: 220 foo.com Simple Mail Transfer Service Ready
+C: EHLO bar.com
+S: 250-foo.com greets bar.com
+S: 250-8BITMIME
+S: 250-SIZE
+S: 250-DSN
+S: 250 HELP
+</pre></div>
+</div>
+<p>SMTP (Ask for information, provide answers):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: MAIL FROM:&lt;Smith@bar.com&gt;
+S: 250 OK
+C: RCPT TO:&lt;Jones@foo.com&gt;
+S: 250 OK
+C: RCPT TO:&lt;Green@foo.com&gt;
+S: 550 No such user here
+C: DATA
+S: 354 Start mail input; end with &lt;CRLF&gt;.&lt;CRLF&gt;
+C: Blah blah blah...
+C: ...etc. etc. etc.
+C: .
+S: 250 OK
+</pre></div>
+</div>
+<p>SMTP (Say goodbye):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: QUIT
+S: 221 foo.com Service closing transmission channel
+</pre></div>
+</div>
+</div>
+<div class="section" id="smtp-characteristics">
+<h3>SMTP Characteristics<a class="headerlink" href="#smtp-characteristics" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Interaction consists of commands and replies</li>
+<li>Each command or reply is <em>one line</em> terminated by &lt;CRLF&gt;</li>
+<li>The exception is message payload, terminated by &lt;CRLF&gt;.&lt;CRLF&gt;</li>
+<li>Each command has a <em>verb</em> and one or more <em>arguments</em></li>
+<li>Each reply has a formal <em>code</em> and an informal <em>explanation</em></li>
+</ul>
+</div>
+<div class="section" id="the-pop3-protocol">
+<h3>The POP3 Protocol<a class="headerlink" href="#the-pop3-protocol" title="Permalink to this headline">¶</a></h3>
+<p>POP3 (Say hello and identify yourself):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: &lt;client connects to service port 110&gt;
+S: +OK POP3 server ready &lt;1896.6971@mailgate.dobbs.org&gt;
+C: USER bob
+S: +OK bob
+C: PASS redqueen
+S: +OK bob&#39;s maildrop has 2 messages (320 octets)
+</pre></div>
+</div>
+<p>POP3 (Ask for information, provide answers):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: STAT
+S: +OK 2 320
+C: LIST
+S: +OK 1 messages (120 octets)
+S: 1 120
+S: .
+</pre></div>
+</div>
+<p>POP3 (Ask for information, provide answers):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: RETR 1
+S: +OK 120 octets
+S: &lt;server sends the text of message 1&gt;
+S: .
+C: DELE 1
+S: +OK message 1 deleted
+</pre></div>
+</div>
+<p>POP3 (Say goodbye):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: QUIT
+S: +OK dewey POP3 server signing off (maildrop empty)
+C: &lt;client hangs up&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="pop3-characteristics">
+<h3>POP3 Characteristics<a class="headerlink" href="#pop3-characteristics" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Interaction consists of commands and replies</li>
+<li>Each command or reply is <em>one line</em> terminated by &lt;CRLF&gt;</li>
+<li>The exception is message payload, terminated by &lt;CRLF&gt;.&lt;CRLF&gt;</li>
+<li>Each command has a <em>verb</em> and one or more <em>arguments</em></li>
+<li>Each reply has a formal <em>code</em> and an informal <em>explanation</em></li>
+</ul>
+<p>The codes don&#8217;t really look the same, though, do they?</p>
+</div>
+<div class="section" id="one-other-difference">
+<h3>One Other Difference<a class="headerlink" href="#one-other-difference" title="Permalink to this headline">¶</a></h3>
+<p>The exception to the one-line-per-message rule is <em>payload</em></p>
+<p>In both SMTP and POP3 this is terminated by &lt;CRLF&gt;.&lt;CRLF&gt;</p>
+<p>In SMTP, the <em>client</em> has this ability</p>
+<p>But in POP3, it belongs to the <em>server</em>.  Why?</p>
+</div>
+</div>
+<div class="section" id="the-imap-protocol">
+<h2>The IMAP Protocol<a class="headerlink" href="#the-imap-protocol" title="Permalink to this headline">¶</a></h2>
+<p>IMAP (Say hello and identify yourself):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: &lt;client connects to service port 143&gt;
+S: * OK example.com IMAP4rev1 v12.264 server ready
+C: A0001 USER &quot;frobozz&quot; &quot;xyzzy&quot;
+S: * OK User frobozz authenticated
+</pre></div>
+</div>
+<p>IMAP (Ask for information, provide answers [connect to an inbox]):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: A0002 SELECT INBOX
+S: * 1 EXISTS
+S: * 1 RECENT
+S: * FLAGS (\Answered \Flagged \Deleted \Draft \Seen)
+S: * OK [UNSEEN 1] first unseen message in /var/spool/mail/esr
+S: A0002 OK [READ-WRITE] SELECT completed
+</pre></div>
+</div>
+<p>IMAP (Ask for information, provide answers [Get message sizes]):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: A0003 FETCH 1 RFC822.SIZE
+S: * 1 FETCH (RFC822.SIZE 2545)
+S: A0003 OK FETCH completed
+</pre></div>
+</div>
+<p>IMAP (Ask for information, provide answers [Get first message header]):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: A0004 FETCH 1 BODY[HEADER]
+S: * 1 FETCH (RFC822.HEADER {1425}
+&lt;server sends 1425 octets of message payload&gt;
+S: )
+S: A0004 OK FETCH completed
+</pre></div>
+</div>
+<p>IMAP (Ask for information, provide answers [Get first message body]):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: A0005 FETCH 1 BODY[TEXT]
+S: * 1 FETCH (BODY[TEXT] {1120}
+&lt;server sends 1120 octets of message payload&gt;
+S: )
+S: * 1 FETCH (FLAGS (\Recent \Seen))
+S: A0005 OK FETCH completed
+</pre></div>
+</div>
+<p>IMAP (Say goodbye):</p>
+<div class="highlight-python"><div class="highlight"><pre>C: A0006 LOGOUT
+S: * BYE example.com IMAP4rev1 server terminating connection
+S: A0006 OK LOGOUT completed
+C: &lt;client hangs up&gt;
+</pre></div>
+</div>
+<div class="section" id="imap-characteristics">
+<h3>IMAP Characteristics<a class="headerlink" href="#imap-characteristics" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Interaction consists of commands and replies</li>
+<li>Each command or reply is <em>one line</em> terminated by &lt;CRLF&gt;</li>
+<li>Each command has a <em>verb</em> and one or more <em>arguments</em></li>
+<li>Each reply has a formal <em>code</em> and an informal <em>explanation</em></li>
+</ul>
+</div>
+<div class="section" id="imap-differences">
+<h3>IMAP Differences<a class="headerlink" href="#imap-differences" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Commands and replies are prefixed by &#8216;sequence identifier&#8217;</li>
+<li>Payloads are prefixed by message size, rather than terminated by reserved
+sequence</li>
+</ul>
+<p>Compared with POP3, what do these differences suggest?</p>
+</div>
+</div>
+<div class="section" id="protocols-in-python">
+<h2>Protocols in Python<a class="headerlink" href="#protocols-in-python" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s try this out for ourselves</p>
+<p>Fire up your python interpreters and prepare to type.</p>
+<p>Begin by importing the <tt class="docutils literal"><span class="pre">imaplib</span></tt> module from the Python Standard Library:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">imaplib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">imaplib</span><span class="p">)</span>
+<span class="go">[&#39;AllowedVersions&#39;, &#39;CRLF&#39;, &#39;Commands&#39;,</span>
+<span class="go"> &#39;Continuation&#39;, &#39;Debug&#39;, &#39;Flags&#39;, &#39;IMAP4&#39;,</span>
+<span class="go"> &#39;IMAP4_PORT&#39;, &#39;IMAP4_SSL&#39;, &#39;IMAP4_SSL_PORT&#39;,</span>
+<span class="go"> ...</span>
+<span class="go"> &#39;socket&#39;, &#39;ssl&#39;, &#39;sys&#39;, &#39;time&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imaplib</span><span class="o">.</span><span class="n">Debug</span> <span class="o">=</span> <span class="mi">4</span>
+</pre></div>
+</div>
+<p>Setting <tt class="docutils literal"><span class="pre">imap.Debug</span></tt> shows us what is sent and received</p>
+<p>I&#8217;ve prepared a server for us to use, we&#8217;ll need to set up a client to speak
+to it. Our server requires SSL for connecting to IMAP servers, so let&#8217;s
+initialize an IMAP4_SSL client and authenticate:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span> <span class="o">=</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4_SSL</span><span class="p">(</span><span class="s">&#39;mail.webfaction.com&#39;</span><span class="p">)</span>
+<span class="go">  57:04.83 imaplib version 2.58</span>
+<span class="go">  57:04.83 new IMAP4 connection, tag=FNHG</span>
+<span class="go">  ...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+<span class="go">  12:16.50 &gt; IMAD1 LOGIN username password</span>
+<span class="go">  12:18.52 &lt; IMAD1 OK Logged in.</span>
+<span class="go">(&#39;OK&#39;, [&#39;Logged in.&#39;])</span>
+</pre></div>
+</div>
+<p>We can start by listing the mailboxes we have on the server:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+<span class="go">  00:41.91 &gt; FNHG3 LIST &quot;&quot; *</span>
+<span class="go">  00:41.99 &lt; * LIST (\HasNoChildren) &quot;.&quot; &quot;INBOX&quot;</span>
+<span class="go">  00:41.99 &lt; FNHG3 OK List completed.</span>
+<span class="go">(&#39;OK&#39;, [&#39;(\\HasNoChildren) &quot;.&quot; &quot;INBOX&quot;&#39;])</span>
+</pre></div>
+</div>
+<p>To interact with our email, we must select a mailbox from the list we received
+earlier:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s">&#39;INBOX&#39;</span><span class="p">)</span>
+<span class="go">  00:00.47 &gt; FNHG2 SELECT INBOX</span>
+<span class="go">  00:00.56 &lt; * FLAGS (\Answered \Flagged \Deleted \Seen \Draft)</span>
+<span class="go">  00:00.56 &lt; * OK [PERMANENTFLAGS (\Answered \Flagged \Deleted \Seen \Draft \*)] Flags permitted.</span>
+<span class="go">  00:00.56 &lt; * 2 EXISTS</span>
+<span class="go">  00:00.57 &lt; * 0 RECENT</span>
+<span class="go">  00:00.57 &lt; * OK [UNSEEN 2] First unseen.</span>
+<span class="go">  00:00.57 &lt; * OK [UIDVALIDITY 1357449499] UIDs valid</span>
+<span class="go">  00:00.57 &lt; * OK [UIDNEXT 3] Predicted next UID</span>
+<span class="go">  00:00.57 &lt; FNHG2 OK [READ-WRITE] Select completed.</span>
+<span class="go">(&#39;OK&#39;, [&#39;2&#39;])</span>
+</pre></div>
+</div>
+<p>We can search our selected mailbox for messages matching one or more criteria.
+The return value is a string list of the UIDs of messages that match our
+search:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;(FROM &quot;cris&quot;)&#39;</span><span class="p">)</span>
+<span class="go">  18:25.41 &gt; FNHG5 SEARCH (FROM &quot;cris&quot;)</span>
+<span class="go">  18:25.54 &lt; * SEARCH 1</span>
+<span class="go">  18:25.54 &lt; FNHG5 OK Search completed.</span>
+<span class="go">(&#39;OK&#39;, [&#39;1&#39;])</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Once we&#8217;ve found a message we want to look at, we can use the <tt class="docutils literal"><span class="pre">fetch</span></tt>
+command to read it from the server. IMAP allows fetching each part of
+a message independently:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="s">&#39;(BODY[HEADER])&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="s">&#39;(BODY[TEXT])&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">conn</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="s">&#39;(FLAGS)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="python-means-batteries-included">
+<h3>Python Means Batteries Included<a class="headerlink" href="#python-means-batteries-included" title="Permalink to this headline">¶</a></h3>
+<p>So we can download an entire message and then make a Python email message
+object:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">email</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s">&#39;1&#39;</span><span class="p">,</span> <span class="s">&#39;(RFC822)&#39;</span><span class="p">)</span>
+<span class="go">  28:08.40 &gt; FNHG8 FETCH 1 (RFC822)</span>
+<span class="go">  ...</span>
+</pre></div>
+</div>
+<p>Parse the returned data to get to the actual message:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+<span class="gp">... </span>  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">msg</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">message_from_string</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">...</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Once we have that, we can play with the resulting email object:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">msg</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">[&#39;Return-Path&#39;, &#39;X-Original-To&#39;, &#39;Delivered-To&#39;, &#39;Received&#39;,</span>
+<span class="go"> ...</span>
+<span class="go"> &#39;To&#39;, &#39;Mime-Version&#39;, &#39;X-Mailer&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msg</span><span class="p">[</span><span class="s">&#39;To&#39;</span><span class="p">]</span>
+<span class="go">&#39;demo@crisewing.com&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">msg</span><span class="o">.</span><span class="n">get_payload</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">If you are reading this email, ...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="what-have-we-learned">
+<h3>What Have We Learned?<a class="headerlink" href="#what-have-we-learned" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Protocols are just a set of rules for how to communicate</li>
+<li>Protocols tell us how to parse and delimit messages</li>
+<li>Protocols tell us what messages are valid</li>
+<li>If we properly format request messages to a server, we can get response
+messages</li>
+<li>Python supports a number of these protocols</li>
+<li>So we don&#8217;t have to remember how to format the commands ourselves</li>
+</ul>
+<p>But in every case we&#8217;ve seen, we could do the same thing with a socket and
+some strings</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Network Protocols in Python</a><ul>
+<li><a class="reference internal" href="#what-is-a-protocol">What is a Protocol?</a><ul>
+<li><a class="reference internal" href="#protocols-irl">Protocols IRL</a></li>
+<li><a class="reference internal" href="#protocols-in-computers">Protocols In Computers</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#protocol-examples">Protocol Examples</a><ul>
+<li><a class="reference internal" href="#the-smtp-protocol">The SMTP Protocol</a></li>
+<li><a class="reference internal" href="#smtp-characteristics">SMTP Characteristics</a></li>
+<li><a class="reference internal" href="#the-pop3-protocol">The POP3 Protocol</a></li>
+<li><a class="reference internal" href="#pop3-characteristics">POP3 Characteristics</a></li>
+<li><a class="reference internal" href="#one-other-difference">One Other Difference</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-imap-protocol">The IMAP Protocol</a><ul>
+<li><a class="reference internal" href="#imap-characteristics">IMAP Characteristics</a></li>
+<li><a class="reference internal" href="#imap-differences">IMAP Differences</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#protocols-in-python">Protocols in Python</a><ul>
+<li><a class="reference internal" href="#python-means-batteries-included">Python Means Batteries Included</a></li>
+<li><a class="reference internal" href="#what-have-we-learned">What Have We Learned?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Day 07 Lectures</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="http.html"
+                        title="next chapter">Understanding the HTTP Protocol</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day07/protocols.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="http.html" title="Understanding the HTTP Protocol"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 07 Lectures"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 07 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
