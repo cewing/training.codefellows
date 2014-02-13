@@ -6,3 +6,4 @@ Day 07 Lectures
    :maxdepth: 2
 
    protocols
+   http
