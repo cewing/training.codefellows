@@ -35,7 +35,7 @@ Life has lots of sets of rules for how to do things.
 
 * ...?
 
-.. image:: img/icup.png
+.. image:: /_static/icup.png
     :align: center
     :width: 58%
 
