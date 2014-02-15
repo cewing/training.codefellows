@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Managing AWS EC2 Instances with Boto &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 08 Lectures" href="index.html" />
+    <link rel="next" title="Assignments" href="../../assignments/index.html" />
+    <link rel="prev" title="Day 08 Lectures" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 08 Lectures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 08 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="managing-aws-ec2-instances-with-boto">
+<h1>Managing AWS EC2 Instances with Boto<a class="headerlink" href="#managing-aws-ec2-instances-with-boto" title="Permalink to this headline">¶</a></h1>
+<p>Amazon Web Services provides an API for interacting directly with cloud
+resources from the command line. Using this API allows you to automate
+deployment tasks.</p>
+<p>Automated tasks are easy.</p>
+<p>Easy tasks get done more often.</p>
+<p>Therefore, using the API means you can and will perform deployment tasks like
+setting up and running a testing environment with a much higher frequency. This
+will improve the quality of your work.</p>
+<div class="section" id="aws-in-python">
+<h2>AWS in Python<a class="headerlink" href="#aws-in-python" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://boto.readthedocs.org/">Boto</a> is the Python binding of the AWS API. It&#8217;s a solid, well-built package
+that provides control over most of the available services in AWS.</p>
+<p>Today, we&#8217;ll spend some time learning a basic interaction with AWS EC2 using
+boto.</p>
+<div class="section" id="practice-safe-development">
+<h3>Practice Safe Development<a class="headerlink" href="#practice-safe-development" title="Permalink to this headline">¶</a></h3>
+<p>To get started, let&#8217;s install boto in a virtual environment:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="go">$ mkproject bototests</span>
+<span class="go">New python executable in bototests/bin/python</span>
+<span class="go">Installing setuptools, pip...done.</span>
+<span class="go">Creating /Users/cewing/projects/bototests</span>
+<span class="go">Setting project for bototests to /Users/cewing/projects/bototests</span>
+<span class="go">[bototests]</span>
+<span class="go">heffalump:bototests cewing$ pip install boto</span>
+<span class="go">Downloading/unpacking boto</span>
+<span class="go">  Downloading boto-2.25.0-py2.py3-none-any.whl (1.1MB): 1.1MB downloaded</span>
+<span class="go">Installing collected packages: boto</span>
+<span class="go">Successfully installed boto</span>
+<span class="go">Cleaning up...</span>
+<span class="go">[bototests]</span>
+<span class="go">heffalump:bototests cewing$ pwd</span>
+<span class="go">/Users/cewing/projects/bototests</span>
+<span class="go">[bototests]</span>
+<span class="go">heffalump:bototests cewing$</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h3>
+<p>Next, we want to configure boto so that it has access to the security
+credentials it needs.</p>
+<p>Boto will look for configuration in a configuration file in your home
+directory.  This file is called <tt class="docutils literal"><span class="pre">.boto</span></tt>. Create it, if it doesn&#8217;t exist:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>ls ~/.b*
+/Users/cewing/.bash_history
+
+/Users/cewing/.buildout:
+default.cfg downloads   eggs        extends
+
+/Users/cewing/.bundler:
+tmp
+<span class="o">[</span>bototests<span class="o">]</span>
+heffalump:bototests cewing<span class="nv">$ </span>touch ~/.boto
+</pre></div>
+</div>
+<p>Open this file in your text editor and add the following lines:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Credentials]</span>
+<span class="na">aws_access_key_id</span> <span class="o">=</span> <span class="s">YOURACCESSKEY</span>
+<span class="na">aws_secret_access_key</span> <span class="o">=</span> <span class="s">YOURSECRETKEY</span>
+</pre></div>
+</div>
+<p>You will want to secure that file from easy access by making it readable and
+writable only by yourself:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>bototests<span class="o">]</span>
+heffalump:bototests cewing<span class="nv">$ </span>chmod 600 ~/.boto
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="create-your-first-ec2-instance">
+<h2>Create Your First EC2 Instance<a class="headerlink" href="#create-your-first-ec2-instance" title="Permalink to this headline">¶</a></h2>
+<p>You are ready now to create your first instance.</p>
+<div class="section" id="getting-connected">
+<h3>Getting Connected<a class="headerlink" href="#getting-connected" title="Permalink to this headline">¶</a></h3>
+<p>First, we are going to make a connection to the EC2 service.  When we do so, we
+have to designate the AWS region to which we are connecting.  All AWS resources
+are tied to a region in some fashion.</p>
+<p>We&#8217;ll set up stream logging so that we can see more information about what is
+happening:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="go">[bototests]</span>
+<span class="go">heffalump:bototests cewing$ python</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">boto</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">boto</span><span class="o">.</span><span class="n">set_stream_logger</span><span class="p">(</span><span class="s">&#39;boto&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">boto.ec2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ec2</span> <span class="o">=</span> <span class="n">boto</span><span class="o">.</span><span class="n">ec2</span><span class="o">.</span><span class="n">connect_to_region</span><span class="p">(</span><span class="s">&#39;us-west-2&#39;</span><span class="p">)</span>
+<span class="go">2014-02-14 17:32:56,641 boto [DEBUG]:Using access key found in config file.</span>
+<span class="go">2014-02-14 17:32:56,641 boto [DEBUG]:Using secret key found in config file.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ec2</span>
+<span class="go">EC2Connection:ec2.us-west-1.amazonaws.com</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>The next step is to find an AMI that you want to use. AMIs are machine images
+that Amazon uses in order to create a cloud server of a particular type.</p>
+<p>I generally use Ubuntu Linux when creating cloud servers with AWS, and I like
+to choose images from <a class="reference external" href="http://alestic.com">Alestic</a>, which is sort of the &#8216;official&#8217; face of Ubuntu
+in EC2.</p>
+<p>At the top right of the Alestic homepage is a tool for finding AMI ids in a
+given AWS region.  We&#8217;ve connected to us-west-2, so we need one for that
+region. The tool reports that an EBS-store image for Ubuntu 12.04 Precise is
+&#8216;ami-d0d8b8e0&#8217;. Let&#8217;s use that.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">image_id</span> <span class="o">=</span> <span class="s">&#39;ami-d0d8b8e0&#39;</span>
+</pre></div>
+</div>
+<p>We also need to designate a key pair name and the name of a security group. Use
+the key pair name and security group you created as part of the assignment to
+get an AWS account. If you followed the instructions explicitly, these should
+be <tt class="docutils literal"><span class="pre">pk-aws</span></tt> and <tt class="docutils literal"><span class="pre">ssh-access</span></tt>.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">key_pair</span> <span class="o">=</span> <span class="s">&#39;pk-aws&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">security_group</span> <span class="o">=</span> <span class="s">&#39;ssh-access&#39;</span>
+</pre></div>
+</div>
+<p>Finally, we need to designate exactly what type of instance to create. AWS
+instances come in all shapes and sizes, but the only on that is in the free
+usage tier is the <tt class="docutils literal"><span class="pre">t1.micro</span></tt> instance.</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">instance_type</span> <span class="o">=</span> <span class="s">&#39;t1.micro&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="starting-an-instance">
+<h3>Starting an Instance<a class="headerlink" href="#starting-an-instance" title="Permalink to this headline">¶</a></h3>
+<p>Finally we are ready to run an instance. Using your open ec2 connection object,
+run the following command:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">reservations</span> <span class="o">=</span> <span class="n">ec2</span><span class="o">.</span><span class="n">run_instances</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">image_id</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">key_name</span><span class="o">=</span><span class="n">key_name</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">instance_type</span><span class="o">=</span><span class="n">instance_type</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">security_groups</span><span class="o">=</span><span class="p">[</span><span class="n">security_group</span><span class="p">])</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>When the command returns, <tt class="docutils literal"><span class="pre">reservations</span></tt> will hold a list of all the
+instances we have just created (there should be only one). We can pull that
+instance out and check its status:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">reservations</span>
+<span class="go">Reservation:r-9f78c096</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reservations</span><span class="o">.</span><span class="n">instances</span>
+<span class="go">[Instance:i-d0d558d9]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">reservations</span><span class="o">.</span><span class="n">instances</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span> <span class="o">=</span> <span class="n">reservations</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span>
+<span class="go">Instance:i-d0d558d9&gt;&gt;&gt; instance.id</span>
+<span class="go">u&#39;i-d0d558d9&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">state</span>
+<span class="go">u&#39;pending&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="go">2014-02-14 22:14:00,660 boto [DEBUG]:Method: POST</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">state</span>
+<span class="go">u&#39;running&#39;</span>
+</pre></div>
+</div>
+<p>You may need to update a couple of times until you see the state change to
+<tt class="docutils literal"><span class="pre">running</span></tt>. Once it does, you can get the public DNS name of the instance:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">public_dns_name</span>
+<span class="go">u&#39;ec2-54-203-88-113.us-west-2.compute.amazonaws.com&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ssh-into-the-new-instance">
+<h3>SSH Into the New Instance<a class="headerlink" href="#ssh-into-the-new-instance" title="Permalink to this headline">¶</a></h3>
+<p>You can use that DNS name to ssh into the running instance.  <strong>In another
+terminal</strong>, run the following command:</p>
+<div class="highlight-bash"><div class="highlight"><pre>$ ssh -i ~/.ssh/pk-aws.pem ubuntu@ec2-your.dns.name.amazonaws.com
+The authenticity of host &#39;ec2-54-203-88-113.us-west-2.compute.amazonaws.com (54.203.88.113)&#39; can&#39;t be established.
+RSA key fingerprint is 56:3e:9c:b3:75:96:4f:11:44:e9:2b:14:3a:02:f8:f2.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added &#39;ec2-54-203-88-113.us-west-2.compute.amazonaws.com,54.203.88.113&#39; (RSA) to the list of known hosts.
+Welcome to Ubuntu 12.04.4 LTS (GNU/Linux 3.2.0-58-virtual x86_64)
+
+ * Documentation:  https://help.ubuntu.com/
+
+  System information as of Sat Feb 15 06:20:44 UTC 2014
+
+  System load:  0.0               Processes:           58
+  Usage of /:   11.1% of 7.87GB   Users logged in:     0
+  Memory usage: 8%                IP address for eth0: 10.235.47.92
+  Swap usage:   0%
+
+  Graph this data and manage this system at:
+    https://landscape.canonical.com/
+
+  Get cloud support with Ubuntu Advantage Cloud Guest:
+    http://www.ubuntu.com/business/services/cloud
+
+0 packages can be updated.
+0 updates are security updates.
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+To run a command as administrator (user &quot;root&quot;), use &quot;sudo &lt;command&gt;&quot;.
+See &quot;man sudo_root&quot; for details.
+
+ubuntu@ip-10-235-47-92:~$
+</pre></div>
+</div>
+<p>At this point, you are now working in a shell <em>on the server you just created</em>!</p>
+<p>Go ahead and run a few simple shell commands and look around a bit.  Not much
+to see, but it&#8217;s fun to prove that you&#8217;re there.</p>
+<p>Finally, disconnect by typing the <tt class="docutils literal"><span class="pre">exit</span></tt> command and return to your Python
+interpreter.</p>
+</div>
+<div class="section" id="stop-the-instance">
+<h3>Stop the Instance<a class="headerlink" href="#stop-the-instance" title="Permalink to this headline">¶</a></h3>
+<p>Okay, that&#8217;s enough for one day. Now it&#8217;s time to clean up our toys. Let&#8217;s
+begin by requesting that our instance be stopped:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+<span class="go">2014-02-14 22:25:25,012 boto [DEBUG]:Method: POST</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">state</span>
+<span class="go">u&#39;stopping&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="go">2014-02-14 22:28:55,768 boto [DEBUG]:Method: POST</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">state</span>
+<span class="go">u&#39;stopped&#39;</span>
+</pre></div>
+</div>
+<p>Once the instance is cleanly stopped, we can terminate it, which will
+completely destroy it and leave us ready to play again another day:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+<span class="go">2014-02-14 22:31:06,801 boto [DEBUG]:Method: POST</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">state</span>
+<span class="go">u&#39;terminated&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="wrap-up">
+<h2>Wrap-up<a class="headerlink" href="#wrap-up" title="Permalink to this headline">¶</a></h2>
+<p>Boto, the Python wrapper for the AWS API allows us to automate the management
+of cloud resources. This type of automation makes the typical tasks of creating
+deployments (whether to production, staging or testing) easy and quick. This in
+turn lowers the bar to doing what we should all be doing, deploying
+consistently and often.</p>
+<p>There&#8217;s much more to learn about AWS and boto, but that&#8217;s all we have time for
+for now.</p>
+<p>Please read more in the <a class="reference external" href="http://boto.readthedocs.org/">boto documentation</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Managing AWS EC2 Instances with Boto</a><ul>
+<li><a class="reference internal" href="#aws-in-python">AWS in Python</a><ul>
+<li><a class="reference internal" href="#practice-safe-development">Practice Safe Development</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-your-first-ec2-instance">Create Your First EC2 Instance</a><ul>
+<li><a class="reference internal" href="#getting-connected">Getting Connected</a></li>
+<li><a class="reference internal" href="#starting-an-instance">Starting an Instance</a></li>
+<li><a class="reference internal" href="#ssh-into-the-new-instance">SSH Into the New Instance</a></li>
+<li><a class="reference internal" href="#stop-the-instance">Stop the Instance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#wrap-up">Wrap-up</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Day 08 Lectures</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../assignments/index.html"
+                        title="next chapter">Assignments</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day08/boto.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 08 Lectures"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 08 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
