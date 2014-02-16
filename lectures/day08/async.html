@@ -1,0 +1,448 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Concurrency in Python &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 08 Lectures" href="index.html" />
+    <link rel="next" title="Assignments" href="../../assignments/index.html" />
+    <link rel="prev" title="Managing AWS EC2 Instances with Boto" href="boto.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="boto.html" title="Managing AWS EC2 Instances with Boto"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 08 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="concurrency-in-python">
+<h1>Concurrency in Python<a class="headerlink" href="#concurrency-in-python" title="Permalink to this headline">¶</a></h1>
+<p>We&#8217;ve been working for a few days now on writing servers and clients in Python.</p>
+<p>To do so, we&#8217;ve made extensive use of the <tt class="docutils literal"><span class="pre">socket</span></tt> library and the interface
+it provides to low-level network I/O primitives.</p>
+<p>There&#8217;s a problem with the code we&#8217;ve been writing, however. It is
+<tt class="docutils literal"><span class="pre">blocking</span></tt>.</p>
+<p>Consider the following code, part of our basic echo server:</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">def</span> <span class="nf">server</span><span class="p">():</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">buffsize</span> <span class="o">=</span> <span class="mi">16</span>
+
+    <span class="k">try</span><span class="p">:</span>
+<span class="hll">        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span>            <span class="n">conn</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span> <span class="c"># blocking</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">buffsize</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+                        <span class="n">conn</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+                        <span class="k">break</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>Line 10 of this block contains a <tt class="docutils literal"><span class="pre">blocking</span></tt> call to <tt class="docutils literal"><span class="pre">socket.accept</span></tt>. This
+means that although in principle our server can handle more than one connection
+(it has a backlog of 5, right?), in fact it is only able to process one request
+at a time.</p>
+<p>Even for a trivial program like this, this is a problem. What if the message
+the client is sending us to be echoed back is the collected works of
+Shakespeare? Any other clients looking to have their simple messages echoed
+would be fored to wait while we process Shakespeare 16 bytes at a time.</p>
+<p>Operations that <tt class="docutils literal"><span class="pre">block</span></tt> like this are called <em>synchronous</em>. Getting around
+them is one of the tasks that comes with scaling a program.</p>
+<div class="section" id="simple-concurrency-w-select">
+<h2>Simple Concurrency w/ <tt class="docutils literal"><span class="pre">select</span></tt><a class="headerlink" href="#simple-concurrency-w-select" title="Permalink to this headline">¶</a></h2>
+<p>The Python standard library provides the <tt class="docutils literal"><span class="pre">select</span></tt> module to help us alleviate
+some of the issues with blocking I/O operations.</p>
+<p>The module provides <tt class="docutils literal"><span class="pre">select</span></tt>, an interface to the underlying Unix <tt class="docutils literal"><span class="pre">select</span></tt>
+system call. The purpose of select is to take a list of possible I/O channels
+(file handles, Unix sockets, network sockets) and return lists of those that
+are ready to be read, written or in an error state.</p>
+<p>Consider the following update to our echo server code:</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">def</span> <span class="nf">server</span><span class="p">(</span><span class="n">log_buffer</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">):</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="n">server_socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="n">server_socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">server_socket</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+    <span class="n">server_socket</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">buffsize</span> <span class="o">=</span> <span class="mi">16</span>
+
+<span class="hll">    <span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="n">server_socket</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">]</span>
+</span><span class="hll">    <span class="n">running</span> <span class="o">=</span> <span class="bp">True</span>
+</span>
+    <span class="k">while</span> <span class="n">running</span><span class="p">:</span>
+
+<span class="hll">        <span class="n">read_ready</span><span class="p">,</span> <span class="n">write_ready</span><span class="p">,</span> <span class="n">except_ready</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[],</span> <span class="mi">0</span><span class="p">)</span>
+</span>
+        <span class="k">for</span> <span class="n">readable</span> <span class="ow">in</span> <span class="n">read_ready</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">readable</span> <span class="ow">is</span> <span class="n">server_socket</span><span class="p">:</span>
+                <span class="c"># spin up new handler sockets as clients connect</span>
+                <span class="n">handler_socket</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">readable</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span> <span class="c"># won&#39;t block now</span>
+                <span class="nb">input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">handler_socket</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">readable</span> <span class="ow">is</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+                <span class="c"># handle any stdin by terminating the server</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                <span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># handle each client connection 1 buffer at a time</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">readable</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">buffsize</span><span class="p">)</span> <span class="c"># also won&#39;t block</span>
+<span class="hll">                <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+</span>                    <span class="c"># return one buffer&#39;s worth of message to the client</span>
+                    <span class="n">readable</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">readable</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="nb">input</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">readable</span><span class="p">)</span>
+
+    <span class="n">server_socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<div class="section" id="what-s-changed">
+<h3>What&#8217;s Changed<a class="headerlink" href="#what-s-changed" title="Permalink to this headline">¶</a></h3>
+<p>This code has incorporated <tt class="docutils literal"><span class="pre">select.select</span></tt> in order to allow the outer loop
+to continue running regardless of the readiness of any given I/O operation.</p>
+<p>On line 9-10, we initialize a list of possible I/O sources by providing the server
+socket we&#8217;ve created and <tt class="docutils literal"><span class="pre">sys.stdin</span></tt>, which we will use to gracefully
+terminate the server.</p>
+<p>On line 14, we pass this initialized list of I/O sources into a call to
+<tt class="docutils literal"><span class="pre">select.select</span></tt> as the potential readables. The list of potential writables
+and potential exceptions can be ignored for this application. By additionally
+providing a <tt class="docutils literal"><span class="pre">timeout</span></tt> value of <tt class="docutils literal"><span class="pre">0</span></tt>, we ensure that this call to
+<tt class="docutils literal"><span class="pre">select.select</span></tt> will not block the loop. If no sources are ready for reading
+when the call is executed, the lists will be returned empty and we&#8217;ll simply
+move on to the next iteration.</p>
+<p>When the list of I/O sources bound to <tt class="docutils literal"><span class="pre">read_ready</span></tt> is non-empty, we use a for
+loop construct to handle each read_ready source individually.</p>
+<p>Now, when we call <tt class="docutils literal"><span class="pre">accept</span></tt> on the original server socket on line 18, we can
+be assured that in fact a client <em>has</em> made a connection and the call will
+return immediately. When it does, we add the new socket it has given us, which
+represents the connection to the client, to the list of inputs so that it can
+be processed by <tt class="docutils literal"><span class="pre">select</span></tt> along with our server and stdin sources.</p>
+<p>Once a handler for a client has been added to the list of inputs, it might also
+be one of the items in the <tt class="docutils literal"><span class="pre">read_ready</span></tt> list returned by the call to
+<tt class="docutils literal"><span class="pre">select.</span></tt> This brings us to line 31, where a single buffer of data is
+received from the client. The data is immediately returned to the client, if
+present.</p>
+<p>In this way, a series of longer messages from clients may be handled
+concurrently, with each being dealt with one buffer at a time. All requests
+might take a bit longer than they would have if they came in one at a time, but
+the aggregate time spent for a message received when the load is heavy will be
+lower. Shakespeare will no longer prevent a smaller message from being
+processed in a timely fashion.</p>
+</div>
+<div class="section" id="what-hasn-t-changed">
+<h3>What Hasn&#8217;t Changed<a class="headerlink" href="#what-hasn-t-changed" title="Permalink to this headline">¶</a></h3>
+<p>For a simple process like this echo server, an update like this might be enough
+to solve the problem. But what if the job the server needs to accomplish for
+any given connection is more complex? Even if we are handling jobs &#8220;at the same
+time&#8221;, we still need to deal with the length of time it takes each job to run
+through a given cycle.</p>
+<p>Although we&#8217;ve woven a number of tasks together, completing any one of them can
+still have a significant impact on how quickly any others might be completed.</p>
+</div>
+</div>
+<div class="section" id="batteries-included">
+<h2>Batteries Included<a class="headerlink" href="#batteries-included" title="Permalink to this headline">¶</a></h2>
+<p>Python provides us with a couple of possible solutions within the standard
+library: <a class="reference external" href="http://docs.python.org/2/library/threading.html">threading</a> and <a class="reference external" href="http://docs.python.org/2/library/multiprocessing.html">multiprocessing</a>. Each takes a different approach
+to solving the problem of sharing resources among concurrent tasks.</p>
+<div class="section" id="id1">
+<h3>Threading<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">threading</span></tt> module extends and provides a more useable API for the older,
+more basic <tt class="docutils literal"><span class="pre">thread</span></tt> module.  You should never need to address the <tt class="docutils literal"><span class="pre">thread</span></tt>
+module directly.</p>
+<p>Threads are lightweight, independent processes that share the memory space used
+by the process that spawns them. This allows for great convenience in
+processing shared data. But that convenience comes at the price of complexity,
+as using threads can lead to race conditions, deadlocks and other hard-to-debug
+problems unless done with the greatest of care.</p>
+<p>To use threading in our echo server, we could spin off a new thread for every
+client connection and allow the thread to run itself. A reasonable example of
+this approach, implemented as a set of Python classes, <a class="reference external" href="http://ilab.cs.byu.edu/python/threadingmodule.html">can be seen here</a>.</p>
+<p>But threading doesn&#8217;t really solve our problems.  Although it <em>does</em> ostensibly
+create a separate process in which to run the handler code for a client
+connection, in reality, that process shares the GIL and so even though it is
+running &#8216;separately&#8217;, it&#8217;s bound by the same resource limitations as simply
+using <tt class="docutils literal"><span class="pre">select</span></tt>.</p>
+</div>
+<div class="section" id="id2">
+<h3>Multiprocessing<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">multiprocessing</span></tt> module basically offers that same API as the threading
+module. So using it would look much like the example linked above, except that
+we would create the <tt class="docutils literal"><span class="pre">Client</span></tt> class as a subclass of
+<tt class="docutils literal"><span class="pre">multiprocessing.Process</span></tt> rather than <tt class="docutils literal"><span class="pre">threading.Thread</span></tt>.</p>
+<p>Multiprocessing differs from threading in that it creates completely separate
+processes rather than lightweight threads. The processes created <strong>do not
+share</strong> memory space with each-other, and so if you have a need to mutate some
+shared state with multiprocessing, you&#8217;ll need to pass messages or data from
+one process to another.</p>
+<p>On the other hand, because they do not share memory, much of the challenge of
+threaded programming is avoided. There is no worry about deadlocks and race
+conditions because no two processes are working with the same resources.</p>
+<p>It appears that there is general agreement that the future of concurrent
+programming in Python lies more along the path of multiprocessing than
+threading. It&#8217;s easier to comprehend, fits better with the mental model most
+programmers have of processes running in isolation, and the drawbacks of
+isolation can be reduced with not too much effort.</p>
+</div>
+</div>
+<div class="section" id="asynchronous-concurrency">
+<h2>Asynchronous Concurrency<a class="headerlink" href="#asynchronous-concurrency" title="Permalink to this headline">¶</a></h2>
+<p>Another approach to the issue of concurrency is to treat the problem
+asynchronously. This approach uses the idea of <em>events</em> to handle I/O outside
+the flow of the main process.</p>
+<p>If you think of the fact of a client connecting to a server socket as an event,
+then when such an event happens, you can hand off the problem of dealing with
+that event to a <em>handler</em>. The handler can go on it&#8217;s merry way, doing what it
+needs to do, without concern for what happens back in the server process.</p>
+<p>There are two models for this type of <em>event-driven</em> operation: Callbacks and
+Coroutines. These two methods are nicely modeled by two well-known packages in
+the Python ecosystem: twisted and gevent</p>
+<p>With either of these packages, it&#8217;s possible to write our echo server to handle
+incoming requests asynchronously. This can enable enourmous concurrency
+allowing a server to deal with incoming requests on the order of tens of
+thousands at once.</p>
+<p>For today, we&#8217;ll be using gevent. The advantage of gevent over twisted is that
+it allows you to write code as if it were synchronous, without needing to worry
+about when it might be interrupted.</p>
+<p>The code for this example is remarkably light, simply because the majority of
+the work is done by a <tt class="docutils literal"><span class="pre">StreamServer</span></tt> class provided by gevent. All we have to
+do is write the portion that actually handles a single client connection.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">def</span> <span class="nf">echo</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;a simple echoing handler for incoming client connections</span>
+
+<span class="sd">    It will be used for each incoming connection on a separate greenlet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">buffsize</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">buffsize</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">socket</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">break</span>
+</pre></div>
+</td></tr></table></div>
+<p>This code looks remarkably like the connection-handling code from our original
+server, and from the <tt class="docutils literal"><span class="pre">select</span></tt> version above. In fact, it is exactly the same,
+minus the work needed to manage readable sockets for select.</p>
+<p>Running this server is accomplished like so:</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6
+7</pre></div></td><td class="code"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">gevent.server</span> <span class="kn">import</span> <span class="n">StreamServer</span>
+    <span class="kn">from</span> <span class="nn">gevent.monkey</span> <span class="kn">import</span> <span class="n">patch_all</span>
+<span class="hll">    <span class="n">patch_all</span><span class="p">()</span>
+</span>    <span class="n">server</span> <span class="o">=</span> <span class="n">StreamServer</span><span class="p">((</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span> <span class="n">echo</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&#39;Starting echo server on port 10000&#39;</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+<p>Note on line 4 the call to <tt class="docutils literal"><span class="pre">gevent.monkey.patch_all</span></tt>. Gevent works by
+leveraging a low-level library called <tt class="docutils literal"><span class="pre">libevent</span></tt>. To accomodate this library,
+it makes some changes to how blocking is handled by code in a number of
+standard Python libraries such as socket. In order to fully take advantage of
+these optimizations, calling one of the patch functions from <tt class="docutils literal"><span class="pre">gevent.monkey</span></tt>
+(or simply calling <tt class="docutils literal"><span class="pre">patch_all</span></tt>) will apply these changes so that if you are
+using a library built on one of these bases (such as <tt class="docutils literal"><span class="pre">requests</span></tt>) you can take
+advantage of the asynchronous I/O provided by gevent.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Concurrency in Python</a><ul>
+<li><a class="reference internal" href="#simple-concurrency-w-select">Simple Concurrency w/ <tt class="docutils literal"><span class="pre">select</span></tt></a><ul>
+<li><a class="reference internal" href="#what-s-changed">What&#8217;s Changed</a></li>
+<li><a class="reference internal" href="#what-hasn-t-changed">What Hasn&#8217;t Changed</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#batteries-included">Batteries Included</a><ul>
+<li><a class="reference internal" href="#id1">Threading</a></li>
+<li><a class="reference internal" href="#id2">Multiprocessing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#asynchronous-concurrency">Asynchronous Concurrency</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="boto.html"
+                        title="previous chapter">Managing AWS EC2 Instances with Boto</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../assignments/index.html"
+                        title="next chapter">Assignments</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day08/async.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="boto.html" title="Managing AWS EC2 Instances with Boto"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 08 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
