@@ -37,3 +37,6 @@ nosetests.xml
 
 # sublime
 *.sublime-workspace
+
+# sphinx
+.buildinfo
