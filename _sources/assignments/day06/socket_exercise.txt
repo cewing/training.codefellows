@@ -237,7 +237,6 @@ then be sure to close your client socket too:
 
     >>> client_socket.recv(32)
     'Yes, I hear you.'
-    >>> client_socket.shutdown(socket.SHUT_RD)
     >>> client_socket.close()
 
 And now that we're done, we can close up the server too (back in the server
