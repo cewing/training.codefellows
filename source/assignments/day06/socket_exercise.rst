@@ -12,6 +12,7 @@ First, connect and send a message, then tell the server you're done sending:
 
 .. code-block:: pycon
 
+    >>> import socket
     >>> streams = [info
     ...     for info in socket.getaddrinfo('crisewing.com', 'http')
     ...     if info[1] == socket.SOCK_STREAM]
