@@ -217,14 +217,12 @@ client:
 
     >>> conn.recv(32)
     'Hey, can you hear me?'
-    >>> conn.shutdown(socket.SHUT_RD)
 
 Send a message back, and then close up your connection:
 
 .. code-block:: pycon
 
     >>> conn.sendall("Yes, I hear you.")
-    >>> conn.shutdown(socket.SHUT_WR)
     >>> conn.close()
 
 
