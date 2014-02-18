@@ -12,6 +12,7 @@ First, connect and send a message, then tell the server you're done sending:
 
 .. code-block:: pycon
 
+    >>> import socket
     >>> streams = [info
     ...     for info in socket.getaddrinfo('crisewing.com', 'http')
     ...     if info[1] == socket.SOCK_STREAM]
@@ -216,14 +217,12 @@ client:
 
     >>> conn.recv(32)
     'Hey, can you hear me?'
-    >>> conn.shutdown(socket.SHUT_RD)
 
 Send a message back, and then close up your connection:
 
 .. code-block:: pycon
 
     >>> conn.sendall("Yes, I hear you.")
-    >>> conn.shutdown(socket.SHUT_WR)
     >>> conn.close()
 
 
