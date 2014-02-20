@@ -12,4 +12,4 @@ Contents:
    day01/index
    day06/index
    day07/index
-   day08/index
+   day09/index
