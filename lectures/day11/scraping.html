@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Extracting Data from the Web &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="extracting-data-from-the-web">
+<h1>Extracting Data from the Web<a class="headerlink" href="#extracting-data-from-the-web" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="web-scraping">
+<h2>Web Scraping<a class="headerlink" href="#web-scraping" title="Permalink to this headline">¶</a></h2>
+<p>The internet makes a vast quantity of data available.</p>
+<p>But not always in the form or combination you want.</p>
+<p>It can be nice to combine data from different sources to create <em>meaning</em>.</p>
+<div class="section" id="data-sources">
+<h3>Data Sources<a class="headerlink" href="#data-sources" title="Permalink to this headline">¶</a></h3>
+<p>Data online comes in many different formats:</p>
+<ul class="simple">
+<li>Simple websites with data in HTML</li>
+<li>Web services providing structured data</li>
+<li>Web services providing tranformative service (geocoding)</li>
+<li>Web services providing presentation (mapping)</li>
+</ul>
+<p>Let&#8217;s concentrate today on that first class of data, HTML.</p>
+</div>
+</div>
+<div class="section" id="html-data">
+<h2>HTML Data<a class="headerlink" href="#html-data" title="Permalink to this headline">¶</a></h2>
+<p>Ideally HTML would be well-formed and strictly correct in it&#8217;s structure:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;p&gt;</span>A nice clean paragraph<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;p&gt;</span>And another nice clean paragraph<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</div>
+<p>But in fact, it usually ends up looking more like this:</p>
+<div class="highlight-html"><div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+ <span class="nt">&lt;form&gt;</span>
+  <span class="nt">&lt;table&gt;</span>
+   <span class="nt">&lt;td&gt;&lt;input</span> <span class="na">name=</span><span class="s">&quot;input1&quot;</span><span class="nt">&gt;</span>Row 1 cell 1
+   <span class="nt">&lt;tr&gt;&lt;td&gt;</span>Row 2 cell 1
+  <span class="nt">&lt;/form&gt;</span>
+  <span class="nt">&lt;td&gt;</span>Row 2 cell 2<span class="nt">&lt;br&gt;</span>This<span class="nt">&lt;/br&gt;</span> sure is a long cell
+ <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+</div>
+<p>An Internet Law: &#8220;Be strict in what you send and tolerant in what you receive&#8221;</p>
+<a class="reference internal image-reference" href="../../_images/scream.jpg"><img alt="../../_images/scream.jpg" class="align-center" src="../../_images/scream.jpg" style="width: 60%;" /></a>
+<p>Photo by Matthew via Flickr (<a class="reference external" href="http://www.flickr.com/photos/purplemattfish/3918004964/">http://www.flickr.com/photos/purplemattfish/3918004964/</a>) - CC-BY-NC-ND</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Extracting Data from the Web</a><ul>
+<li><a class="reference internal" href="#web-scraping">Web Scraping</a><ul>
+<li><a class="reference internal" href="#data-sources">Data Sources</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#html-data">HTML Data</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day11/scraping.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

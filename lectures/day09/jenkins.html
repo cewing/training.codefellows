@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Automate Tests with Travis CI &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 08 Lectures" href="index.html" />
+    <link rel="next" title="Assignments" href="../../assignments/index.html" />
+    <link rel="prev" title="Concurrency in Python" href="async.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="async.html" title="Concurrency in Python"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 08 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="automate-tests-with-travis-ci">
+<h1>Automate Tests with Travis CI<a class="headerlink" href="#automate-tests-with-travis-ci" title="Permalink to this headline">¶</a></h1>
+<p>Tests are no good unless you run them.</p>
+<p>You should run them every time you make a change to your code.</p>
+<p>Do you?</p>
+<p>(does anyone?)</p>
+<p>It&#8217;s hard to remember to run your tests.</p>
+<p>So give up trying.</p>
+<p>No, really.</p>
+<div class="section" id="automation-to-the-rescue">
+<h2>Automation to the Rescue<a class="headerlink" href="#automation-to-the-rescue" title="Permalink to this headline">¶</a></h2>
+<p>Instead, allow your repository to run your tests for you.</p>
+<p>Github provides simple integration with <a class="reference external" href="https://travis-ci.org/.">a service called Travis CI</a>.</p>
+<p>Travis leverages the power of <a class="reference external" href="http://jenkins-ci.org">an automated build tool called Jenkins</a>. This
+tool allows you to cofigure <em>jobs</em> that can involve pretty much all aspects of
+setting up software, including running tests.</p>
+<p>You can download and install <tt class="docutils literal"><span class="pre">Jenkins</span></tt> on your own, but unless you are a
+development team with complex needs, it&#8217;s probably overkill to do so. <tt class="docutils literal"><span class="pre">Travis</span>
+<span class="pre">CI</span></tt> provides access to the test-running abilities of <tt class="docutils literal"><span class="pre">Jenkins</span></tt> with a
+minimum of fuss and difficulty.</p>
+<div class="section" id="getting-started">
+<h3>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h3>
+<p>So long as your project <em>has tests</em> that can be run with a command, Travis is
+great for you.</p>
+<p>Let&#8217;s start with one of our early repositories, fizzbuzz.</p>
+<p>The first step is to sign in to Travis.  Luckily, you can simply sign in using
+the account you already have with github (no new account required!).</p>
+<p>Once you&#8217;ve signed in, click on the <em>docs</em> link in the top and then click the
+big red <em>Get Started</em> button.</p>
+<p>The steps that are outlined on that page will tell you to go to your <strong>profile
+page</strong>. The link there is the easiest way to do so. Click it.</p>
+<p>When the page loads, it will contain a list of all the repositories that you
+have in your <tt class="docutils literal"><span class="pre">GitHub</span></tt> account. For each, there is an on/off switch. Find your
+fizzbuzz repository and turn it on.</p>
+<p>Once this is done, you need to let <tt class="docutils literal"><span class="pre">GitHub</span></tt> know that you want <tt class="docutils literal"><span class="pre">Travis</span> <span class="pre">CI</span></tt>
+to have access to your repositories. You do this by enabling the <strong>Travis
+Commit Hook</strong>.</p>
+<p>For this operation, you&#8217;ll need your <strong>Travis Token</strong>. You can get this from
+your <tt class="docutils literal"><span class="pre">Travis</span> <span class="pre">CI</span></tt> profile page by clickin on the <em>Profile</em> tab at the top of
+the page. Copy the token then open your GitHub repository in a new browser tab.</p>
+<p>In <tt class="docutils literal"><span class="pre">GitHub</span></tt>, find your fizzbuzz repository and on the right side of the page
+find the <em>repsitory settings</em> (a little wrench and screwdriver icon). Click it,
+and then on the left side of the page, find the <em>Webhooks &amp; Services</em> menu
+item and click that.</p>
+<p>You want to configure a third-party service, so click on the blue <em>Configure
+services</em> button and find the <strong>Travis</strong> service in the long, alphabetical
+list. Click it to open the settings for <tt class="docutils literal"><span class="pre">Travis</span> <span class="pre">CI</span></tt>.</p>
+<p>You can configure a number of options, but to get started, all you <em>have to</em>
+provide is your <strong>Travis Token</strong>.  Paste it in the provided text box.</p>
+<p>After you&#8217;ve pasted your token, check the &#8216;active&#8217; box, then click <em>Update
+settings</em>.</p>
+<p>Once the page reloads, you can verify that the token is right by clicking on
+<em>Test Hook</em>. If you see &#8220;Test payload deployed!&#8221; then you&#8217;re all set.</p>
+</div>
+<div class="section" id="configuring-travis">
+<h3>Configuring Travis<a class="headerlink" href="#configuring-travis" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">Travis</span> <span class="pre">CI</span></tt> needs to know how <em>your</em> tests should be run. It does this using
+a configuration file written in <a class="reference external" href="http://www.yaml.org">YAML</a>.</p>
+<p>For a Python project there are a couple of things to set up:</p>
+<ul class="simple">
+<li>You must inform Travis that your project uses Python.</li>
+<li>You must inform Travis which versions of Python are used.</li>
+<li>You must inform Travis wnat command to run to execute your tests.</li>
+<li>You can tell Travis what extra software needs to be installed.</li>
+</ul>
+<p>For our fizzbuzz project, we want to test in Python 2.7.</p>
+<p>We&#8217;ll also need to install the <tt class="docutils literal"><span class="pre">lettuce</span></tt> package so that we can use it for
+our tests.</p>
+<p>Finally, we need to provide the command to be executed in order to run our
+tests.</p>
+<p>Here&#8217;s what the <tt class="docutils literal"><span class="pre">YAML</span></tt> file will look like:</p>
+<div class="highlight-yaml"><div class="highlight"><pre><span class="l-Scalar-Plain">language</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">python</span>
+<span class="l-Scalar-Plain">python</span><span class="p-Indicator">:</span>
+  <span class="p-Indicator">-</span> <span class="s">&quot;2.7&quot;</span>
+<span class="c1"># command to install dependencies</span>
+<span class="l-Scalar-Plain">install</span><span class="p-Indicator">:</span> <span class="s">&quot;pip</span><span class="nv"> </span><span class="s">install</span><span class="nv"> </span><span class="s">-r</span><span class="nv"> </span><span class="s">requirements.txt&quot;</span>
+<span class="c1"># command to run tests</span>
+<span class="l-Scalar-Plain">script</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">lettuce</span>
+</pre></div>
+</div>
+<p>To set this up, we need to add a new file to our fizzbuzz repository with that
+content.</p>
+<div class="highlight-bash"><div class="highlight"><pre>$ workon fizzbuzz
+[fizzbuzz]
+[master *=]
+heffalump:fizzbuzz cewing$ pwd
+/Users/cewing/projects/fizzbuzz
+[fizzbuzz]
+[master *=]
+heffalump:fizzbuzz cewing$ touch .travis.yml
+[fizzbuzz]
+[master *=]
+heffalump:fizzbuzz cewing$ subl .travis.yml
+[fizzbuzz]
+[master *=]
+heffalump:fizzbuzz cewing$
+</pre></div>
+</div>
+<p>Once you&#8217;ve entered the above content, you&#8217;re nearly there. You&#8217;ve told
+<tt class="docutils literal"><span class="pre">Travis</span> <span class="pre">CI</span></tt> what it will need to build your project and test it. But there&#8217;s
+still one thing missing, <strong>requirements.txt</strong>.</p>
+</div>
+<div class="section" id="installing-python-packages">
+<h3>Installing Python Packages<a class="headerlink" href="#installing-python-packages" title="Permalink to this headline">¶</a></h3>
+<p>When you created the <tt class="docutils literal"><span class="pre">virtualenv</span></tt> for your fizzbuzz project, you installed
+<tt class="docutils literal"><span class="pre">lettuce</span></tt> using the <tt class="docutils literal"><span class="pre">pip</span></tt> installation tool.  Pip can also be automated to
+a degree by providing a list of packages to install (<tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span>
+<span class="pre">requirements.txt</span></tt>).</p>
+<p>But what goes in that file?  You installed <tt class="docutils literal"><span class="pre">lettuce</span></tt> but if you remember,
+there were some other packages that were automatically installed because
+<tt class="docutils literal"><span class="pre">lettuce</span></tt> depended on them.</p>
+<p>Do you remember what they were?</p>
+<p>You don&#8217;t need to.</p>
+<p>Run the following command in your terminal, while you are in the root directory
+of your fizzbuzz repository <strong>and</strong> while your fizzbuzz virtualenv is active:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>fizzbuzz<span class="o">]</span>
+<span class="o">[</span>master *<span class="o">=]</span>
+heffalump:fizzbuzz cewing<span class="nv">$ </span>pip freeze &gt; requirements.txt
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">freeze</span></tt> subcommand to pip will dump out a list of all the packages
+installed in a given environment, <strong>with the specific versions currently
+installed</strong>.</p>
+<p>This is good, explicit is better than implicit.  Especially when it comes to
+software versions. When you have a set of packages that work together properly
+it is <strong>always</strong> a good idea to record <em>exactly</em> the combination you have so
+that you can repeat it.</p>
+</div>
+<div class="section" id="running-your-ci-tests">
+<h3>Running Your CI Tests<a class="headerlink" href="#running-your-ci-tests" title="Permalink to this headline">¶</a></h3>
+<p>Now that you have all the pieces in place, you should be ready to roll. Add the
+two new files you&#8217;ve created to your fizzbuzz repository.  Then commit and push
+them:</p>
+<div class="highlight-bash"><div class="highlight"><pre>[fizzbuzz]
+[master *+=]
+heffalump:fizzbuzz cewing$ git add .travis.yml requirements.txt
+[fizzbuzz]
+[master +=]
+heffalump:fizzbuzz cewing$ git status
+# On branch master
+# Changes to be committed:
+#   (use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)
+#
+#   new file:   .travis.yml
+#   new file:   requirements.txt
+#
+[fizzbuzz]
+[master +=]
+heffalump:fizzbuzz cewing$ git commit
+...
+[fizzbuzz]
+[master&gt;]
+heffalump:fizzbuzz cewing$ git push origin master
+Counting objects: 10, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (6/6), 670 bytes | 0 bytes/s, done.
+Total 6 (delta 2), reused 0 (delta 0)
+To git@github.com:cewing/fizzbuzz.git
+   68482be..3e3d283  master -&gt; master
+[fizzbuzz]
+[master=]
+heffalump:fizzbuzz cewing$
+</pre></div>
+</div>
+<p>If all is well, you should be able to look at the main page in <tt class="docutils literal"><span class="pre">Travis</span> <span class="pre">CI</span></tt>
+and see your tests start, run and pass.</p>
+</div>
+<div class="section" id="advertise-your-awesome">
+<h3>Advertise Your Awesome<a class="headerlink" href="#advertise-your-awesome" title="Permalink to this headline">¶</a></h3>
+<p>Now that you&#8217;ve got CI running, and you have your tests passing, let the world
+know about it.</p>
+<p>Add a bit to your README.md that displays the test results badge from <tt class="docutils literal"><span class="pre">Travis</span>
+<span class="pre">CI</span></tt>:</p>
+<div class="highlight-markdown"><div class="highlight"><pre>[![Travis](https://api.travis-ci.org/&lt;you&gt;/&lt;yourproject&gt;)](https://api.travis-ci.org/&lt;you&gt;/&lt;yourproject&gt;)
+</pre></div>
+</div>
+<p>And that&#8217;s it.</p>
+</div>
+</div>
+<div class="section" id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>For your assignment outside of class, repeat this process for your
+<tt class="docutils literal"><span class="pre">data-structures</span></tt> repository.</p>
+<p>The more often you repeat a process like this, the better you will get at doing
+it. From now on, make sure to do it for each repository you create.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Automate Tests with Travis CI</a><ul>
+<li><a class="reference internal" href="#automation-to-the-rescue">Automation to the Rescue</a><ul>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#configuring-travis">Configuring Travis</a></li>
+<li><a class="reference internal" href="#installing-python-packages">Installing Python Packages</a></li>
+<li><a class="reference internal" href="#running-your-ci-tests">Running Your CI Tests</a></li>
+<li><a class="reference internal" href="#advertise-your-awesome">Advertise Your Awesome</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="async.html"
+                        title="previous chapter">Concurrency in Python</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../assignments/index.html"
+                        title="next chapter">Assignments</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day09/jenkins.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="async.html" title="Concurrency in Python"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 08 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

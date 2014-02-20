@@ -1,0 +1,67 @@
+****************************
+Extracting Data from the Web
+****************************
+
+Web Scraping
+============
+
+The internet makes a vast quantity of data available.
+
+But not always in the form or combination you want.
+
+It can be nice to combine data from different sources to create *meaning*.
+
+
+Data Sources
+------------
+
+Data online comes in many different formats:
+
+* Simple websites with data in HTML
+* Web services providing structured data
+* Web services providing tranformative service (geocoding)
+* Web services providing presentation (mapping)
+
+Let's concentrate today on that first class of data, HTML.
+
+HTML Data
+=========
+
+Ideally HTML would be well-formed and strictly correct in it's structure:
+
+.. code-block:: html
+
+    <!DOCTYPE html>
+    <html>
+      <head>
+      </head>
+      <body>
+        <p>A nice clean paragraph</p>
+        <p>And another nice clean paragraph</p>
+      </body>
+    </html>
+
+
+But in fact, it usually ends up looking more like this:
+
+.. code-block:: html
+
+    <html>
+     <form>
+      <table>
+       <td><input name="input1">Row 1 cell 1
+       <tr><td>Row 2 cell 1
+      </form>
+      <td>Row 2 cell 2<br>This</br> sure is a long cell
+     </body>
+    </html>
+
+
+An Internet Law: "Be strict in what you send and tolerant in what you receive"
+
+
+.. image:: /_static/scream.jpg
+    :align: center
+    :width: 60%
+
+Photo by Matthew via Flickr (http://www.flickr.com/photos/purplemattfish/3918004964/) - CC-BY-NC-ND
