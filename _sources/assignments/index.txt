@@ -11,3 +11,5 @@ Contents:
 
    day01/index
    day06/index
+   day11/index
+   day12/index
