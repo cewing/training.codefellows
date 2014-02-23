@@ -1,0 +1,351 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Consuming Data from a RESTful Web Service &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="consuming-data-from-a-restful-web-service">
+<h1>Consuming Data from a RESTful Web Service<a class="headerlink" href="#consuming-data-from-a-restful-web-service" title="Permalink to this headline">¶</a></h1>
+<p>As an example of a RESTful web service, let&#8217;s add some more information to our
+list of apartment rentals from previous exercises.</p>
+<p>We&#8217;ll use a common, public API provided by Google.</p>
+<dl class="class">
+<dt>
+<tt class="descname">incremental center</tt></dt>
+<dd></dd></dl>
+
+<p><strong>Geocoding</strong></p>
+<div class="section" id="geocoding-with-google-apis">
+<h2>Geocoding with Google APIs<a class="headerlink" href="#geocoding-with-google-apis" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://developers.google.com/maps/documentation/geocoding">https://developers.google.com/maps/documentation/geocoding</a></p>
+<p>Open a python interpreter using your <tt class="docutils literal"><span class="pre">souptests</span></tt> virtualenv:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>souptests<span class="o">]</span>
+heffalump:souptests cewing<span class="nv">$ </span>python
+</pre></div>
+</div>
+<p>Then, import the <tt class="docutils literal"><span class="pre">requests</span></tt> library and prepare to make an HTTP request to
+the google geocoding service resource:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://maps.googleapis.com/maps/api/geocode/json&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">addr</span> <span class="o">=</span> <span class="s">&#39;511 Boren Ave. N, Seattle, 98109&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;address&#39;</span><span class="p">:</span> <span class="n">addr</span><span class="p">,</span> <span class="s">&#39;sensor&#39;</span><span class="p">:</span> <span class="s">&#39;false&#39;</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;OK&#39;</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">pprint</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{u&#39;results&#39;: [{u&#39;address_components&#39;: [{u&#39;long_name&#39;: u&#39;511&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;511&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;street_number&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;Boren Avenue North&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;Boren Ave N&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;route&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;South Lake Union&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;SLU&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;neighborhood&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;Seattle&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;Seattle&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;locality&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;King County&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;King County&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;administrative_area_level_2&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;Washington&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;WA&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;administrative_area_level_1&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;United States&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;US&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;country&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;98109&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;98109&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;postal_code&#39;]}],</span>
+<span class="go">               u&#39;formatted_address&#39;: u&#39;511 Boren Avenue North, Seattle, WA 98109, USA&#39;,</span>
+<span class="go">               u&#39;geometry&#39;: {u&#39;location&#39;: {u&#39;lat&#39;: 47.6235481,</span>
+<span class="go">                                           u&#39;lng&#39;: -122.336212},</span>
+<span class="go">                             u&#39;location_type&#39;: u&#39;ROOFTOP&#39;,</span>
+<span class="go">                             u&#39;viewport&#39;: {u&#39;northeast&#39;: {u&#39;lat&#39;: 47.6248970802915,</span>
+<span class="go">                                                          u&#39;lng&#39;: -122.3348630197085},</span>
+<span class="go">                                           u&#39;southwest&#39;: {u&#39;lat&#39;: 47.6221991197085,</span>
+<span class="go">                                                          u&#39;lng&#39;: -122.3375609802915}}},</span>
+<span class="go">               u&#39;types&#39;: [u&#39;street_address&#39;]}],</span>
+<span class="go"> u&#39;status&#39;: u&#39;OK&#39;}</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>You can also do the reverse, provide a location as latitude and longitude and
+receive address informatin back:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">location</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;results&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;geometry&#39;</span><span class="p">][</span><span class="s">&#39;location&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">latlng</span><span class="o">=</span><span class="s">&quot;{lat},{lng}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">location</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;latlng&#39;</span><span class="p">:</span> <span class="n">latlng</span><span class="p">,</span> <span class="s">&#39;sensor&#39;</span><span class="p">:</span> <span class="s">&#39;false&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">paramters</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;OK&#39;</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">pprint</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">{u&#39;results&#39;: [{u&#39;address_components&#39;: [{u&#39;long_name&#39;: u&#39;511&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;511&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;street_number&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;Boren Avenue North&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;Boren Ave N&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;route&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;South Lake Union&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;SLU&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;neighborhood&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;Seattle&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;Seattle&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;locality&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;King County&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;King County&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;administrative_area_level_2&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;Washington&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;WA&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;administrative_area_level_1&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;United States&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;US&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;country&#39;,</span>
+<span class="go">                                                   u&#39;political&#39;]},</span>
+<span class="go">                                       {u&#39;long_name&#39;: u&#39;98109&#39;,</span>
+<span class="go">                                        u&#39;short_name&#39;: u&#39;98109&#39;,</span>
+<span class="go">                                        u&#39;types&#39;: [u&#39;postal_code&#39;]}],</span>
+<span class="go">               u&#39;formatted_address&#39;: u&#39;511 Boren Avenue North, Seattle, WA 98109, USA&#39;,</span>
+<span class="go">               u&#39;geometry&#39;: {u&#39;location&#39;: {u&#39;lat&#39;: 47.6235481,</span>
+<span class="go">                                           u&#39;lng&#39;: -122.336212},</span>
+<span class="go">                             u&#39;location_type&#39;: u&#39;ROOFTOP&#39;,</span>
+<span class="go">                             u&#39;viewport&#39;: {u&#39;northeast&#39;: {u&#39;lat&#39;: 47.6248970802915,</span>
+<span class="go">                                                          u&#39;lng&#39;: -122.3348630197085},</span>
+<span class="go">                                           u&#39;southwest&#39;: {u&#39;lat&#39;: 47.6221991197085,</span>
+<span class="go">                                                          u&#39;lng&#39;: -122.3375609802915}}},</span>
+<span class="go">               u&#39;types&#39;: [u&#39;street_address&#39;]},</span>
+<span class="go">              ...</span>
+<span class="go">              ],</span>
+<span class="go"> u&#39;status&#39;: u&#39;OK&#39;}</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Notice that in the response there are actually a number of results.  These are
+decreasingly specific designations for the location you provided.  The
+<tt class="docutils literal"><span class="pre">types</span></tt> values for each indicate the level of geographical specificity for
+each result.</p>
+</div>
+<div class="section" id="mashup">
+<h2>Mashup!<a class="headerlink" href="#mashup" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s create a simple mashup of this data with the apartment listings we built
+by scraping Craigslist in an earlier exercise.</p>
+<p>Open your <tt class="docutils literal"><span class="pre">scraper.py</span></tt> file in your editor and add a new function. Call it
+<tt class="docutils literal"><span class="pre">add_address</span></tt>. This function should:</p>
+<ul class="simple">
+<li>take a single listing from our craiglist work</li>
+<li>format the location data provided in that listing properly</li>
+<li>make a reverse geocoding lookup using the google api above</li>
+<li>add the best available address to the listing</li>
+<li>return the updated listing</li>
+</ul>
+<p>Can you write this function without looking at the solution below?  Try it.</p>
+<div class="section" id="solution">
+<h3>Solution<a class="headerlink" href="#solution" title="Permalink to this headline">¶</a></h3>
+<p>Here are the changes I made to <tt class="docutils literal"><span class="pre">scraper.py</span></tt> to add this function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># add an import</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="c"># and a function</span>
+<span class="k">def</span> <span class="nf">add_address</span><span class="p">(</span><span class="n">listing</span><span class="p">):</span>
+    <span class="n">api_url</span> <span class="o">=</span> <span class="s">&#39;http://maps.googleapis.com/maps/api/geocode/json&#39;</span>
+    <span class="n">loc</span> <span class="o">=</span> <span class="n">listing</span><span class="p">[</span><span class="s">&#39;location&#39;</span><span class="p">]</span>
+    <span class="n">latlng_tmpl</span> <span class="o">=</span> <span class="s">&quot;{data-latitude},{data-longitude}&quot;</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">&#39;sensor&#39;</span><span class="p">:</span> <span class="s">&#39;false&#39;</span><span class="p">,</span>
+        <span class="s">&#39;latlng&#39;</span><span class="p">:</span> <span class="n">latlng_tmpl</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">loc</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">resp</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span> <span class="c"># &lt;- this is a no-op if all is well</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;status&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;OK&#39;</span><span class="p">:</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;results&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">listing</span><span class="p">[</span><span class="s">&#39;address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">best</span><span class="p">[</span><span class="s">&#39;formatted_address&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">listing</span><span class="p">[</span><span class="s">&#39;address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;unavailable&#39;</span>
+    <span class="k">return</span> <span class="n">listing</span>
+</pre></div>
+</div>
+<p>You&#8217;ll need to bolt the new function into your script so that the results it
+gives are added to each listing.</p>
+<p>Make the following changes to your <tt class="docutils literal"><span class="pre">__main__</span></tt> block:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pprint</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;test&#39;</span><span class="p">:</span>
+        <span class="n">html</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="n">read_search_results</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">html</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="n">fetch_search_results</span><span class="p">(</span>
+            <span class="n">minAsk</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">maxAsk</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">bedrooms</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">)</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">parse_source</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span>    <span class="c"># above here is the same</span>
+    <span class="k">for</span> <span class="n">listing</span> <span class="ow">in</span> <span class="n">extract_listings</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span> <span class="c"># change everything below</span>
+        <span class="n">listing</span> <span class="o">=</span> <span class="n">add_address</span><span class="p">(</span><span class="n">listing</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="n">listing</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Give it a whirl, using the test approach so you don&#8217;t hit Craigslist while
+trying it out:</p>
+<div class="highlight-bash"><div class="highlight"><pre>[souptests]
+heffalump:souptests cewing$ python scraper.py test
+{&#39;address&#39;: u&#39;12339-12399 78th Avenue South, Seattle, WA 98178, USA&#39;,
+ &#39;description&#39;: u&#39;2 BEDROOM 2 BATHROOM Zero Down   Rent with Option to Buy&#39;,
+ &#39;link&#39;: u&#39;/oly/apa/4345117401.html&#39;,
+ &#39;location&#39;: {&#39;data-latitude&#39;: u&#39;47.4924143400595&#39;,
+              &#39;data-longitude&#39;: u&#39;-122.235904626445&#39;},
+ &#39;price&#39;: u&#39;$960&#39;,
+ &#39;size&#39;: u&#39;3br&#39;}
+{&#39;address&#39;: ...
+...
+[souptests]
+heffalump:souptests cewing$
+</pre></div>
+</div>
+<p>Nifty, eh?</p>
+</div>
+</div>
+<div class="section" id="reduce-your-footprint">
+<h2>Reduce Your Footprint<a class="headerlink" href="#reduce-your-footprint" title="Permalink to this headline">¶</a></h2>
+<p>At the moment, all of our results need to be held in memory at the same time.
+In this case it probably isn&#8217;t too big a deal, but it&#8217;s good to practice being
+kind to your resources.</p>
+<p>Update the &#8216;extract_listings&#8217; method to turn it into a generator.  Then we can
+process a single apartment listing at a time, decreasing the memory
+requirements of our script:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">extract_listings</span><span class="p">(</span><span class="n">parsed</span><span class="p">):</span>
+    <span class="n">location_attrs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;data-latitude&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span> <span class="s">&#39;data-longitude&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+    <span class="n">listings</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s">&#39;p&#39;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s">&#39;row&#39;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">location_attrs</span><span class="p">)</span>
+    <span class="c"># delete the line where you create a list in which to store</span>
+    <span class="c"># your listings</span>
+    <span class="k">for</span> <span class="n">listing</span> <span class="ow">in</span> <span class="n">listings</span><span class="p">:</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">listing</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">location_attrs</span><span class="p">}</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="n">listing</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;span&#39;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s">&#39;pl&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">price_span</span> <span class="o">=</span> <span class="n">listing</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;span&#39;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s">&#39;price&#39;</span><span class="p">)</span>
+        <span class="n">this_listing</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;location&#39;</span><span class="p">:</span> <span class="n">location</span><span class="p">,</span>
+            <span class="s">&#39;link&#39;</span><span class="p">:</span> <span class="n">link</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s">&#39;href&#39;</span><span class="p">],</span>
+            <span class="s">&#39;description&#39;</span><span class="p">:</span> <span class="n">link</span><span class="o">.</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="s">&#39;price&#39;</span><span class="p">:</span> <span class="n">price_span</span><span class="o">.</span><span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+            <span class="s">&#39;size&#39;</span><span class="p">:</span> <span class="n">price_span</span><span class="o">.</span><span class="n">next_sibling</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; </span><span class="se">\n</span><span class="s">-/&#39;</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="c"># delete the line where you append this result to a list</span>
+        <span class="k">yield</span> <span class="n">this_listing</span>  <span class="c"># This is the only change you need to make</span>
+</pre></div>
+</div>
+<p>When you make that change, each individual listing will be <tt class="docutils literal"><span class="pre">yielded</span></tt> from the
+<tt class="docutils literal"><span class="pre">extract_listings</span></tt> generator, and you will be able to add an address to each
+without building all the rest first.</p>
+</div>
+<div class="section" id="going-further">
+<h2>Going Further<a class="headerlink" href="#going-further" title="Permalink to this headline">¶</a></h2>
+<p>This would be a great opportunity for using asynchronous processing as well.</p>
+<p>Can you think of a way to handle the adding of an address to each listing using
+an asynchronous call using <tt class="docutils literal"><span class="pre">gevent</span></tt> or <tt class="docutils literal"><span class="pre">tornado</span></tt>?</p>
+<p>Consider this a standing challenge.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Consuming Data from a RESTful Web Service</a><ul>
+<li><a class="reference internal" href="#geocoding-with-google-apis">Geocoding with Google APIs</a></li>
+<li><a class="reference internal" href="#mashup">Mashup!</a><ul>
+<li><a class="reference internal" href="#solution">Solution</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#reduce-your-footprint">Reduce Your Footprint</a></li>
+<li><a class="reference internal" href="#going-further">Going Further</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/assignments/day12/rest.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

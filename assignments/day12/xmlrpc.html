@@ -1,0 +1,353 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Producing and Consuming XML-RPC in Python &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="producing-and-consuming-xml-rpc-in-python">
+<h1>Producing and Consuming XML-RPC in Python<a class="headerlink" href="#producing-and-consuming-xml-rpc-in-python" title="Permalink to this headline">¶</a></h1>
+<p>Walk through the following exercise to get an idea of how XML-RPC services can
+be generated and consumed from within a Python ecosystem.</p>
+<div class="section" id="a-simple-function-based-service">
+<h2>A Simple Function-Based Service<a class="headerlink" href="#a-simple-function-based-service" title="Permalink to this headline">¶</a></h2>
+<p>Begin by creating a file, <tt class="docutils literal"><span class="pre">xmlrpc_server.py</span></tt>.</p>
+<p>Into it, type the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">SimpleXMLRPCServer</span>
+
+<span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">50000</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;return the product of two numbers&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_function</span><span class="p">(</span><span class="n">multiply</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Server running on </span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">address</span>
+        <span class="k">print</span> <span class="s">&quot;Use Ctrl-C to Exit&quot;</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">server_close</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&quot;Exiting&quot;</span>
+</pre></div>
+</div>
+<p>The call to server.register_function tells the server that we want this
+<tt class="docutils literal"><span class="pre">multiply</span></tt> function to be available to the network.</p>
+<p>We can run a client from a terminal. First, open one terminal and run the
+xmlrpc_server.py script:</p>
+<blockquote>
+<div>$ python xmlrpc_server.py</div></blockquote>
+<p>Then, open another terminal and start up python:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xmlrpclib</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span> <span class="o">=</span> <span class="n">xmlrpclib</span><span class="o">.</span><span class="n">ServerProxy</span><span class="p">(</span><span class="s">&#39;http://localhost:50000&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">72</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>By passing the optional <tt class="docutils literal"><span class="pre">verbose</span></tt> argument to our ServerProxy, we have
+indicated that we want to see the traffic that goes back and forth.</p>
+<p>If you format the HTTP request you sent to the service, it looks like this:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/RPC2</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.0</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">localhost:50000</span>
+<span class="na">User-Agent</span><span class="o">:</span> <span class="l">xmlrpclib.py/1.0.1 (by www.pythonware.com)</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">text/xml</span>
+<span class="na">Content-Length</span><span class="o">:</span> <span class="l">192</span>
+
+<span class="cp">&lt;?xml version=&#39;1.0&#39;?&gt;</span>
+<span class="nt">&lt;methodCall&gt;</span>
+ <span class="nt">&lt;methodName&gt;</span>multiply<span class="nt">&lt;/methodName&gt;</span>
+ <span class="nt">&lt;params&gt;</span>
+  <span class="nt">&lt;param&gt;</span>
+   <span class="nt">&lt;value&gt;&lt;int&gt;</span>3<span class="nt">&lt;/int&gt;&lt;/value&gt;</span>
+  <span class="nt">&lt;/param&gt;</span>
+  <span class="nt">&lt;param&gt;</span>
+   <span class="nt">&lt;value&gt;&lt;int&gt;</span>24<span class="nt">&lt;/int&gt;&lt;/value&gt;</span>
+  <span class="nt">&lt;/param&gt;</span>
+ <span class="nt">&lt;/params&gt;</span>
+<span class="nt">&lt;/methodCall&gt;</span>
+</pre></div>
+</div>
+<p>And the response that was returned by the service is also a simple HTTP
+response with an XML body:</p>
+<div class="highlight-http"><div class="highlight"><pre><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.0</span> <span class="m">200</span> <span class="ne">OK</span>
+<span class="na">Server</span><span class="o">:</span> <span class="l">BaseHTTP/0.3 Python/2.6.1</span>
+<span class="na">Date</span><span class="o">:</span> <span class="l">Sun, 13 Jan 2013 03:38:00 GMT</span>
+<span class="na">Content-type</span><span class="o">:</span> <span class="l">text/xml</span>
+<span class="na">Content-length</span><span class="o">:</span> <span class="l">121</span>
+
+<span class="cp">&lt;?xml version=&#39;1.0&#39;?&gt;</span>
+<span class="nt">&lt;methodResponse&gt;</span>
+ <span class="nt">&lt;params&gt;</span>
+  <span class="nt">&lt;param&gt;</span>
+   <span class="nt">&lt;value&gt;&lt;int&gt;</span>72<span class="nt">&lt;/int&gt;&lt;/value&gt;</span>
+  <span class="nt">&lt;/param&gt;</span>
+ <span class="nt">&lt;/params&gt;</span>
+<span class="nt">&lt;/methodResponse&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="class-based-service">
+<h2>Class-Based Service<a class="headerlink" href="#class-based-service" title="Permalink to this headline">¶</a></h2>
+<p>It is also possible to register methods defined on a Python class as a service.</p>
+<p>In your <tt class="docutils literal"><span class="pre">xmlrpc_server.py</span></tt> file, add the following class definition:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">SimpleMathService</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;provide simple mathematical operations&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;return the quotient of two numeric values&quot;&quot;&quot;</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">&#39;divide&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">a</span> <span class="o">/</span> <span class="n">b</span>
+
+    <span class="k">def</span> <span class="nf">get_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;show usage statistics&quot;&quot;&quot;</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">op</span><span class="p">,</span> <span class="n">ct</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">:</span>
+            <span class="n">stats</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">: used </span><span class="si">%d</span><span class="s"> times</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stats</span><span class="p">:</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="s">&quot;No operations have yet been used&quot;</span>
+        <span class="k">return</span> <span class="n">stats</span>
+
+    <span class="k">def</span> <span class="nf">_private_method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;this method is private because it starts with &#39;_&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;This method is not callable on the published service&quot;</span>
+</pre></div>
+</div>
+<p>Then, comment out the earlier <tt class="docutils literal"><span class="pre">multiply</span></tt> function and the line that registers
+it with the server:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># def multiply(a, b):</span>
+<span class="c">#     return a * b</span>
+<span class="c"># server.register_function(multiply)</span>
+</pre></div>
+</div>
+<p>Finally, register the new class with the server instead:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">server</span><span class="o">.</span><span class="n">register_instance</span><span class="p">(</span><span class="n">SimpleMathService</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Back in your server terminal, quit the server and then restart it.</p>
+<p>Then, try calling <tt class="docutils literal"><span class="pre">multiply</span></tt> again:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1224</span>, in <span class="n">__call__</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__name</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1578</span>, in <span class="n">__request</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__verbose</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1264</span>, in <span class="n">request</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_request</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">request_body</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1297</span>, in <span class="n">single_request</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1473</span>, in <span class="n">parse_response</span>
+    <span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">793</span>, in <span class="n">close</span>
+    <span class="k">raise</span> <span class="n">Fault</span><span class="p">(</span>\<span class="o">*</span>\<span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gr">xmlrpclib.Fault</span>: <span class="n">&lt;Fault 1: &#39;&lt;type \&#39;exceptions.Exception\&#39;&gt;:method &quot;multiply&quot; is not supported&#39;&gt;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Note that the <em>client</em> has raised an error, but the <em>server</em> is still happily
+running.</p>
+<p>Now, call the new method we defined:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">send: &quot;POST /RPC2 HTTP/1.1\r\nHost: localhost:50000\r\nAccept-Encoding: gzip\r\nUser-Agent: xmlrpclib.py/1.0.1 (by www.pythonware.com)\r\nContent-Type: text/xml\r\nContent-Length: 191\r\n\r\n&lt;?xml version=&#39;1.0&#39;?&gt;\n&lt;methodCall&gt;\n&lt;methodName&gt;divide&lt;/methodName&gt;\n&lt;params&gt;\n&lt;param&gt;\n&lt;value&gt;&lt;int&gt;24&lt;/int&gt;&lt;/value&gt;\n&lt;/param&gt;\n&lt;param&gt;\n&lt;value&gt;&lt;int&gt;3&lt;/int&gt;&lt;/value&gt;\n&lt;/param&gt;\n&lt;/params&gt;\n&lt;/methodCall&gt;\n&quot;</span>
+<span class="go">reply: &#39;HTTP/1.0 200 OK\r\n&#39;</span>
+<span class="go">header: Server: BaseHTTP/0.3 Python/2.7.5</span>
+<span class="go">header: Date: Sun, 23 Feb 2014 00:28:29 GMT</span>
+<span class="go">header: Content-type: text/xml</span>
+<span class="go">header: Content-length: 121</span>
+<span class="go">body: &quot;&lt;?xml version=&#39;1.0&#39;?&gt;\n&lt;methodResponse&gt;\n&lt;params&gt;\n&lt;param&gt;\n&lt;value&gt;&lt;int&gt;8&lt;/int&gt;&lt;/value&gt;\n&lt;/param&gt;\n&lt;/params&gt;\n&lt;/methodResponse&gt;\n&quot;</span>
+<span class="go">8</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Try to call the method we created as private:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span><span class="o">.</span><span class="n">_private_method</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1224</span>, in <span class="n">__call__</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__name</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1578</span>, in <span class="n">__request</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__verbose</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1264</span>, in <span class="n">request</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_request</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">handler</span><span class="p">,</span> <span class="n">request_body</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1297</span>, in <span class="n">single_request</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">1473</span>, in <span class="n">parse_response</span>
+    <span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+  File <span class="nb">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/xmlrpclib.py&quot;</span>, line <span class="m">793</span>, in <span class="n">close</span>
+    <span class="k">raise</span> <span class="n">Fault</span><span class="p">(</span>\<span class="o">*</span>\<span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_stack</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gr">xmlrpclib.Fault</span>: <span class="n">&lt;Fault 1: &#39;&lt;type \&#39;exceptions.Exception\&#39;&gt;:method &quot;_private_method&quot; is not supported&#39;&gt;</span>
+</pre></div>
+</div>
+<p>Again, note that the <em>client</em> raises the error, the <em>server</em> responded just
+fine and continues to run.</p>
+<p>Finally, try calling the other method we defined, to show usage statistics.
+What does it give us?</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span><span class="o">.</span><span class="n">get_usage</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="go">{&#39;divide&#39;: 1}</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Try setting up another proxy in a third terminal.  Call both methods a few
+times from each proxy and notice how the usage statistics increment.  What does
+this tell you about a class-based service?</p>
+</div>
+<div class="section" id="service-introspection">
+<h2>Service Introspection<a class="headerlink" href="#service-introspection" title="Permalink to this headline">¶</a></h2>
+<p>XML-RPC supports introspection of a service, allowing you to get information
+about the service and how it functions.</p>
+<p>The introspection methods that are available for a Python XML-RPC server are
+<tt class="docutils literal"><span class="pre">listMethods</span></tt>, <tt class="docutils literal"><span class="pre">methodHelp</span></tt>, and <tt class="docutils literal"><span class="pre">methodSignature</span></tt>.</p>
+<p>To add support for a given introspection method to your class-based service,
+you have to implement a corresponding private method on the class. Add the
+following two methods to your <tt class="docutils literal"><span class="pre">SimpleMathService</span></tt> class in
+<tt class="docutils literal"><span class="pre">xmlrpc_server.py</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">_listMethods</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;custom logic for presenting method names to users</span>
+
+<span class="sd">    list_public_methods is a convenience function from the Python</span>
+<span class="sd">    library, but you can make your own logic if you wish.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">list_public_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_methodHelp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;provide help text for an individual method</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">__doc__</span>
+</pre></div>
+</div>
+<p>In addition, make sure to import the <tt class="docutils literal"><span class="pre">list_public_methods</span></tt> method from the
+<tt class="docutils literal"><span class="pre">SimpleXMLRPCServer</span></tt> module at the top of the server script:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">SimpleXMLRPCServer</span> <span class="kn">import</span> <span class="n">list_public_methods</span>
+</pre></div>
+</div>
+<p>Finally, just after creating the server, set it up to provide the public
+introspection functions (still in <tt class="docutils literal"><span class="pre">xmlrpc_server.py</span></tt>):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">50000</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="n">SimpleXMLRPCServer</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">register_introspection_functions</span><span class="p">()</span> <span class="c"># this line is new</span>
+</pre></div>
+</div>
+<p>Now, restart your server and kick the tires. The introspection functions are
+available as attributes of the <tt class="docutils literal"><span class="pre">system</span></tt> attribute of your proxy:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">listMethods</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="go">[&#39;divide&#39;, &#39;get_usage&#39;, &#39;system.listMethods&#39;, &#39;system.methodHelp&#39;, &#39;system.methodSignature&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">methodHelp</span><span class="p">(</span><span class="s">&#39;divide&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&#39;return the quotient of two numeric values&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proxy</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">methodSignature</span><span class="p">(</span><span class="s">&#39;divide&#39;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&#39;signatures not supported&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p><strong>Warning</strong>, try it, but I&#8217;ve been unable to get system.methodSignature to work.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Producing and Consuming XML-RPC in Python</a><ul>
+<li><a class="reference internal" href="#a-simple-function-based-service">A Simple Function-Based Service</a></li>
+<li><a class="reference internal" href="#class-based-service">Class-Based Service</a></li>
+<li><a class="reference internal" href="#service-introspection">Service Introspection</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/assignments/day12/xmlrpc.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
