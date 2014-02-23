@@ -1,0 +1,503 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>A Better Approach to Data Extraction: Web Services &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 12 Lectures" href="index.html" />
+    <link rel="next" title="Assignments" href="../../assignments/index.html" />
+    <link rel="prev" title="Day 12 Lectures" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 12 Lectures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 12 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="a-better-approach-to-data-extraction-web-services">
+<h1>A Better Approach to Data Extraction: Web Services<a class="headerlink" href="#a-better-approach-to-data-extraction-web-services" title="Permalink to this headline">¶</a></h1>
+<p>Scraping web pages is tedious and inherently brittle.</p>
+<p>If the owner of the website updates their layout, your code breaks.</p>
+<p>But there is another way to get information from the web in a more normalized
+fashion.</p>
+<p><strong>Web Services</strong></p>
+<p>A web service is described by the W3C as:</p>
+<blockquote>
+<div>&#8220;a software system designed to support interoperable machine-to-machine
+interaction over a network&#8221;</div></blockquote>
+<p>In general, a web service provides a defined set of functionality and returns
+structured data in response to well-formed requests.</p>
+<div class="section" id="early-web-services">
+<h2>Early Web Services<a class="headerlink" href="#early-web-services" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="rss">
+<h3>RSS<a class="headerlink" href="#rss" title="Permalink to this headline">¶</a></h3>
+<p>RSS is one of the earliest forms of Web Services</p>
+<ul class="simple">
+<li>First known as <tt class="docutils literal"><span class="pre">RDF</span> <span class="pre">Site</span> <span class="pre">Summary</span></tt></li>
+<li>Became <tt class="docutils literal"><span class="pre">Really</span> <span class="pre">Simple</span> <span class="pre">Syndication</span></tt></li>
+<li>More at <a class="reference external" href="http://www.rss-specification.com/rss-specifications.htm">http://www.rss-specification.com/rss-specifications.htm</a></li>
+</ul>
+<p>A single web-based <em>endpoint</em> provides a dynamically updated listing of
+content</p>
+<p>RSS is implemented in pure HTTP.  The return value is an XML document</p>
+<p><strong>Atom</strong> is a competing, but similar standard.</p>
+<p>An RSS document might look something like this:</p>
+<div class="highlight-xml"><div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span>
+<span class="nt">&lt;rss</span> <span class="na">version=</span><span class="s">&quot;2.0&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;channel&gt;</span>
+  <span class="nt">&lt;title&gt;</span>RSS Title<span class="nt">&lt;/title&gt;</span>
+  <span class="nt">&lt;description&gt;</span>This is an example of an RSS feed<span class="nt">&lt;/description&gt;</span>
+  <span class="nt">&lt;link&gt;</span>http://www.someexamplerssdomain.com/main.html<span class="nt">&lt;/link&gt;</span>
+  <span class="nt">&lt;lastBuildDate&gt;</span>Mon, 06 Sep 2010 00:01:00 +0000 <span class="nt">&lt;/lastBuildDate&gt;</span>
+  <span class="nt">&lt;pubDate&gt;</span>Mon, 06 Sep 2009 16:45:00 +0000 <span class="nt">&lt;/pubDate&gt;</span>
+  <span class="nt">&lt;ttl&gt;</span>1800<span class="nt">&lt;/ttl&gt;</span>
+
+  <span class="nt">&lt;item&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Example entry<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;description&gt;</span>Here is some text containing an interesting description.<span class="nt">&lt;/description&gt;</span>
+    <span class="nt">&lt;link&gt;</span>http://www.wikipedia.org/<span class="nt">&lt;/link&gt;</span>
+    <span class="nt">&lt;guid&gt;</span>unique string per item<span class="nt">&lt;/guid&gt;</span>
+    <span class="nt">&lt;pubDate&gt;</span>Mon, 06 Sep 2009 16:45:00 +0000 <span class="nt">&lt;/pubDate&gt;</span>
+  <span class="nt">&lt;/item&gt;</span>
+  ...
+<span class="nt">&lt;/channel&gt;</span>
+<span class="nt">&lt;/rss&gt;</span>
+</pre></div>
+</div>
+<p>In python, the best tool for consuming RSS, Atom and other related feeds is
+<a class="reference external" href="https://pythonhosted.org/feedparser/">feedparser</a>.  It&#8217;s not part of the standard library, but it is very well
+supported and commonly used.</p>
+</div>
+<div class="section" id="xml-rpc">
+<h3>XML-RPC<a class="headerlink" href="#xml-rpc" title="Permalink to this headline">¶</a></h3>
+<p>RSS provides a pre-defined data set, can we also allow <em>calling procedures</em> to
+get more dynamic data?</p>
+<p>We can!  Enter XML-RPC (Remote Procedure Call)</p>
+<ul class="simple">
+<li>Provides a set of defined procedures which can take arguments</li>
+<li>Requests are made via HTTP GET, by passing an XML document</li>
+<li>Responses are sent to the client as an XML document</li>
+</ul>
+<p>The Python standard library provides modules both for producing <em>and</em> for
+consuming XML-RPC services.</p>
+<p>Services can be built by registering functions or even entire class objects
+with the <tt class="docutils literal"><span class="pre">SimpleXMLRPCServer</span></tt> class from the <a class="reference external" href="http://docs.python.org/2/library/simplexmlrpcserver.html">SimpleXMLRPCServer</a> library.</p>
+<p>The <a class="reference external" href="http://docs.python.org/2/library/xmlrpclib.html">xmlrpclib</a> module provides client methods to consume XML-RPC services.</p>
+<p>It is worth noting that there are a number of <a class="reference external" href="http://docs.python.org/2/library/xml.html#xml-vulnerabilities">known vulnerabilities</a> in the
+XML standard and that the <tt class="docutils literal"><span class="pre">xmlrpclib</span></tt> is <strong>not</strong> secured against them. When
+interacting with XML-RPC online, it behooves you to pay close attention to the
+sources of your data.</p>
+<p>You have a brief XML-RPC walkthrough assignment that will help you to
+familiarize yourself with this form of Web Services.</p>
+</div>
+<div class="section" id="soap">
+<h3>SOAP<a class="headerlink" href="#soap" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>XML-RPC allows introspection</li>
+<li>XML-RPC forces you to introspect to get information</li>
+<li><strong>Wouldn&#8217;t it be nice to get that automatically?</strong></li>
+<li>XML-RPC provides data types</li>
+<li>XML-RPC provides only <em>certain</em> data types</li>
+<li><strong>Wouldn&#8217;t it be nice to have an extensible system for types?</strong></li>
+<li>XML-RPC allows calling methods with parameters</li>
+<li>XML-RPC only allows calling methods, nothing else</li>
+<li><strong>wouldn&#8217;t it be nice to have contextual data as well?</strong></li>
+</ul>
+<p><strong>Enter SOAP: Simple Object Access Protocol</strong></p>
+<p>SOAP extends XML-RPC in a couple of useful ways:</p>
+<ul class="simple">
+<li>It uses the Web Services Description Language (WSDL) to provide meta-data
+about an entire service in a machine-readable format (Automatic
+introspection)</li>
+<li>It establishes a method for extending available data types using XML
+namespaces (extensible type system)</li>
+<li>It provides a wrapper around method calls called the <strong>envelope</strong>, which
+allows the inclusion of a <strong>header</strong> with system meta-data that can be used
+by the application (contextual data)</li>
+</ul>
+</div>
+<div class="section" id="soap-in-python">
+<h3>SOAP in Python<a class="headerlink" href="#soap-in-python" title="Permalink to this headline">¶</a></h3>
+<p>There is no standard library module that supports SOAP directly.</p>
+<ul class="simple">
+<li>The best-known and best-supported module available is <strong>Suds</strong></li>
+<li>The homepage is <a class="reference external" href="https://fedorahosted.org/suds/">https://fedorahosted.org/suds/</a></li>
+<li>It can be installed using <tt class="docutils literal"><span class="pre">easy_install</span></tt> or <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span></tt></li>
+</ul>
+<p><strong>HOWEVER</strong></p>
+<p>The source for <tt class="docutils literal"><span class="pre">suds</span></tt> has not seen a commit since <a class="reference external" href="https://fedorahosted.org/suds/changeset/712">February 13, 2012</a>, and
+the last release of the package to PyPI was <a class="reference external" href="https://pypi.python.org/pypi/suds.">even longer ago, in 2010</a>.</p>
+<p>I have recently discovered that there <em>is</em> an updated version of this package
+available. It&#8217;s called <a class="reference external" href="https://pypi.python.org/pypi/suds-jurko/0.6">suds-jurko</a> after the username of the developer who
+stepped up to lead development forward.</p>
+<p>I cannot speak to the quality of this package, but it does show a lot of
+activity, with the most recent commit less than one week ago, and the most
+recent release coming just last month (Jan 2014).</p>
+<p>I&#8217;m not going to bother providing an exercise in SOAP. I&#8217;ve never had an
+interaction with a SOAP service that was a positive experience, and if you have
+any other option, you should avoid it.</p>
+<p>If you do have to use a SOAP web service, prepare yourself for some significant
+time spent trying to get things to work properly.</p>
+</div>
+<div class="section" id="afterword">
+<h3>Afterword<a class="headerlink" href="#afterword" title="Permalink to this headline">¶</a></h3>
+<p>SOAP (and XML-RPC) have some issues.</p>
+<ul class="simple">
+<li>XML is pretty damned inefficient as a data transfer medium</li>
+<li>Why should I need to know method names?</li>
+<li>If I can discover method names at all, I have to read a WSDL to do it?</li>
+</ul>
+<p>Moreover, for SOAP <tt class="docutils literal"><span class="pre">suds</span></tt> is the best we have, and it hasn&#8217;t been updated
+since Sept. 2010 by its official owner. What does that say about the utility of
+the standard? (At least as perceived by the Python community?)</p>
+</div>
+</div>
+<div class="section" id="modern-web-services">
+<h2>Modern Web Services<a class="headerlink" href="#modern-web-services" title="Permalink to this headline">¶</a></h2>
+<p>So, if not XML, then what data format <em>should</em> one use to provide responses to
+Web Service calls?</p>
+<div class="section" id="json">
+<h3>JSON<a class="headerlink" href="#json" title="Permalink to this headline">¶</a></h3>
+<p>JavaScript Object Notation:</p>
+<ul class="simple">
+<li>a lightweight data-interchange format</li>
+<li>easy for humans to read and write</li>
+<li>easy for machines to parse and generate</li>
+</ul>
+<p>JSON is based on two structures:</p>
+<ul class="simple">
+<li>the JavaScript object: <tt class="docutils literal"><span class="pre">{</span> <span class="pre">string:</span> <span class="pre">value,</span> <span class="pre">...}</span></tt></li>
+<li>the JavaScript array: <tt class="docutils literal"><span class="pre">[value,</span> <span class="pre">value,</span> <span class="pre">]</span></tt></li>
+</ul>
+<p>These both end up looking quite suspiciously like code we are familiar with.</p>
+<p>In addition JSON provides a few basic data types (see <a class="reference external" href="http://json.org/">http://json.org/</a>):</p>
+<ul class="simple">
+<li><strong>string</strong>: unicode, anything but &#8221;, \ and control characters</li>
+<li><strong>number</strong>: any number, but json does not use octal or hexadecimal</li>
+<li><strong>object, array</strong>: (we&#8217;ve seen these above)</li>
+<li><strong>true</strong>: boolean true value</li>
+<li><strong>false</strong>: boolean false value</li>
+<li><strong>null</strong>: represents no value, the same as Python&#8217;s <tt class="docutils literal"><span class="pre">None</span></tt></li>
+</ul>
+<p>Note that the boolean values <em>must</em> be typed as all lowercase letters.  This is
+JavaScript, not Python. It&#8217;s an easy mistake to make.</p>
+<p>Also note that there is no representation of a date type in JSON.</p>
+<p><strong>No date type? OMGWTF??!!1!1</strong></p>
+<p>You have a couple of options for how to deal with dates and time in JSON.</p>
+<p>Option 1 - Unix Epoch Time (number):</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="go">1358212616.7691269</span>
+</pre></div>
+</div>
+<p>Option 2 - ISO 8661 (string):</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+<span class="go">&#39;2013-01-14T17:18:10.727240&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="json-in-python">
+<h3>JSON in Python<a class="headerlink" href="#json-in-python" title="Permalink to this headline">¶</a></h3>
+<p>You can encode Python to json, and decode json back to Python:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s">&#39;[1, 2, 3]&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orig</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;foo&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="s">&#39;bar&#39;</span><span class="p">:</span> <span class="s">u&#39;my resumé&#39;</span><span class="p">,</span> <span class="s">&#39;baz&#39;</span><span class="p">:</span> <span class="bp">True</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">orig</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span>
+<span class="go">&#39;{&quot;baz&quot;: true, &quot;foo&quot;: [1, 2, 3], &quot;bar&quot;: &quot;my resum\\u00e9&quot;}&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">decoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">decoded</span> <span class="o">==</span> <span class="n">orig</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>Notice that by default, unicode strings are converted to ASCII-compatible
+escape characters.</p>
+<p>Also note that encoding a Python <tt class="docutils literal"><span class="pre">tuple</span></tt> to JSON and then decoding it back to
+Python <strong>cannot produce a tuple</strong>:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">foo</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">encoded</span>
+<span class="go">&#39;[1, 2, 3]&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span>
+<span class="go">[1, 2, 3]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span> <span class="o">==</span> <span class="n">foo</span>
+<span class="go">False</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>This is just the way that it is due to the fact that JavaScript does not have
+any data equivalent of the immutable tuple type in Python.</p>
+<p>In addition to <tt class="docutils literal"><span class="pre">loads</span></tt> and <tt class="docutils literal"><span class="pre">dumps</span></tt>, json provides <tt class="docutils literal"><span class="pre">load</span></tt> and <tt class="docutils literal"><span class="pre">dump</span></tt>.
+The difference between these methods is in what argument they accept as the
+value to be decoded or encoded.</p>
+<p>The <tt class="docutils literal"><span class="pre">json.loads</span></tt> method takes a <tt class="docutils literal"><span class="pre">unicode</span></tt> object. But <tt class="docutils literal"><span class="pre">json.load</span></tt> accepts
+any object which is <strong>file-like</strong>, meaning that it has a <tt class="docutils literal"><span class="pre">.read()</span></tt> method.
+This method is optimized so that very large input streams can be handled more
+efficiently.</p>
+<p>The <tt class="docutils literal"><span class="pre">json.dumps</span></tt> method directly returns a string.  But <tt class="docutils literal"><span class="pre">json.dump</span></tt>
+requires a <em>second positional argument</em> which must be a <strong>file-like</strong> object,
+something with a <tt class="docutils literal"><span class="pre">.write()</span></tt> method.  The value that would normally have been
+returned from the method will instead be written to the provided object.</p>
+<p>Both <tt class="docutils literal"><span class="pre">json.loads</span></tt> and <tt class="docutils literal"><span class="pre">json.dumps</span></tt> can take optional <tt class="docutils literal"><span class="pre">cls</span></tt> keyword
+arguments that allow you to pass a subclass of the <tt class="docutils literal"><span class="pre">json.JSONEncoder</span></tt> or
+<tt class="docutils literal"><span class="pre">json.JSONDecoder</span></tt> class to be used instead of those standard objects.</p>
+<p>This can allow you to create powerful, customized encoders and decoders for
+specialized data types not recognized by the standard implementations:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ComplexEncoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">complex</span><span class="p">):</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">imag</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="c"># Let the base class default method raise the TypeError</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dumps</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1j</span><span class="p">,</span> <span class="n">cls</span><span class="o">=</span><span class="n">ComplexEncoder</span><span class="p">)</span>
+<span class="go">&#39;[2.0, 1.0]&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ComplexEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1j</span><span class="p">)</span>
+<span class="go">&#39;[2.0, 1.0]&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">ComplexEncoder</span><span class="p">()</span><span class="o">.</span><span class="n">iterencode</span><span class="p">(</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1j</span><span class="p">))</span>
+<span class="go">[&#39;[&#39;, &#39;2.0&#39;, &#39;, &#39;, &#39;1.0&#39;, &#39;]&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="rest">
+<h3>REST<a class="headerlink" href="#rest" title="Permalink to this headline">¶</a></h3>
+<p>SOAP was invented in part to provide completely machine-readable
+interoperability through WSDL.</p>
+<p>Does that really work in real life?</p>
+<p>Hardly ever.</p>
+<p>Another reason was to provide extensibility via custom types defined in WSDL.</p>
+<p>Does that really work in real life?</p>
+<p>Hardly ever.</p>
+<p>So, if neither of these goals is really achieved by using SOAP, why pay all
+the overhead required to use the protocol?</p>
+<p>Instead, a new form for Web Services was defined, ReST.</p>
+<p>It stands for <strong>Representational State Transfer</strong>.</p>
+<ul class="simple">
+<li>Originally described by Roy T. Fielding (worth reading)</li>
+<li>Use HTTP for what it can do</li>
+<li>Read more in <a class="reference external" href="http://www.crummy.com/writing/RESTful-Web-Services/">this book</a></li>
+</ul>
+<p>Seriously. Buy it and read (&lt;<a class="reference external" href="http://www.crummy.com/writing/RESTful-Web-Services/">http://www.crummy.com/writing/RESTful-Web-Services/</a>)</p>
+</div>
+<div class="section" id="rest-as-http">
+<h3>REST as HTTP<a class="headerlink" href="#rest-as-http" title="Permalink to this headline">¶</a></h3>
+<p>In XML-RCP/SOAP the same HTTP method is used for all calls, and the <em>endpoint</em>
+is a different function. For a commenting system on a blog, this might look
+something like this:</p>
+<ul class="simple">
+<li>POST /getComment HTTP/1.1</li>
+<li>POST /getComments HTTP/1.1</li>
+<li>POST /addComment HTTP/1.1</li>
+<li>POST /editComment HTTP/1.1</li>
+<li>POST /deleteComment HTTP/1.1</li>
+</ul>
+<p>RESTful Web Services are designed to use HTTP Methods as they were intended to
+be used. So the same set of functionality can be expressed like this:</p>
+<dl class="class">
+<dt>
+<tt class="descname">incremental small</tt></dt>
+<dd></dd></dl>
+
+<ul class="simple">
+<li>GET /comment/&lt;id&gt; HTTP/1.1</li>
+<li>GET /comment HTTP/1.1</li>
+<li>POST /comment HTTP/1.1</li>
+<li>PUT /comment/&lt;id&gt; HTTP/1.1</li>
+<li>DELETE /comment/&lt;id&gt; HTTP/1.1</li>
+</ul>
+<p>We call this approach <strong>Resource Oriented Architecture</strong> because each function
+is implemented as a different method of the same web-based <strong>resource</strong>.</p>
+<p>The URL represents the <em>resource</em> we are working with.</p>
+<p>The HTTP Method represents the <tt class="docutils literal"><span class="pre">action</span></tt> to be taken.</p>
+<p>Similarly, the HTTP Code returned by a RESTful service can tell us the
+<tt class="docutils literal"><span class="pre">result</span></tt> of our action.</p>
+<p>For example, in our putative commenting system, consider a POST request to
+create a new comment:</p>
+<div class="highlight-python"><div class="highlight"><pre>POST /comment HTTP/1.1
+</pre></div>
+</div>
+<p>Possible responses might include:</p>
+<ul class="simple">
+<li>Success: <tt class="docutils literal"><span class="pre">HTTP/1.1</span> <span class="pre">201</span> <span class="pre">Created</span></tt></li>
+<li>Failure (unauthorized): <tt class="docutils literal"><span class="pre">HTTP/1.1</span> <span class="pre">401</span> <span class="pre">Unauthorized</span></tt></li>
+<li>Failure (NotImplemented): <tt class="docutils literal"><span class="pre">HTTP/1.1</span> <span class="pre">405</span> <span class="pre">Not</span> <span class="pre">Allowed</span></tt></li>
+<li>Failure (ValueError): <tt class="docutils literal"><span class="pre">HTTP/1.1</span> <span class="pre">406</span> <span class="pre">Not</span> <span class="pre">Acceptable</span></tt></li>
+</ul>
+<p>Or for a PUT request to edit an existing comment:</p>
+<div class="highlight-python"><div class="highlight"><pre>PUT /comment/&lt;id&gt; HTTP/1.1
+</pre></div>
+</div>
+<ul class="simple">
+<li>Success: <tt class="docutils literal"><span class="pre">HTTP/1.1</span> <span class="pre">200</span> <span class="pre">OK</span></tt></li>
+<li>Failure: <tt class="docutils literal"><span class="pre">HTTP/1.1</span> <span class="pre">409</span> <span class="pre">Conflict</span></tt></li>
+</ul>
+<p>And a DELETE request to remove a comment:</p>
+<div class="highlight-python"><div class="highlight"><pre>DELETE /comment/&lt;id&gt; HTTP/1.1
+</pre></div>
+</div>
+<ul class="simple">
+<li>Success: <tt class="docutils literal"><span class="pre">HTTP/1.1</span> <span class="pre">204</span> <span class="pre">No</span> <span class="pre">Content</span></tt></li>
+</ul>
+<p>A fundamental truth of HTTP is that the protocol is <strong>stateless</strong>.</p>
+<p>I&#8217;ll repeat that, for emphasis.</p>
+<p><strong>HTTP is fundamentally STATELESS</strong></p>
+<p>No individual request may be assumed to know anything about any other request.</p>
+<p>If we are considering a request as a call to take some action on an
+applications (our web service), then the following conclusion may be drawn:</p>
+<p>All the required information representing the possible actions to take <em>should
+be present in every response</em>.</p>
+<p>This brings us to the definition of <strong>HATEOAS</strong></p>
+<p><strong>Hypermedia As The Engine Of Application State</strong></p>
+</div>
+<div class="section" id="applications-are-state-engines">
+<h3>Applications are State Engines<a class="headerlink" href="#applications-are-state-engines" title="Permalink to this headline">¶</a></h3>
+<p>A State Engine is like a machine. The individual parts of the machine may be
+said to be in a given <em>state</em> at any one time. For example, the engine of a car
+can be <em>running</em> or <em>stopped</em>. If the engine is running, the drive shaft may be
+<em>engaged</em> or <em>disengaged</em> via a transmission.</p>
+<p>The act of <em>starting the engine</em> moves the state of the engine from <em>stopped</em>
+to <em>running</em>. The act of <em>putting the car in gear</em> moves the drive shaft from
+the state of <em>disengaged</em> to <em>engaged</em>.</p>
+<p>In a state engine we call these acts <strong>transitions</strong>.  They exist to move the
+resources of the application between available states.</p>
+<p>In HTTP, we have said that no individual request can be asserted to be aware of
+the current state of the application to which it will be sent.</p>
+<p>This means that a RESTful web service response must:</p>
+<ul class="simple">
+<li>provide information about the current state of a resource</li>
+<li>provide information about available transitions for that resource (URIs)</li>
+<li>gracefully respond to incoming requests that reference out-of-date state
+information.</li>
+<li>provide all this in <em>each</em> HTTP response</li>
+</ul>
+<p>Tonight, you&#8217;ll do a walkthrough of using a RESTful web service to extend the
+data you built about apartment listings yesterday.</p>
+<p>As you do so, make note of how the information the web service provides you
+indicates what else you can do with the data you get back.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">A Better Approach to Data Extraction: Web Services</a><ul>
+<li><a class="reference internal" href="#early-web-services">Early Web Services</a><ul>
+<li><a class="reference internal" href="#rss">RSS</a></li>
+<li><a class="reference internal" href="#xml-rpc">XML-RPC</a></li>
+<li><a class="reference internal" href="#soap">SOAP</a></li>
+<li><a class="reference internal" href="#soap-in-python">SOAP in Python</a></li>
+<li><a class="reference internal" href="#afterword">Afterword</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modern-web-services">Modern Web Services</a><ul>
+<li><a class="reference internal" href="#json">JSON</a></li>
+<li><a class="reference internal" href="#json-in-python">JSON in Python</a></li>
+<li><a class="reference internal" href="#rest">REST</a></li>
+<li><a class="reference internal" href="#rest-as-http">REST as HTTP</a></li>
+<li><a class="reference internal" href="#applications-are-state-engines">Applications are State Engines</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Day 12 Lectures</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../assignments/index.html"
+                        title="next chapter">Assignments</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day12/json_apis.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 12 Lectures"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 12 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
