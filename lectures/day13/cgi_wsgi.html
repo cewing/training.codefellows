@@ -1,0 +1,670 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting Data In &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-data-in">
+<h1>Getting Data In<a class="headerlink" href="#getting-data-in" title="Permalink to this headline">¶</a></h1>
+<p>We&#8217;ve talked over the last few sessions about ways of consuming data from
+online web services.</p>
+<p>In most cases, when you use a web service, you send some data to that service
+so that it can use that information as parameters for whatever process it
+performs.</p>
+<p>How does the data we send to a web service end up getting used by that service?</p>
+<div class="section" id="environments">
+<h2>Environments<a class="headerlink" href="#environments" title="Permalink to this headline">¶</a></h2>
+<p>A computer has an <em>environment</em>:</p>
+<p>In *nix, you can see this in a shell:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>printenv
+<span class="nv">TERM_PROGRAM</span><span class="o">=</span>iTerm.app
+...
+</pre></div>
+</div>
+<p>It&#8217;s there in Windows too:</p>
+<div class="highlight-posh"><div class="highlight"><pre>C:\&gt; set
+ALLUSERSPROFILE=C:\ProgramData
+...
+</pre></div>
+</div>
+<p>This can be manipulated. In a <tt class="docutils literal"><span class="pre">bash</span></tt> shell we can do this:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span><span class="nb">export </span><span class="nv">VARIABLE</span><span class="o">=</span><span class="s1">&#39;some value&#39;</span>
+<span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$VARIABLE</span>
+some value
+</pre></div>
+</div>
+<p>And in Windows as well:</p>
+<div class="highlight-posh"><div class="highlight"><pre>C:\Users\Administrator\&gt; set VARIABLE=&#39;some value&#39;
+C:\Users\Administrator\&gt; echo %VARIABLE%
+&#39;some value&#39;
+</pre></div>
+</div>
+<p>Once you change them, these new values are now part of the <em>environment</em> for as
+long as your shell session remains alive.</p>
+<p>In *nix:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>printenv
+<span class="nv">TERM_PROGRAM</span><span class="o">=</span>iTerm.app
+...
+<span class="nv">VARIABLE</span><span class="o">=</span>some value
+</pre></div>
+</div>
+<p>Or Windows:</p>
+<div class="highlight-posh"><div class="highlight"><pre>C:\&gt; set
+ALLUSERSPROFILE=C:\ProgramData
+...
+VARIABLE=&#39;some value&#39;
+</pre></div>
+</div>
+<div class="section" id="environment-in-python">
+<h3>Environment in Python<a class="headerlink" href="#environment-in-python" title="Permalink to this headline">¶</a></h3>
+<p>From within Python, the same <em>environment</em> can be seen:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python
+...
+&gt;&gt;&gt; import os
+&gt;&gt;&gt; print os.environ[&#39;VARIABLE&#39;]
+some_value
+&gt;&gt;&gt; print os.environ.keys()
+[&#39;VERSIONER_PYTHON_PREFER_32_BIT&#39;, &#39;VARIABLE&#39;,
+ &#39;LOGNAME&#39;, &#39;USER&#39;, &#39;PATH&#39;, ...]
+</pre></div>
+</div>
+<p>And of course, from within Python you can alter os environment values:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;VARIABLE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;new_value&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;VARIABLE&#39;</span><span class="p">]</span>
+<span class="go">new_value</span>
+</pre></div>
+</div>
+<p>But changing that value inside Python doesn&#8217;t change the original value,
+<em>outside</em> Python:</p>
+<div class="highlight-bash"><div class="highlight"><pre>&gt;&gt;&gt; ^D
+
+<span class="nv">$ </span><span class="nb">echo </span>this is the value: <span class="nv">$VARIABLE</span>
+this is the value: some_value
+&lt;OR&gt;
+C:<span class="se">\&gt;</span> <span class="se">\U</span>sers<span class="se">\A</span>dministrator<span class="se">\&gt;</span> <span class="nb">echo</span> %VARIABLE%
+<span class="s1">&#39;some value&#39;</span>
+</pre></div>
+</div>
+<p>So what does this all mean?</p>
+<p>The Python interpreter, when you start it up, is a <tt class="docutils literal"><span class="pre">subprocess</span></tt> of the
+terminal session from which you started it.</p>
+<ul class="simple">
+<li>Subprocesses inherit their environment from their Parent</li>
+<li>Parents do not see changes to environment in subprocesses</li>
+<li>In Python, you can actually set the environment for a subprocess explicitly</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">bufsize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">stdin</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">preexec_fn</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">close_fds</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">shell</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="c"># &lt;-------</span>
+                 <span class="n">universal_newlines</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">startupinfo</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">creationflags</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="environments-online">
+<h2>Environments Online<a class="headerlink" href="#environments-online" title="Permalink to this headline">¶</a></h2>
+<p>When it comes to building online scripts that can consume incoming data, it is
+this concept of an <em>environment</em> that serves to connect data from an incoming
+request to the process(es) that handle it.</p>
+<p>We&#8217;ll take a quick look at two implementations of this idea, the CGI standard
+and the WSGI specification.</p>
+</div>
+<div class="section" id="cgi">
+<h2>CGI<a class="headerlink" href="#cgi" title="Permalink to this headline">¶</a></h2>
+<p>CGI is little more than a set of standard environmental variables</p>
+<p>First discussed in 1993, formalized in 1997, the current version (1.1) has
+been in place since 2004.</p>
+<p>The preamble to <a class="reference external" href="http://tools.ietf.org/html/rfc3875">rfc3875</a> has the following text:</p>
+<dl class="class">
+<dt id="center">
+<em class="property">class </em><tt class="descname">center</tt><a class="headerlink" href="#center" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p><em>This memo provides information for the Internet community. It does not specify
+an Internet standard of any kind.</em></p>
+<p>This means that although there is a <em>general agreement</em> about what should be in
+the CGI environment, there is <strong>no law</strong> that enforces this. You cannot count
+on any specific information actually being there.</p>
+<p>Here&#8217;s a list of the commonly understood environmental <tt class="docutils literal"><span class="pre">Meta-Variables</span></tt> in CGI:</p>
+<div class="highlight-python"><div class="highlight"><pre>4.  The CGI Request . . . . . . . . . . . . . . . . . . . . . . .  10
+    4.1. Request Meta-Variables . . . . . . . . . . . . . . . . .  10
+         4.1.1.  AUTH_TYPE. . . . . . . . . . . . . . . . . . . .  11
+         4.1.2.  CONTENT_LENGTH . . . . . . . . . . . . . . . . .  12
+         4.1.3.  CONTENT_TYPE . . . . . . . . . . . . . . . . . .  12
+         4.1.4.  GATEWAY_INTERFACE. . . . . . . . . . . . . . . .  13
+         4.1.5.  PATH_INFO. . . . . . . . . . . . . . . . . . . .  13
+         4.1.6.  PATH_TRANSLATED. . . . . . . . . . . . . . . . .  14
+         4.1.7.  QUERY_STRING . . . . . . . . . . . . . . . . . .  15
+         4.1.8.  REMOTE_ADDR. . . . . . . . . . . . . . . . . . .  15
+         4.1.9.  REMOTE_HOST. . . . . . . . . . . . . . . . . . .  16
+         4.1.10. REMOTE_IDENT . . . . . . . . . . . . . . . . . .  16
+         4.1.11. REMOTE_USER. . . . . . . . . . . . . . . . . . .  16
+         4.1.12. REQUEST_METHOD . . . . . . . . . . . . . . . . .  17
+         4.1.13. SCRIPT_NAME. . . . . . . . . . . . . . . . . . .  17
+         4.1.14. SERVER_NAME. . . . . . . . . . . . . . . . . . .  17
+         4.1.15. SERVER_PORT. . . . . . . . . . . . . . . . . . .  18
+         4.1.16. SERVER_PROTOCOL. . . . . . . . . . . . . . . . .  18
+         4.1.17. SERVER_SOFTWARE. . . . . . . . . . . . . . . . .  19
+</pre></div>
+</div>
+<div class="section" id="cgi-in-python">
+<h3>CGI In Python<a class="headerlink" href="#cgi-in-python" title="Permalink to this headline">¶</a></h3>
+<p>You can run CGI scripts that you write on any web server that supports CGI:</p>
+<ul class="simple">
+<li>Apache</li>
+<li>IIS (on Windows)</li>
+<li>Some other HTTP server that implements CGI (lighttpd, ...?)</li>
+</ul>
+<p>Note that <tt class="docutils literal"><span class="pre">nginx</span></tt> is <strong>not</strong> on this list. The designers of that server have
+specifically stated that they will not support CGI.</p>
+<p>The Python standard library also provides a simple CGI server in the
+<tt class="docutils literal"><span class="pre">CGIHTTPServer</span></tt> module.</p>
+<p>This module provides some benefits that will help if you need to debug CGI.</p>
+<p>To see CGI in action, let&#8217;s create a very simple Python CGI script and run it,
+using the built-in server.</p>
+<p>To begin with, create a folder called <tt class="docutils literal"><span class="pre">cgitests</span></tt>.  Then create a folder
+inside that called <tt class="docutils literal"><span class="pre">cgi</span></tt> and inside <em>that</em>, create a script called cgi.py:</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:tests cewing<span class="nv">$ </span>mkdir -p cgitests/cgi-bin
+heffalump:tests cewing<span class="nv">$ </span>touch cgitests/cgi-bin/cgi_1.py
+heffalump:tests cewing<span class="nv">$ </span>git status
+heffalump:tests cewing<span class="nv">$ </span><span class="nb">cd </span>cgitests/
+heffalump:cgitests cewing<span class="nv">$ </span>tree .
+.
+└── cgi-bin
+    └── cgi_1.py
+</pre></div>
+</div>
+<p>Next, open <tt class="docutils literal"><span class="pre">cgi.py</span></tt> in your text editor and enter the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="kn">import</span> <span class="nn">cgi</span>
+
+
+<span class="n">cgi</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Once you&#8217;ve saved that file, start the Python CGI server.</p>
+<p><strong>!!Make sure you are in the cgitests directory, not the cgi directory!!</strong></p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:cgitests cewing<span class="nv">$ </span>python -m CGIHTTPServer
+Serving HTTP on 0.0.0.0 port 8000 ...
+</pre></div>
+</div>
+<p>Now, open your browser and point it at the following address:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost:8000/cgi-bin/cgi_1.py
+</pre></div>
+</div>
+<p>What do you see?  What&#8217;s in the terminal where the server is running?</p>
+<div class="highlight-bash"><div class="highlight"><pre>127.0.0.1 - - <span class="o">[</span>25/Feb/2014 10:31:14<span class="o">]</span> <span class="s2">&quot;GET /cgi-bin/cgi_1.py HTTP/1.1&quot;</span> 200 -
+Traceback <span class="o">(</span>most recent call last<span class="o">)</span>:
+  File <span class="s2">&quot;/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/CGIHTTPServer.py&quot;</span>, line 253, in run_cgi
+    os.execve<span class="o">(</span>scriptfile, args, env<span class="o">)</span>
+OSError: <span class="o">[</span>Errno 13<span class="o">]</span> Permission denied
+127.0.0.1 - - <span class="o">[</span>25/Feb/2014 10:31:14<span class="o">]</span> CGI script <span class="nb">exit </span>status 0x7f00
+</pre></div>
+</div>
+<p>Notice that the response the server sent back to the client has the HTTP status
+<tt class="docutils literal"><span class="pre">200</span></tt>. As far as your web browser is concerned, nothing went wrong.  But
+clearly something <strong>is</strong> wrong.</p>
+<p>CGI is famously difficult to debug.  There are reasons for this:</p>
+<ul class="simple">
+<li>CGI is designed to provide access to runnable processes to <em>the internet</em></li>
+<li>The internet is a wretched hive of scum and villainy</li>
+<li>Revealing error conditions can expose data that could be exploited</li>
+</ul>
+<p>There are a couple of important facts that are related to the way CGI
+processes are run:</p>
+<ul class="simple">
+<li>The script <strong>must</strong> include a <em>shebang</em> so that the system knows how to run
+it.</li>
+<li>The script <strong>must</strong> be executable.</li>
+<li>The <em>executable</em> named in the <em>shebang</em> will be called as the <em>nobody</em> user.</li>
+<li>This is a security feature to prevent CGI scripts from running as a user
+with any privileges.</li>
+<li>This means that <em>both</em> the script and the <em>executable</em> from the script
+<em>shebang</em> must be one that <em>anyone</em> can run.</li>
+</ul>
+<p>We&#8217;ve got the shebang, but if you look, our script is not executable. Let&#8217;s fix
+that.</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:cgitests cewing$ ls -l cgi-bin/
+total 0
+-rw-r--r--  1 cewing  staff  0 Feb 25 10:18 cgi_1.py
+heffalump:cgitests cewing$ chmod 755 cgi-bin/cgi_1.py
+heffalump:cgitests cewing$ ls -l cgi-bin/
+total 0
+-rwxr-xr-x  1 cewing  staff  0 Feb 25 10:18 cgi_1.py
+heffalump:cgitests cewing$
+</pre></div>
+</div>
+<p>Once you have fixed that, terminate your CGI server and restart it:</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:cgitests cewing<span class="nv">$ </span>python -m CGIHTTPServer
+Serving HTTP on 0.0.0.0 port 8000 ...
+</pre></div>
+</div>
+<p>What do you see now?</p>
+<p>In CGI, problems with permissions can lead to failure. So can scripting errors.</p>
+<p>Back in your editor, add the following line of code before the call to
+<tt class="docutils literal"><span class="pre">cgi.test()</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="mi">1</span> <span class="o">/</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Reload your browser.  What happens now?  What does your browser tell you?  How
+about the server terminal?</p>
+<p>Back in your editor, add the following lines, just below <tt class="docutils literal"><span class="pre">import</span> <span class="pre">cgi</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">cgitb</span>
+<span class="n">cgitb</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now, reload again. You should see something like this.</p>
+<a class="reference internal image-reference" href="../../_images/cgitb_output.png"><img alt="../../_images/cgitb_output.png" class="align-center" src="../../_images/cgitb_output.png" style="width: 60%;" /></a>
+</div>
+<div class="section" id="repair-the-error">
+<h3>Repair the Error<a class="headerlink" href="#repair-the-error" title="Permalink to this headline">¶</a></h3>
+<p>Let&#8217;s fix the error from our traceback.  Edit your <tt class="docutils literal"><span class="pre">cgi_1.py</span></tt> file to match:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/python</span>
+<span class="kn">import</span> <span class="nn">cgi</span>
+<span class="kn">import</span> <span class="nn">cgitb</span>
+
+<span class="n">cgitb</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+
+<span class="n">cgi</span><span class="o">.</span><span class="n">test</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We&#8217;ve said that CGI is largely a set of agreed-upon environmental variables.</p>
+<p>We&#8217;ve seen how environmental variables are found in python in <tt class="docutils literal"><span class="pre">os.environ</span></tt></p>
+<p>We&#8217;ve also seen that at least some of the variables in CGI are <strong>not</strong> in the
+standard set of environment variables.</p>
+<p>Where do they come from?</p>
+<p>Let&#8217;s find &#8216;em.  In a terminal (on your local machine, please) fire up python:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">CGIHTTPServer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CGIHTTPServer</span><span class="o">.</span><span class="n">__file__</span>
+<span class="go">&#39;/big/giant/path/to/lib/python2.6/CGIHTTPServer.pyc&#39;</span>
+</pre></div>
+</div>
+<p>Copy this path and open the file it points to <strong>(without the &#8216;c&#8217;)</strong> in your
+text editor</p>
+<p>From CGIHTTPServer.py, in the CGIHTTPServer.run_cgi method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Reference: http://hoohoo.ncsa.uiuc.edu/cgi/env.html</span>
+<span class="c"># XXX Much of the following could be prepared ahead of time!</span>
+<span class="n">env</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">env</span><span class="p">[</span><span class="s">&#39;SERVER_SOFTWARE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">version_string</span><span class="p">()</span>
+<span class="n">env</span><span class="p">[</span><span class="s">&#39;SERVER_NAME&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">server_name</span>
+<span class="n">env</span><span class="p">[</span><span class="s">&#39;GATEWAY_INTERFACE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;CGI/1.1&#39;</span>
+<span class="n">env</span><span class="p">[</span><span class="s">&#39;SERVER_PROTOCOL&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span>
+<span class="n">env</span><span class="p">[</span><span class="s">&#39;SERVER_PORT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">server_port</span><span class="p">)</span>
+<span class="n">env</span><span class="p">[</span><span class="s">&#39;REQUEST_METHOD&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span>
+<span class="o">...</span>
+<span class="n">ua</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">getheader</span><span class="p">(</span><span class="s">&#39;user-agent&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">ua</span><span class="p">:</span>
+    <span class="n">env</span><span class="p">[</span><span class="s">&#39;HTTP_USER_AGENT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ua</span>
+<span class="o">...</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>And that&#8217;s it, the big secret. The server takes care of setting up the
+environment so it has what is needed.</p>
+<p>Now, in reverse. How does the information that a script creates end up in your
+browser?</p>
+<p>A CGI Script must print its results to stdout.</p>
+<p>Use the same method as above to import and open the source file for the
+<tt class="docutils literal"><span class="pre">cgi</span></tt> module. Note what <tt class="docutils literal"><span class="pre">test</span></tt> does for an example of this.</p>
+<p>What the Server Does:</p>
+<ul class="simple">
+<li>parses the request</li>
+<li>sets up the environment, including HTTP and SERVER variables</li>
+<li>figures out if the URI points to a CGI script and runs it</li>
+<li>builds an appropriate HTTP Response first line (&#8216;HTTP/1.1 200 OK\r\n&#8217;)</li>
+<li>appends what comes from the script on stdout and sends that back</li>
+</ul>
+<p>What the Script Does:</p>
+<ul class="simple">
+<li>names appropriate <em>executable</em> in it&#8217;s <em>shebang</em> line</li>
+<li>uses os.environ to read information from the HTTP request</li>
+<li>builds <em>any and all</em> appropriate <strong>HTTP Headers</strong> (Content-type:,
+Content-length:, ...)</li>
+<li>prints headers, empty line and script output (body) to stdout</li>
+</ul>
+<p>All this is well and good, but where&#8217;s the <em>dynamic</em> stuff?</p>
+<p>It&#8217;d be nice if a user could pass form data to our script for it to use.</p>
+<p>In HTTP, these types of inputs show up in the URL <em>query</em> (the part after
+the <tt class="docutils literal"><span class="pre">?</span></tt>):</p>
+<div class="highlight-python"><div class="highlight"><pre>http://myhost.com/script.py?a=23&amp;b=37
+</pre></div>
+</div>
+<p>In the <tt class="docutils literal"><span class="pre">cgi</span></tt> module, we get access to this with the <tt class="docutils literal"><span class="pre">FieldStorage</span></tt> class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">cgi</span>
+
+<span class="n">form</span> <span class="o">=</span> <span class="n">cgi</span><span class="o">.</span><span class="n">FieldStorage</span><span class="p">()</span>
+<span class="n">stringval</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+<span class="n">listval</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">getlist</span><span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>The values in the <tt class="docutils literal"><span class="pre">FieldStorage</span></tt> are <em>always</em> strings</li>
+<li>Every key/value pair in the <em>query</em> will be in the <tt class="docutils literal"><span class="pre">FieldStorage</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">.getvalue()</span></tt> allows you to return a default, in case the field isn&#8217;t
+present</li>
+<li><tt class="docutils literal"><span class="pre">.getlist()</span></tt> always returns a list: empty, one-valued, or as many values as
+are present</li>
+</ul>
+</div>
+<div class="section" id="cgi-problems">
+<h3>CGI Problems<a class="headerlink" href="#cgi-problems" title="Permalink to this headline">¶</a></h3>
+<p>CGI is quite useful, but there are problems:</p>
+<ul class="simple">
+<li>Code is executed <em>in a new process</em></li>
+<li><strong>Every</strong> call to a CGI script starts a new process on the server</li>
+<li>Starting a new process is expensive in terms of server resources</li>
+<li><em>Especially for interpreted languages like Python</em></li>
+</ul>
+<p>How do we overcome this problem?</p>
+<p>The most popular approach is to have a long-running process <em>inside</em> the
+server that handles CGI scripts.</p>
+<p><tt class="docutils literal"><span class="pre">FastCGI</span></tt> and <tt class="docutils literal"><span class="pre">SCGI</span></tt> are existing implementations of CGI in this fashion.
+The Apache module <strong>mod_python</strong> offers a similar capability for Python code.</p>
+<ul class="simple">
+<li>Each of these options has a specific API</li>
+<li>None are compatible with each-other</li>
+<li>Code written for one is <strong>not portable</strong> to another</li>
+</ul>
+<p>This makes it much more difficult to <em>share resources</em></p>
+</div>
+</div>
+<div class="section" id="wsgi">
+<h2>WSGI<a class="headerlink" href="#wsgi" title="Permalink to this headline">¶</a></h2>
+<p>Enter WSGI, the Web Server Gateway Interface.</p>
+<p>Where other alternatives are specific implementations of CGI, WSGI is itself a
+<em>new specification</em>, not an implementation.</p>
+<p>WSGI is <em>generalized</em> to describe a set of interactions, so that developers
+can write WSGI-capable apps and deploy them on any WSGI server.</p>
+<p>Read the WSGI spec: <a class="reference external" href="http://www.python.org/dev/peps/pep-0333">http://www.python.org/dev/peps/pep-0333</a></p>
+<p>WSGI consists of two parts, a <em>server</em> and an <em>application</em>.</p>
+<p><strong>A WSGI Server must:</strong></p>
+<ul class="simple">
+<li>set up an environment, much like the one in CGI</li>
+<li>provide a method <tt class="docutils literal"><span class="pre">start_response(status,</span> <span class="pre">headers,</span> <span class="pre">exc_info=None)</span></tt></li>
+<li>build a response body by calling an <em>application</em>, passing
+<tt class="docutils literal"><span class="pre">environment</span></tt> and <tt class="docutils literal"><span class="pre">start_response</span></tt> as args</li>
+<li>return a response with the status, headers and body</li>
+</ul>
+<p><strong>A WSGI Appliction must:</strong></p>
+<ul class="simple">
+<li>Be a callable (function, method, class)</li>
+<li>Take an environment and a <tt class="docutils literal"><span class="pre">start_response</span></tt> callable as arguments</li>
+<li>Call the <tt class="docutils literal"><span class="pre">start_response</span></tt> method.</li>
+<li>Return an iterable of 0 or more strings, which are treated as the body of
+the response.</li>
+</ul>
+<p>Here is some pseudocode that outlines what basic functions a WSGI server must
+implement:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">some_application</span> <span class="kn">import</span> <span class="n">simple_app</span>
+
+<span class="k">def</span> <span class="nf">handle_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="n">environ</span> <span class="o">=</span> <span class="n">build_env</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="n">iterable</span> <span class="o">=</span> <span class="n">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+        <span class="n">send_response</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">build_env</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c"># put together some environment info from the reqeuest</span>
+    <span class="k">return</span> <span class="n">env</span>
+
+<span class="k">def</span> <span class="nf">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">):</span>
+    <span class="c"># start an HTTP response, sending status and headers</span>
+
+<span class="c"># listen for HTTP requests and pass on to handle_request()</span>
+<span class="n">serve</span><span class="p">(</span><span class="n">simple_app</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Where the simplified server above is <strong>not</strong> functional, this <em>is</em> a complete
+app:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s">&quot;200 OK&quot;</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="s">&quot;Hello World</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">response_headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s">&#39;text/plain&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s">&#39;Content-length&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">))]</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">response_headers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">body</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>So, WSGI consists of <em>servers</em> and <em>applications</em>. But there&#8217;s actually a third
+part of the puzzle. Something called WSGI <em>middleware</em></p>
+<ul class="simple">
+<li>Middleware implements both the <em>server</em> and <em>application</em> interfaces</li>
+<li>Middleware acts as a server when viewed from an application</li>
+<li>Middleware acts as an application when viewed from a server</li>
+</ul>
+<a class="reference internal image-reference" href="../../_images/wsgi_middleware_onion.png"><img alt="../../_images/wsgi_middleware_onion.png" class="align-center" src="../../_images/wsgi_middleware_onion.png" style="width: 50%;" /></a>
+<p>WSGI Servers:</p>
+<p><strong>HTTP &lt;&#8212;&gt; WSGI</strong></p>
+<p>WSGI Applications:</p>
+<p><strong>WSGI &lt;&#8212;&gt; app code</strong></p>
+<p>So the WSGI <em>Stack</em> can be expressed like this:</p>
+<p><strong>HTTP &lt;&#8212;&gt; WSGI &lt;&#8212;&gt; app code</strong></p>
+<p>There are a number of different ways of serving WSGI apps.</p>
+<p><strong>Using wsgiref</strong></p>
+<p>The Python standard lib provides a reference implementation of WSGI:</p>
+<a class="reference internal image-reference" href="../../_images/wsgiref_flow.png"><img alt="../../_images/wsgiref_flow.png" class="align-center" src="../../_images/wsgiref_flow.png" style="width: 50%;" /></a>
+<p><strong>Apache mod_wsgi</strong></p>
+<p>You can also deploy with Apache as your HTTP server, using <strong>mod_wsgi</strong>:</p>
+<a class="reference internal image-reference" href="../../_images/mod_wsgi_flow.png"><img alt="../../_images/mod_wsgi_flow.png" class="align-center" src="../../_images/mod_wsgi_flow.png" style="width: 50%;" /></a>
+<p><strong>Proxied WSGI Servers</strong></p>
+<p>Finally, it is also common to see WSGI apps deployed via a proxied WSGI
+server:</p>
+<a class="reference internal image-reference" href="../../_images/proxy_wsgi.png"><img alt="../../_images/proxy_wsgi.png" class="align-center" src="../../_images/proxy_wsgi.png" style="width: 50%;" /></a>
+<p>WSGI shares the concept of <em>environment</em> with CGI.</p>
+<p>In WSGI the environment is explicitly built and passed to the application.</p>
+<p>WSGI does not make use directly of <tt class="docutils literal"><span class="pre">os.environ</span></tt>.</p>
+<p>But what is in the WSGI environment should look familiar:</p>
+<div class="highlight-python"><div class="highlight"><pre>REQUEST_METHOD
+  The HTTP request method, such as &quot;GET&quot; or &quot;POST&quot;. This cannot ever be an
+  empty string, and so is always required.
+SCRIPT_NAME
+  The initial portion of the request URL&#39;s &quot;path&quot; that corresponds to the
+  application object, so that the application knows its virtual &quot;location&quot;.
+  This may be an empty string, if the application corresponds to the &quot;root&quot; of
+  the server.
+PATH_INFO
+  The remainder of the request URL&#39;s &quot;path&quot;, designating the virtual
+  &quot;location&quot; of the request&#39;s target within the application. This may be an
+  empty string, if the request URL targets the application root and does not
+  have a trailing slash.
+QUERY_STRING
+  The portion of the request URL that follows the &quot;?&quot;, if any. May be empty or
+  absent.
+CONTENT_TYPE
+  The contents of any Content-Type fields in the HTTP request. May be empty or
+  absent.
+CONTENT_LENGTH
+  The contents of any Content-Length fields in the HTTP request. May be empty
+  or absent.
+SERVER_NAME, SERVER_PORT
+  When combined with SCRIPT_NAME and PATH_INFO, these variables can be used to
+  complete the URL. Note, however, that HTTP_HOST, if present, should be used
+  in preference to SERVER_NAME for reconstructing the request URL. See the URL
+  Reconstruction section below for more detail. SERVER_NAME and SERVER_PORT
+  can never be empty strings, and so are always required.
+SERVER_PROTOCOL
+  The version of the protocol the client used to send the request. Typically
+  this will be something like &quot;HTTP/1.0&quot; or &quot;HTTP/1.1&quot; and may be used by the
+  application to determine how to treat any HTTP request headers. (This
+  variable should probably be called REQUEST_PROTOCOL, since it denotes the
+  protocol used in the request, and is not necessarily the protocol that will
+  be used in the server&#39;s response. However, for compatibility with CGI we
+  have to keep the existing name.)
+HTTP_ Variables
+  Variables corresponding to the client-supplied HTTP request headers (i.e.,
+  variables whose names begin with &quot;HTTP_&quot;). The presence or absence of these
+  variables should correspond with the presence or absence of the appropriate
+  HTTP header in the request.
+</pre></div>
+</div>
+<div class="section" id="a-simple-wsgi-app">
+<h3>A Simple WSGI App<a class="headerlink" href="#a-simple-wsgi-app" title="Permalink to this headline">¶</a></h3>
+<p>Let&#8217;s create ourselves a simple WSGI app so that we can see this in action.</p>
+<p>In your terminal, kill the CGIHTTPServer and then move up and out of the
+<tt class="docutils literal"><span class="pre">cgitests</span></tt> directory.</p>
+<p>Make a new directory called <tt class="docutils literal"><span class="pre">wsgitests</span></tt> and create a new file in it called
+<tt class="docutils literal"><span class="pre">simple_app.py</span></tt>.  Then open that in your editor:</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:cgitests cewing<span class="nv">$ </span><span class="nb">cd</span> ..
+heffalump:tests cewing<span class="nv">$ </span>mkdir wsgitests
+heffalump:tests cewing<span class="nv">$ </span>touch wsgitests/simple_app.py
+heffalump:tests cewing<span class="nv">$ </span>subl wsgitests/
+</pre></div>
+</div>
+<p>In your new file, enter the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">line_tmpl</span> <span class="o">=</span> <span class="s">&quot;Key: {} Value: {}</span><span class="se">\n</span><span class="s">&quot;</span>
+    <span class="n">body_length</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">environ</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line_tmpl</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">body_length</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s">&#39;200 OK&#39;</span>
+    <span class="n">response_headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&#39;Content-Type&#39;</span><span class="p">,</span> <span class="s">&#39;text/plain&#39;</span><span class="p">),</span>
+                        <span class="p">(</span><span class="s">&#39;Content-Length&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">body_length</span><span class="p">))]</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">response_headers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p>Then, at the bottom of the file, add the following <tt class="docutils literal"><span class="pre">__main__</span></tt> block:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+    <span class="n">srv</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="n">application</span><span class="p">)</span>
+    <span class="n">srv</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Note</strong></p>
+<p>We do not define <tt class="docutils literal"><span class="pre">start_response</span></tt>, the application does that.</p>
+<p>We <em>are</em> responsible for determining the HTTP status.</p>
+<p>You can now start up a wsgi server by running this script at the command line:</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:wsgitests cewing<span class="nv">$ </span>python simple_app.py
+</pre></div>
+</div>
+<p>What host and port will it use?</p>
+<p>Point your browser at <tt class="docutils literal"><span class="pre">http://localhost:8080/</span></tt>. Did your application work?</p>
+<p>Look over the names and values present in the WSGI environment. What parts do
+you think might be useful in building a more complex application?</p>
+<p>Also notice that although we have a Python file named <tt class="docutils literal"><span class="pre">simple_app.py</span></tt>, the
+name of our script <em>does not appear in the URL</em>.  This is different from CGI.</p>
+<p>What does this mean about our application?  What does it mean if our
+application is to serve multiple &#8220;resources&#8221; from different URIs?</p>
+</div>
+<div class="section" id="some-tips">
+<h3>Some Tips<a class="headerlink" href="#some-tips" title="Permalink to this headline">¶</a></h3>
+<p>Because WSGI is a long-running process, the file you are editing is <em>not</em>
+reloaded after you edit it.</p>
+<p>You&#8217;ll need to quit and re-run the script between edits.</p>
+<p>However, unlike CGI, WSGI does not hijack <tt class="docutils literal"><span class="pre">stdout</span></tt> which means that you <em>can</em>
+insert breakpoints into WSGI application code and interact with the code in a
+debugger.</p>
+<p>Yay!</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting Data In</a><ul>
+<li><a class="reference internal" href="#environments">Environments</a><ul>
+<li><a class="reference internal" href="#environment-in-python">Environment in Python</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#environments-online">Environments Online</a></li>
+<li><a class="reference internal" href="#cgi">CGI</a><ul>
+<li><a class="reference internal" href="#cgi-in-python">CGI In Python</a></li>
+<li><a class="reference internal" href="#repair-the-error">Repair the Error</a></li>
+<li><a class="reference internal" href="#cgi-problems">CGI Problems</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#wsgi">WSGI</a><ul>
+<li><a class="reference internal" href="#a-simple-wsgi-app">A Simple WSGI App</a></li>
+<li><a class="reference internal" href="#some-tips">Some Tips</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day13/cgi_wsgi.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

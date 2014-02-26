@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>A Simple Multi-Page WSGI Application &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="a-simple-multi-page-wsgi-application">
+<h1>A Simple Multi-Page WSGI Application<a class="headerlink" href="#a-simple-multi-page-wsgi-application" title="Permalink to this headline">¶</a></h1>
+<p>To explore the concept of a WSGI application that serves more than one resource
+more in-depth, we&#8217;ll build a simple application.</p>
+<p>Our application will serve a small database of python books.</p>
+<div class="section" id="set-up">
+<h2>Set Up<a class="headerlink" href="#set-up" title="Permalink to this headline">¶</a></h2>
+<p>Begin by creating a new project to work in:</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:tests cewing$ mkproject bookapp
+New python executable in bookapp/bin/python
+Installing setuptools, pip...done.
+Creating /Users/cewing/projects/bookapp
+Setting project for bookapp to /Users/cewing/projects/bookapp
+[bookapp]
+heffalump:bookapp cewing$
+</pre></div>
+</div>
+<p>Our application will need some data.  I&#8217;ve got a simple database that we can
+use all set up.</p>
+<p>The database (with a very simple api) <cite>can be found here</cite>. Copy that code and
+paste it into a file in your bookapp project folder.  Keep the same name
+(<tt class="docutils literal"><span class="pre">bookdb.py</span></tt>).</p>
+<p>Once you have that in place, you&#8217;re ready to get started on the application.</p>
+</div>
+<div class="section" id="what-it-does">
+<h2>What It Does<a class="headerlink" href="#what-it-does" title="Permalink to this headline">¶</a></h2>
+<p>A good place to start when thinking about a new app is to consider what it does.</p>
+<p>For our application we will want it to provide the following:</p>
+<ul class="simple">
+<li>a listing page that shows the titles of all the books</li>
+<li>each title will link to a details page for that book</li>
+<li>a details page for each book that will display all the information and have a
+link back to the list</li>
+</ul>
+<div class="section" id="our-first-problem">
+<h3>Our First Problem<a class="headerlink" href="#our-first-problem" title="Permalink to this headline">¶</a></h3>
+<p>When viewing our first wsgi app, do we see the name of the wsgi application
+script anywhere in the URL?</p>
+<p>In our wsgi application script, how many applications did we actually have?</p>
+<p>How are we going to serve different types of information out of a single
+application?</p>
+</div>
+<div class="section" id="dispatch">
+<h3>Dispatch<a class="headerlink" href="#dispatch" title="Permalink to this headline">¶</a></h3>
+<p>We have to write an app that will map our incoming request path to some code
+that can handle that request.</p>
+<p>This process is called <tt class="docutils literal"><span class="pre">dispatch</span></tt>. There are many possible approaches</p>
+<p>Let&#8217;s begin by designing this piece of it.</p>
+<p>Create a new file called <tt class="docutils literal"><span class="pre">bookapp.py</span></tt> in your bookapp project folder.  We&#8217;ll
+do our work here.</p>
+<p>The wsgi environment gives us access to <em>PATH_INFO</em>, which maps to the URI the
+user requested when they loaded the page.</p>
+<p>We can design the URLs that our app will use to assist us in routing.</p>
+<p>Let&#8217;s declare that any request for <tt class="docutils literal"><span class="pre">/</span></tt> will map to the list page</p>
+<p>We can also say that the URL for a book will look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost:8080/book/&lt;identifier&gt;
+</pre></div>
+</div>
+<p>We need to design a function that will take the incoming path information from
+the wsgi environment and map it to something that will actually build our
+response for us.</p>
+<p>Conceptually, this is much like the <tt class="docutils literal"><span class="pre">map_uri</span></tt> function you built for your
+HTTP server.</p>
+<p>The difference is that the thing it finds will be a Python function, not a
+filesystem file or folder.</p>
+<p>Add a new function called <tt class="docutils literal"><span class="pre">resolve_path</span></tt> in our application file.</p>
+<dl class="class">
+<dt id="incremental">
+<em class="property">class </em><tt class="descname">incremental</tt><a class="headerlink" href="#incremental" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<ul class="simple">
+<li>It should take the <em>PATH_INFO</em> value from environ as an argument.</li>
+<li>It should return the function that will be called.</li>
+<li>It should also return any arguments needed to call that function.</li>
+<li>This implies of course that the arguments should be part of the PATH</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">bookdb</span> <span class="kn">import</span> <span class="n">BookDB</span>
+
+<span class="n">DB</span> <span class="o">=</span> <span class="n">BookDB</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">resolve_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">urls</span> <span class="o">=</span> <span class="p">[(</span><span class="s">r&#39;^$&#39;</span><span class="p">,</span> <span class="n">books</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">r&#39;^book/(id[\d]+)$&#39;</span><span class="p">,</span> <span class="n">book</span><span class="p">)]</span>
+    <span class="n">matchpath</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">regexp</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regexp</span><span class="p">,</span> <span class="n">matchpath</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">([])</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">,</span> <span class="n">args</span>
+    <span class="c"># we get here if no url matches</span>
+    <span class="k">raise</span> <span class="ne">NameError</span>
+</pre></div>
+</div>
+<p>Because this code references symbols (<tt class="docutils literal"><span class="pre">book</span></tt> and <tt class="docutils literal"><span class="pre">books</span></tt>) that do not
+exist, we need to make some dummy functions to stand in for them:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">book</span><span class="p">(</span><span class="n">book_id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&quot;&lt;h1&gt;a book with id </span><span class="si">%s</span><span class="s">&lt;/h1&gt;&quot;</span> <span class="o">%</span> <span class="n">book_id</span>
+
+<span class="k">def</span> <span class="nf">books</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&quot;&lt;h1&gt;a list of books&lt;/h1&gt;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="application-code">
+<h3>Application Code<a class="headerlink" href="#application-code" title="Permalink to this headline">¶</a></h3>
+<p>These function are not a WSGI application. They are pieces that the application
+we write will use to make things happen.</p>
+<p>Let&#8217;s add our actual application next:</p>
+<ul class="simple">
+<li>The path should be extracted from <tt class="docutils literal"><span class="pre">environ</span></tt>.</li>
+<li>The dispatch function should be used to get a function and arguments</li>
+<li>The body to return should come from calling that function with those
+arguments</li>
+<li>If an error is raised by calling the function, an appropriate response
+should be returned</li>
+<li>If the router raises a NameError, the application should return a 404
+response</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Content-type&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span><span class="p">)]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;PATH_INFO&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NameError</span>
+        <span class="n">func</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">resolve_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s">&quot;200 OK&quot;</span>
+    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s">&quot;404 Not Found&quot;</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="s">&quot;&lt;h1&gt;Not Found&lt;/h1&gt;&quot;</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s">&quot;500 Internal Server Error&quot;</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="s">&quot;&lt;h1&gt;Internal Server Error&lt;/h1&gt;&quot;</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;Content-length&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">))))</span>
+        <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">body</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Finally, you&#8217;ll need to add a <tt class="docutils literal"><span class="pre">__main__</span></tt> block to run your application:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">wsgiref.simple_server</span> <span class="kn">import</span> <span class="n">make_server</span>
+    <span class="n">srv</span> <span class="o">=</span> <span class="n">make_server</span><span class="p">(</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8080</span><span class="p">,</span> <span class="n">application</span><span class="p">)</span>
+    <span class="n">srv</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Once you&#8217;ve got your script settled, run it:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python bookapp.py
+</pre></div>
+</div>
+<p>Then point your browser at <tt class="docutils literal"><span class="pre">http://localhost:8080/</span></tt></p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">http://localhost/book/id3</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">http://localhost/book/id73/</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">http://localhost/sponge/damp</span></tt></li>
+</ul>
+<p>Did that all work as you would have expected?</p>
+</div>
+<div class="section" id="handling-requests">
+<h3>Handling Requests<a class="headerlink" href="#handling-requests" title="Permalink to this headline">¶</a></h3>
+<p>The basics of our app are already in place.  Let&#8217;s move on next to build the
+functions that will generate our individual pages.</p>
+<p>The function <tt class="docutils literal"><span class="pre">books</span></tt> should return an html list of book titles where each
+title is a link to the detail page for that book</p>
+<ul class="simple">
+<li>You&#8217;ll need all the ids and titles from the book database.</li>
+<li>You&#8217;ll need to build a list in HTML using this information</li>
+<li>Each list item should have the book title as a link</li>
+<li>The href for the link should be of the form <tt class="docutils literal"><span class="pre">/book/&lt;id&gt;</span></tt></li>
+</ul>
+<p>Look at the <tt class="docutils literal"><span class="pre">bookdb.py</span></tt> file and ad the api for the books</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">books</span><span class="p">():</span>
+    <span class="n">all_books</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">titles</span><span class="p">()</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&lt;h1&gt;My Bookshelf&lt;/h1&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;ul&gt;&#39;</span><span class="p">]</span>
+    <span class="n">item_template</span> <span class="o">=</span> <span class="s">&#39;&lt;li&gt;&lt;a href=&quot;/book/{id}&quot;&gt;{title}&lt;/a&gt;&lt;/li&gt;&#39;</span>
+    <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">all_books</span><span class="p">:</span>
+        <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">book</span><span class="p">))</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;&lt;/ul&gt;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To see the effect of this function, quit your application and restart it:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python bookapp.py
+</pre></div>
+</div>
+<p>Then reload the root of your application:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost:8080/
+</pre></div>
+</div>
+<p>You should see a nice list of the books in the database. Do you?</p>
+<p>Click on a link to view the detail page. Does it load without error?</p>
+<p>The next step of course is to polish up those detail pages.</p>
+<ul class="simple">
+<li>You&#8217;ll need to retrieve a single book from the database</li>
+<li>You&#8217;ll need to format the details about that book and return them as HTML</li>
+<li>You&#8217;ll need to guard against ids that do not map to books</li>
+</ul>
+<p>In this last case, what&#8217;s the right HTTP response code to send?</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">book</span><span class="p">(</span><span class="n">book_id</span><span class="p">):</span>
+    <span class="n">page</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">&lt;h1&gt;{title}&lt;/h1&gt;</span>
+<span class="s">&lt;table&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;th&gt;Author&lt;/th&gt;&lt;td&gt;{author}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;th&gt;Publisher&lt;/th&gt;&lt;td&gt;{publisher}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">    &lt;tr&gt;&lt;th&gt;ISBN&lt;/th&gt;&lt;td&gt;{isbn}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s">&lt;/table&gt;</span>
+<span class="s">&lt;a href=&quot;/&quot;&gt;Back to the list&lt;/a&gt;</span>
+<span class="s">&quot;&quot;&quot;</span>
+    <span class="n">book</span> <span class="o">=</span> <span class="n">DB</span><span class="o">.</span><span class="n">title_info</span><span class="p">(</span><span class="n">book_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">book</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NameError</span>
+    <span class="k">return</span> <span class="n">page</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">book</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Quit and restart your script one more time</p>
+<p>Then poke around at your application and see the good you&#8217;ve made</p>
+<p>And your application is portable and sharable</p>
+<p>It should run equally well under any
+<a class="reference external" href="http://www.wsgi.org/en/latest/applications.html">wsgi server</a></p>
+</div>
+<div class="section" id="a-few-steps-further">
+<h3>A Few Steps Further<a class="headerlink" href="#a-few-steps-further" title="Permalink to this headline">¶</a></h3>
+<p>Next steps for an app like this might be:</p>
+<ul class="simple">
+<li>Create a shared full page template and incorporate it into your app</li>
+<li>Improve the error handling by emitting error codes other than 404 and 500</li>
+<li>Swap out the basic backend here with a different one, maybe a Web Service?</li>
+<li>Think about ways to make the application less tightly coupled to the pages
+it serves</li>
+<li>Write tests to cover your functions (and the database too).</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">A Simple Multi-Page WSGI Application</a><ul>
+<li><a class="reference internal" href="#set-up">Set Up</a></li>
+<li><a class="reference internal" href="#what-it-does">What It Does</a><ul>
+<li><a class="reference internal" href="#our-first-problem">Our First Problem</a></li>
+<li><a class="reference internal" href="#dispatch">Dispatch</a></li>
+<li><a class="reference internal" href="#application-code">Application Code</a></li>
+<li><a class="reference internal" href="#handling-requests">Handling Requests</a></li>
+<li><a class="reference internal" href="#a-few-steps-further">A Few Steps Further</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/assignments/day13/wsgi_book_app.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
