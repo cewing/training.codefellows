@@ -25,7 +25,7 @@ Begin by creating a new project to work in:
 Our application will need some data.  I've got a simple database that we can
 use all set up.
 
-The database (with a very simple api) `can be found here`. Copy that code and
+The database (with a very simple api) `can be found here`_. Copy that code and
 paste it into a file in your bookapp project folder.  Keep the same name
 (``bookdb.py``).
 
