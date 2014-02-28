@@ -80,9 +80,9 @@ Try the following:
     >>> import mypackage
     >>> dir()
     ['__builtins__', '__doc__', '__name__', '__package__', 'mypackage']
-    >>> import mypackage.module1
     >>> dir(mypackage)
     ['__builtins__', '__doc__', '__file__', '__name__', '__package__', '__path__', 'module1']
+    >>> import mypackage.mymodule
     >>> dir(mypackage.module1)
     ['__builtins__', '__doc__', '__file__', '__name__', '__package__', 'whoami']
     >>> mypackage.module1.whoami()
@@ -179,7 +179,7 @@ them into Python ``packages``:
     .
     ├── README.md
     ├── data_structures
-    │   ├── __init__py
+    │   ├── __init__.py
     │   ├── hasher.py
     │   ├── linked_list.py
     │   ├── ll_stack.py

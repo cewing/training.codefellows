@@ -328,7 +328,7 @@ Then we can provide a set of data for the scenario to use, and ``lettuce`` will
 automatically plug in our values and run the same scenario over and over for
 us. Update ``fizzbuzz.feature`` like so:
 
-.. code-block:: cucmber
+.. code-block:: cucumber
 
         Scenario Outline: FizzBuzz [just enough]
             Given the number <input>

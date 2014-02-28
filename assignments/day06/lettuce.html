@@ -23,7 +23,10 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 06 Assignments" href="index.html" />
+    <link rel="next" title="Socket Communications" href="socket_exercise.html" />
+    <link rel="prev" title="Day 06 Assignments" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -32,7 +35,15 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="socket_exercise.html" title="Socket Communications"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 06 Assignments"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Assignments</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 06 Assignments</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -303,20 +314,20 @@ replace the <em>specific</em> numbers in our current scenario with <em>placehold
 Then we can provide a set of data for the scenario to use, and <tt class="docutils literal"><span class="pre">lettuce</span></tt> will
 automatically plug in our values and run the same scenario over and over for
 us. Update <tt class="docutils literal"><span class="pre">fizzbuzz.feature</span></tt> like so:</p>
-<div class="highlight-cucmber"><div class="highlight"><pre>Scenario Outline: FizzBuzz [just enough]
-    Given the number &lt;input&gt;
-    When I call FizzBuzz
-    Then I see the output &lt;output&gt;
+<div class="highlight-cucumber"><div class="highlight"><pre><span class="k">Scenario Outline:</span><span class="nf"> FizzBuzz [just enough]</span>
+<span class="k">    Given </span><span class="nf">the number </span><span class="nv">&lt;input&gt;</span><span class="nf"></span>
+<span class="nf">    </span><span class="k">When </span><span class="nf">I call FizzBuzz</span>
+<span class="nf">    </span><span class="k">Then </span><span class="nf">I see the output </span><span class="nv">&lt;output&gt;</span><span class="nf"></span>
 
-Examples:
-| input | output   |
-| 0     | 0        |
-| 1     | 1        |
-| 3     | Fizz     |
-| 5     | Buzz     |
-| 6     | Fizz     |
-| 10    | Buzz     |
-| 15    | FizzBuzz |
+<span class="k">Examples:</span>
+<span class="k">|</span><span class="nv"> input</span><span class="k"> |</span><span class="nv"> output</span><span class="k">   |</span><span class="nf"></span>
+<span class="nf">| </span><span class="s">0</span><span class="k">     |</span><span class="s"> 0</span><span class="k">        |</span><span class="nf"></span>
+<span class="nf">| </span><span class="s">1</span><span class="k">     |</span><span class="s"> 1</span><span class="k">        |</span><span class="nf"></span>
+<span class="nf">| </span><span class="s">3</span><span class="k">     |</span><span class="s"> Fizz</span><span class="k">     |</span><span class="nf"></span>
+<span class="nf">| </span><span class="s">5</span><span class="k">     |</span><span class="s"> Buzz</span><span class="k">     |</span><span class="nf"></span>
+<span class="nf">| </span><span class="s">6</span><span class="k">     |</span><span class="s"> Fizz</span><span class="k">     |</span><span class="nf"></span>
+<span class="nf">| </span><span class="s">10</span><span class="k">    |</span><span class="s"> Buzz</span><span class="k">     |</span><span class="nf"></span>
+<span class="nf">| </span><span class="s">15</span><span class="k">    |</span><span class="s"> FizzBuzz</span><span class="k"> |</span>
 </pre></div>
 </div>
 <p>We&#8217;ve changed our <em>scenario</em> into a <strong>Scenario Outline</strong>. This lets <tt class="docutils literal"><span class="pre">lettuce</span></tt>
@@ -399,6 +410,12 @@ forms, for example, <tt class="docutils literal"><span class="pre">Gherkin</span
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Day 06 Assignments</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="socket_exercise.html"
+                        title="next chapter">Socket Communications</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/assignments/day06/lettuce.txt"
@@ -427,7 +444,15 @@ forms, for example, <tt class="docutils literal"><span class="pre">Gherkin</span
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="socket_exercise.html" title="Socket Communications"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 06 Assignments"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Assignments</a> &raquo;</li>
+          <li><a href="index.html" >Day 06 Assignments</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

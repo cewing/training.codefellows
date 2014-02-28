@@ -78,7 +78,7 @@ For the purposes of the exercises this week, please learn these two facts:
 2. In Python 3, ``print`` has been changed from a *statement* to a *function*.
    Here's how print looks in Python 3:
 
-    .. code-block:: language
+    .. code-block:: pycon
     
         >>> print('this is a much better syntax')
         this is a much better syntax

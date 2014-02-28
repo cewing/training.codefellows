@@ -228,7 +228,7 @@ know about it.
 Add a bit to your README.md that displays the test results badge from ``Travis
 CI``:
 
-.. code-block:: markdown
+.. code-block:: rst
 
     [![Travis](https://api.travis-ci.org/<you>/<yourproject>)](https://api.travis-ci.org/<you>/<yourproject>)
 
