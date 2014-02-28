@@ -140,7 +140,7 @@ Installing Packages
 Now that your virtualenv is active, not only has your ``python`` executable been
 hijacked, so have ``pip`` and ``easy_install``:
 
-.. code-block:: base
+.. code-block:: bash
 
     (demoenv)$ which pip
     /Users/cewing/demoenv/bin/pip
