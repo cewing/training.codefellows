@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>A Quick Flask Walkthrough &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="a-quick-flask-walkthrough">
+<h1>A Quick Flask Walkthrough<a class="headerlink" href="#a-quick-flask-walkthrough" title="Permalink to this headline">¶</a></h1>
+<p>This walkthrough is designed to give you a quick introduction to the basics of
+the Flask microframework.</p>
+<p>In it, you&#8217;ll create a virtualenv and install Flask and its dependencies.  Then
+you&#8217;ll interact a bit with the framework by creating a very simple Flask
+application and seeing what it can do.</p>
+<div class="section" id="setting-up">
+<h2>Setting Up<a class="headerlink" href="#setting-up" title="Permalink to this headline">¶</a></h2>
+<p>Start by creating a <tt class="docutils literal"><span class="pre">flask_intro</span></tt> project and virtualenv:</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:cewing cewing$ mkproject flask_intro
+New python executable in flask_intro/bin/python
+Installing setuptools, pip...done.
+Creating /Users/cewing/projects/flask_intro
+Setting project for flask_intro to /Users/cewing/projects/flask_intro
+[flask_intro]
+heffalump:flask_intro cewing$
+</pre></div>
+</div>
+<p>Finally, install Flask using <tt class="docutils literal"><span class="pre">pip</span></tt>:</p>
+<div class="highlight-bash"><div class="highlight"><pre>flask_intro]
+heffalump:flask_intro cewing$ pip install flask
+Downloading/unpacking flask
+  Downloading Flask-0.10.1.tar.gz (544kB): 544kB downloaded
+  ...
+Successfully installed flask Werkzeug Jinja2 itsdangerous markupsafe
+Cleaning up...
+[flask_intro]
+heffalump:flask_intro cewing$
+</pre></div>
+</div>
+</div>
+<div class="section" id="kicking-the-tires">
+<h2>Kicking the Tires<a class="headerlink" href="#kicking-the-tires" title="Permalink to this headline">¶</a></h2>
+<p>We&#8217;ve installed the Flask microframework and all of its dependencies.</p>
+<p>Now, let&#8217;s see what it can do.</p>
+<p>With your flaskenv active, create a file called <tt class="docutils literal"><span class="pre">flask_intro.py</span></tt> and open it
+in your text editor.</p>
+<div class="section" id="a-flask-app">
+<h3>A Flask App<a class="headerlink" href="#a-flask-app" title="Permalink to this headline">¶</a></h3>
+<p>Getting started with Flask is pretty straightforward. Here&#8217;s a complete,
+simple app.  Type it into <cite>flask_intro.py</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&#39;Hello World!&#39;</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As you might expect by now, the last block in our <tt class="docutils literal"><span class="pre">flask_intro.py</span></tt> file
+allows us to run this as a python program. Save your file, and in your
+terminal try this:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>flask_intro<span class="o">]</span>
+heffalump:flask_intro cewing<span class="nv">$ </span>python flask_intro.py
+ * Running on http://127.0.0.1:5000/
+</pre></div>
+</div>
+<p>Load <tt class="docutils literal"><span class="pre">http://localhost:5000</span></tt> in your browser to see it in action.</p>
+</div>
+<div class="section" id="debugging-flask">
+<h3>Debugging Flask<a class="headerlink" href="#debugging-flask" title="Permalink to this headline">¶</a></h3>
+<p>You&#8217;ve seen how <tt class="docutils literal"><span class="pre">pdb</span></tt> can come in handy in debugging Python code. And when we
+discussed the CGI specification, you used <tt class="docutils literal"><span class="pre">cgitb</span></tt> to enable tracebacks for
+errors raised in otherwise impenetrable CGI code.</p>
+<p>Flask provides a combination of these features.</p>
+<p>To explore them a bit, add a divide-by-0 error to your app, and also update the
+call to <tt class="docutils literal"><span class="pre">app.run()</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">0</span>         <span class="c">#&lt;- Add an error so you can see the fireworks.</span>
+    <span class="k">return</span> <span class="s">&#39;Hello World!&#39;</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c">#&lt;- Update this here</span>
+</pre></div>
+</div>
+<p>Restart your app and then reload your browser to see what happens.</p>
+<p>Hover over a single line in the stack trace and keep your eye on the right end
+of the window. You should see a little terminal icon and a page icon. Click on
+the terminal.</p>
+<p>Flask provides (by way of the development server it uses) an in-broswer
+debugger that allows you to interact with the code frames in your stack trace
+whenever an error happens. This is pretty nice.</p>
+<p>Play with this for a while. Try introducing some slightly more complex code
+with a few bound symbols and see what you can find out about them.</p>
+<p>(clean up your error(s) when you&#8217;re done playing).</p>
+</div>
+<div class="section" id="a-quick-recap">
+<h3>A Quick Recap<a class="headerlink" href="#a-quick-recap" title="Permalink to this headline">¶</a></h3>
+<p>Time for a quick review of what you&#8217;ve accomplished so far:</p>
+<ul class="simple">
+<li>You instantiated a <cite>Flask</cite> app with a name that represents the package or
+module containing the app<ul>
+<li>Because our app is a single Python module, this should be <tt class="docutils literal"><span class="pre">__name__</span></tt></li>
+<li>This is used to help the <cite>Flask</cite> app figure out where to look for
+<em>resources</em></li>
+</ul>
+</li>
+<li>You defined a function that returned a &#8220;response body&#8221;</li>
+<li>You told the app which requests should be handled by that function with a
+<em>route</em></li>
+</ul>
+<p>Let&#8217;s take a look at how that last bit works for a moment...</p>
+</div>
+</div>
+<div class="section" id="url-routing">
+<h2>URL Routing<a class="headerlink" href="#url-routing" title="Permalink to this headline">¶</a></h2>
+<p>Remember our bookdb WSGI exercise? How did you end up solving the problem of
+mapping an HTTP request to the right function?</p>
+<p>Flask solves this problem by using the <cite>route</cite> decorator from your app.</p>
+<p>A &#8216;route&#8217; takes a URL rule (more on that in a minute) and maps it to an
+<em>endpoint</em> and a <em>function</em>.</p>
+<p>When a request arrives at a URL that matches a known rule, the function is
+called.</p>
+<div class="section" id="url-rules">
+<h3>URL Rules<a class="headerlink" href="#url-rules" title="Permalink to this headline">¶</a></h3>
+<p>URL Rules are strings.  They represent what environ[&#8216;PATH_INFO&#8217;] will look like
+when it arrives at your application code.</p>
+<p>These rules are added to a <em>mapping</em> on the Flask object called the <em>url_map</em>.</p>
+<p>You can call <tt class="docutils literal"><span class="pre">app.add_url_rule()</span></tt> to add a new one</p>
+<p>Or you can use what we&#8217;ve used, the <tt class="docutils literal"><span class="pre">app.route()</span></tt> decorator.</p>
+<p>This <em>imperative</em> code example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;some function that returns something&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;this is the homepage&quot;</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="s">&#39;/foo&#39;</span><span class="p">,</span> <span class="s">&#39;homepage&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>is identical to this <em>declarative</em> example.</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/foo&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s">&#39;homepage&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;some function that returns something&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;this is the homepage&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Pick one of the above, and add a the new function to your <tt class="docutils literal"><span class="pre">flask_intro.py</span></tt>
+app file. (Make sure it comes above the <tt class="docutils literal"><span class="pre">__main__</span></tt>)</p>
+<p>Notice that the the route for the <tt class="docutils literal"><span class="pre">hello_world</span></tt> function we defined in
+<tt class="docutils literal"><span class="pre">flask_intro.py</span></tt> did not have an <tt class="docutils literal"><span class="pre">endpoint</span></tt> argument. This argument allows
+us to establish a different &#8216;name&#8217; for our route than the name of the function
+that will handle the route. If this argument is ommitted, then the &#8216;name&#8217; for
+the route will be the same as the name of the function.</p>
+</div>
+<div class="section" id="reversing-urls">
+<h3>Reversing URLs<a class="headerlink" href="#reversing-urls" title="Permalink to this headline">¶</a></h3>
+<p>The &#8216;name&#8217; of a route is useful to us because it allows us to build a url for a
+part of an application without needing to know it ahead of time.</p>
+<p>This means <em>you don&#8217;t have to hard-code your URLs when building links</em></p>
+<p>That means <em>you can change the URLs for your app without changing code or
+templates</em></p>
+<p>This separation is called <strong>decoupling</strong> and it is a good thing.</p>
+<p>Let&#8217;s try it out to make the concept clear.</p>
+<p>Fire up a python interpreter in the same directory where you&#8217;ve created
+<tt class="docutils literal"><span class="pre">flask_intro.py</span></tt>. When it&#8217;s ready, type the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flask_intro</span> <span class="kn">import</span> <span class="n">app</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">url_for</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;hello_world&#39;</span><span class="p">);</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;homepage&#39;</span><span class="p">);</span>
+<span class="gp">...</span>
+<span class="go">/</span>
+<span class="go">/foo</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Notice that we didn&#8217;t need to know what the url for a give endpoint was, we
+just needed to know its name.</p>
+<p>There are a few important points to note about what we just did:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">url_for</span></tt> requires an <em>HTTP request context</em> to work</li>
+<li>You can fake an HTTP request when working in a terminal (or testing)</li>
+<li>The <tt class="docutils literal"><span class="pre">test_request_context</span></tt> method of your app object provides one.</li>
+<li>That method is a <em>context manager</em>, so you can use it with the <tt class="docutils literal"><span class="pre">with</span></tt>
+statement. When execution leaves the block defined by <tt class="docutils literal"><span class="pre">with</span></tt>, the context
+is safely destroyed.</li>
+</ul>
+</div>
+<div class="section" id="dynamic-urls">
+<h3>Dynamic URLs<a class="headerlink" href="#dynamic-urls" title="Permalink to this headline">¶</a></h3>
+<p>In our WSGI bookapp, we created a dynamic URL for each book detail page using
+Python regular expressions.</p>
+<p>Flask allows for dynamic urls as well, but uses <em>placeholders</em> instead.</p>
+<p>A <em>placeholder</em> in a URL rule becomes a named arg to your function.</p>
+<p>And <em>converters</em> ensure the incoming argument is of the correct type.</p>
+<p>Add these two new routes to <tt class="docutils literal"><span class="pre">flask_intro.py</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/profile/&lt;username&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">show_profile</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&quot;My username is </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">username</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/div/&lt;float:val&gt;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&quot;</span><span class="si">%0.2f</span><span class="s"> divided by 2 is </span><span class="si">%0.2f</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">val</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There are four available <em>converters</em> for urls:</p>
+<ul class="simple">
+<li><strong>string</strong> accepts any text without a slash (the default)</li>
+<li><strong>int</strong> accepts integers</li>
+<li><strong>float</strong> like int but for floating point values</li>
+<li><strong>path</strong> like the default but also accepts slashes</li>
+</ul>
+</div>
+<div class="section" id="filtered-urls">
+<h3>Filtered URLS<a class="headerlink" href="#filtered-urls" title="Permalink to this headline">¶</a></h3>
+<p>You can also determine which HTTP <em>methods</em> a given route will accept:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/blog/entry/&lt;int:id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,])</span>
+<span class="k">def</span> <span class="nf">read_entry</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&quot;reading entry </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">id</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/blog/entry/&lt;int:id&gt;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;POST&#39;</span><span class="p">,</span> <span class="p">])</span>
+<span class="k">def</span> <span class="nf">write_entry</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&#39;writing entry </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">id</span>
+</pre></div>
+</div>
+<p>After adding that to <tt class="docutils literal"><span class="pre">flask_intro.py</span></tt> and saving, start up your app and try
+loading <tt class="docutils literal"><span class="pre">http://localhost:5000/blog/entry/23/</span></tt> into your browser. Which of
+the two was called?</p>
+<p>Before finishing the tutorial, try reversing one more time now that you have a
+bit more variety to work with:</p>
+<p>Quit your Flask app with <tt class="docutils literal"><span class="pre">^C</span></tt>.  Then start a python interpreter in that same
+terminal and import your <tt class="docutils literal"><span class="pre">flask_intro.py</span></tt> module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flask_intro</span> <span class="kn">import</span> <span class="n">app</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">url_for</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">test_request_context</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;show_profile&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s">&quot;cris&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">url_for</span><span class="p">(</span><span class="s">&#39;divide&#39;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="mf">23.7</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&#39;/profile/cris/&#39;</span>
+<span class="go">&#39;/div/23.7/&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>That will give you plenty to think about before class.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">A Quick Flask Walkthrough</a><ul>
+<li><a class="reference internal" href="#setting-up">Setting Up</a></li>
+<li><a class="reference internal" href="#kicking-the-tires">Kicking the Tires</a><ul>
+<li><a class="reference internal" href="#a-flask-app">A Flask App</a></li>
+<li><a class="reference internal" href="#debugging-flask">Debugging Flask</a></li>
+<li><a class="reference internal" href="#a-quick-recap">A Quick Recap</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#url-routing">URL Routing</a><ul>
+<li><a class="reference internal" href="#url-rules">URL Rules</a></li>
+<li><a class="reference internal" href="#reversing-urls">Reversing URLs</a></li>
+<li><a class="reference internal" href="#dynamic-urls">Dynamic URLs</a></li>
+<li><a class="reference internal" href="#filtered-urls">Filtered URLS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/assignments/day21/flask_walkthrough.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
