@@ -17,3 +17,5 @@ Contents:
    day12/index
    day13/index
    day14/index
+   day21/index
+   day22/index
