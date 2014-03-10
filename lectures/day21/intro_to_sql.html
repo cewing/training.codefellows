@@ -1,0 +1,524 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>A 20-minute introduction to SQL &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="a-20-minute-introduction-to-sql">
+<h1>A 20-minute introduction to SQL<a class="headerlink" href="#a-20-minute-introduction-to-sql" title="Permalink to this headline">¶</a></h1>
+<p>A quick overview of SQL: History, Concepts, and Syntax.</p>
+<div class="section" id="history">
+<h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
+<p><strong>SQL == Structured Query Language</strong></p>
+<ul class="simple">
+<li>First invented in the early 1970s at IBM</li>
+<li>Based on <em>Relational Algebra</em> and <em>Tuple Relational Calculus</em></li>
+<li>Used to get at data stored in their <tt class="docutils literal"><span class="pre">System-R</span></tt> database management system</li>
+<li>Picked up by <em>Relational Software</em> (now <em>Oracle</em>) in the late 1970s</li>
+<li><tt class="docutils literal"><span class="pre">Oracle</span> <span class="pre">V2</span></tt>, the first commercial Relational Database released in 1979</li>
+<li>IBM followed with <tt class="docutils literal"><span class="pre">System/38</span></tt>, <tt class="docutils literal"><span class="pre">SQL/DS</span></tt> and <tt class="docutils literal"><span class="pre">DB2</span></tt> between 1979 and
+1983</li>
+</ul>
+<p>source: <a class="reference external" href="http://en.wikipedia.org/wiki/SQL">http://en.wikipedia.org/wiki/SQL</a></p>
+<p>SQL, and Relational Database Management Systems (RDBMS) have been the de-facto
+standard for data persistence for 30+ years.</p>
+<p>Currently, there are more than 100 RDBMS available, both proprietary and
+open-source.</p>
+<p>Most, if not all, include some implementation of SQL as their query language.</p>
+<p>source: <a class="reference external" href="http://en.wikipedia.org/wiki/List_of_relational_database_management_systems">http://en.wikipedia.org/wiki/List_of_relational_database_management_systems</a></p>
+<div class="section" id="big-players">
+<h3>Big Players<a class="headerlink" href="#big-players" title="Permalink to this headline">¶</a></h3>
+<p>There are a number of RDBMS that you will run into regularly:</p>
+<p><strong>Commercial / Proprietary</strong></p>
+<ul class="simple">
+<li>MS SQL Server</li>
+<li>Oracle</li>
+<li>MySQL Enterprise (Oracle)</li>
+</ul>
+<p><strong>Open Source</strong></p>
+<ul class="simple">
+<li>PostgreSQL</li>
+<li>MariaDB (MySQL community)</li>
+<li>SQLite</li>
+</ul>
+</div>
+</div>
+<div class="section" id="sql-concepts">
+<h2>SQL Concepts<a class="headerlink" href="#sql-concepts" title="Permalink to this headline">¶</a></h2>
+<p>The core construct in SQL is a <em>table</em></p>
+<p>A table consists of <em>rows</em> (also called <em>records</em>) and <em>columns</em></p>
+<p>Each row/record represents a single item.</p>
+<p>Each column represents a data point.</p>
+<p>Most tables will have one column which is considered the <em>primary key</em>.</p>
+<p>This value will uniquely identify a single row out of all the rows in the
+table.</p>
+<p>For example, here is an example table which represents people in a system:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="31%" />
+<col width="31%" />
+<col width="28%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">username</th>
+<th class="head">first_name</th>
+<th class="head">last_name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>wont_u_b</td>
+<td>Fred</td>
+<td>Rogers</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>neuroman</td>
+<td>William</td>
+<td>Gibson</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>race</td>
+<td>Roger</td>
+<td>Bannon</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+<td>harrywho</td>
+<td>Harry</td>
+<td>Houdini</td>
+</tr>
+<tr class="row-even"><td>7</td>
+<td>whitequeen</td>
+<td>Emma</td>
+<td>Frost</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>shadowcat</td>
+<td>Kitty</td>
+<td>Pryde</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="relations">
+<h3>Relations<a class="headerlink" href="#relations" title="Permalink to this headline">¶</a></h3>
+<p>You can <em>model</em> things using tables like this.  Adding columns for all sorts
+of different data points.</p>
+<p>But what happens when not all of the items in a table share the <em>same</em> data
+points?</p>
+<p>Or what if some of the items need to have more than one of a particular data
+point?</p>
+<p>Leaving columns empty in a row wastes memory and slows down querying.  Use
+<em>relations</em> to solve these types of problems.</p>
+<p>There are three basic types of relationships:</p>
+<dl class="docutils">
+<dt>One-to-one relationships</dt>
+<dd>Best used to represent aspects of an item which are not <em>core</em> to it. Like
+user (id, password) -&gt; user_profile (preferences, name, address)</dd>
+<dt>Many-to-one relationships</dt>
+<dd>Used to represent relationships of ownership or belonging. Like product -&gt;
+manufacturer or book -&gt; author</dd>
+<dt>Many-to-many relationships</dt>
+<dd>Used to represent associations or membership.  Like users -&gt; groups or
+items -&gt; orders</dd>
+</dl>
+</div>
+<div class="section" id="sql-relations-1">
+<h3>SQL Relations - ∞ -&gt; 1<a class="headerlink" href="#sql-relations-1" title="Permalink to this headline">¶</a></h3>
+<p>Many-to-one relationships are modelled using <em>Foreign Keys</em></p>
+<p>The <em>many</em> table has a column which holds the <em>primary key</em> of the row from
+the <em>one</em> table:</p>
+<p>For example, consider the relationship of books to author:</p>
+<p><strong>People</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="29%" />
+<col width="32%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">username</th>
+<th class="head">first_name</th>
+<th class="head">last_name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>4</td>
+<td>neuroman</td>
+<td>William</td>
+<td>Gibson</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+<td>harrywho</td>
+<td>Harry</td>
+<td>Houdini</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Books</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="74%" />
+<col width="17%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">title</th>
+<th class="head">author</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>Miracle Mongers and their Methods</td>
+<td>6</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>The Right Way to Do Wrong</td>
+<td>6</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>Pattern Recognition</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="sql-relations-1-1">
+<h3>SQL Relations - 1 -&gt; 1<a class="headerlink" href="#sql-relations-1-1" title="Permalink to this headline">¶</a></h3>
+<p>One-to-one relationships are really just a special case of Many-to-one, and
+are also modelled with <em>Foreign Keys</em></p>
+<p>In this case, the column on the related table which holds the <em>primary key</em> of
+the target table has an additional <em>unique</em> constraint, so that only one
+related record can exist</p>
+<p>The classic purpose is for data that doesn&#8217;t need to be accessed often, and
+is unique per record</p>
+<p>As an example of this, consider a databse of birth records:</p>
+<p><strong>People</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="29%" />
+<col width="32%" />
+<col width="29%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">username</th>
+<th class="head">first_name</th>
+<th class="head">last_name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>wont_u_b</td>
+<td>Fred</td>
+<td>Rogers</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>neuroman</td>
+<td>William</td>
+<td>Gibson</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>race</td>
+<td>Roger</td>
+<td>Bannon</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Birth Records</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="19%" />
+<col width="38%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">person</th>
+<th class="head">date</th>
+<th class="head">place</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>1</td>
+<td>March 20, 1928</td>
+<td>Latrobe, PA</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>4</td>
+<td>March 17, 1948</td>
+<td>Conway, SC</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>5</td>
+<td>April 1, 1954</td>
+<td>Wilmette, IL</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="sql-relations">
+<h3>SQL Relations - ∞ -&gt; ∞<a class="headerlink" href="#sql-relations" title="Permalink to this headline">¶</a></h3>
+<p>Many-to-many relations are a bit trickier.</p>
+<p>You can&#8217;t have a multi-valued field, so there&#8217;s no way to define a <em>foreign
+key</em>-like construct that would work</p>
+<p>Instead, this relationship is modelled using a <em>join table</em>, which has two
+<em>foreign key</em> fields, one for each side of the relation.</p>
+<p>Beyond these two, other columns can add data points describing the qualities
+of the relationship itself.</p>
+<p>For this example, consider a database modelling the membership of people in
+groups or organizations:</p>
+<p><strong>People</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="31%" />
+<col width="31%" />
+<col width="28%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">username</th>
+<th class="head">first_name</th>
+<th class="head">last_name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>7</td>
+<td>whitequeen</td>
+<td>Emma</td>
+<td>Frost</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>shadowcat</td>
+<td>Kitty</td>
+<td>Pryde</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Groups</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>Hellfire Club</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>X-Men</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Membership</strong>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="30%" />
+<col width="26%" />
+<col width="30%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">person</th>
+<th class="head">group</th>
+<th class="head">active</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>7</td>
+<td>1</td>
+<td>False</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>7</td>
+<td>2</td>
+<td>True</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>8</td>
+<td>2</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="sql-syntax">
+<h2>SQL Syntax<a class="headerlink" href="#sql-syntax" title="Permalink to this headline">¶</a></h2>
+<p>The syntax of SQL can be broken into four basic <em>constructs</em>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>Statements</strong> are discreet units that perform some action, like inserting
+records or querying</li>
+<li><strong>Clauses</strong> are sub-units of statements which indicate some action or
+condition</li>
+<li><strong>Expressions</strong> are elements that produce values, either unitary or as
+tables themselves</li>
+<li><strong>Predicates</strong> are conditionals which produce some boolean or three-valued
+truth value</li>
+</ul>
+</div></blockquote>
+<a class="reference internal image-reference" href="../../_images/sql_anatomy.png"><img alt="../../_images/sql_anatomy.png" class="align-center" src="../../_images/sql_anatomy.png" style="width: 700px;" /></a>
+<p>image: CC-BY-SA by Ferdna <a class="reference external" href="http://en.wikipedia.org/wiki/File:SQL_ANATOMY_wiki.svg">http://en.wikipedia.org/wiki/File:SQL_ANATOMY_wiki.svg</a></p>
+<div class="section" id="syntactic-subsets">
+<h3>Syntactic Subsets<a class="headerlink" href="#syntactic-subsets" title="Permalink to this headline">¶</a></h3>
+<p>SQL statements can be thought of as belonging to one of several <em>subsets</em>:</p>
+<dl class="docutils">
+<dt>Data Definition</dt>
+<dd>Statements in this subset concern the structure of the database itself:</dd>
+</dl>
+<div class="highlight-sql"><div class="highlight"><pre><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;jos_groups&quot;</span> <span class="p">(</span>
+  <span class="ss">&quot;group_id&quot;</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="ss">&quot;name&quot;</span> <span class="nb">character</span> <span class="nb">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="ss">&quot;description&quot;</span> <span class="nb">text</span> <span class="k">NOT</span> <span class="k">NULL</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Data Manipulation</dt>
+<dd>Statements in this subset concern the altering of data within the database:</dd>
+</dl>
+<div class="highlight-sql"><div class="highlight"><pre><span class="k">UPDATE</span> <span class="n">people</span>
+    <span class="k">SET</span> <span class="n">first_name</span><span class="o">=</span><span class="s1">&#39;Bill&#39;</span>
+    <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">4</span><span class="p">;</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>Data Query</dt>
+<dd>Statements in this subset concern the retrieval of data from within the
+database:</dd>
+</dl>
+<div class="highlight-sql"><div class="highlight"><pre><span class="k">SELECT</span> <span class="n">user_id</span><span class="p">,</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">c</span>
+  <span class="k">FROM</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">setting_value</span> <span class="k">AS</span> <span class="n">interests</span><span class="p">,</span> <span class="n">user_id</span>
+          <span class="k">FROM</span> <span class="n">user_settings</span>
+          <span class="k">WHERE</span> <span class="n">setting_name</span> <span class="o">=</span> <span class="s1">&#39;interests&#39;</span><span class="p">)</span> <span class="n">raw_uid</span>
+  <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">user_id</span> <span class="k">HAVING</span> <span class="k">c</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Statements from within each of these subsets are said to belong to a particular
+<em>layer</em>.</p>
+<ul class="simple">
+<li><strong>DDL</strong> for <em>Data Definition</em> statements</li>
+<li><strong>DML</strong> for <em>Data Manipulation</em> statements</li>
+<li><strong>DQL</strong> for <em>Data Query</em> statements</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">A 20-minute introduction to SQL</a><ul>
+<li><a class="reference internal" href="#history">History</a><ul>
+<li><a class="reference internal" href="#big-players">Big Players</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sql-concepts">SQL Concepts</a><ul>
+<li><a class="reference internal" href="#relations">Relations</a></li>
+<li><a class="reference internal" href="#sql-relations-1">SQL Relations - ∞ -&gt; 1</a></li>
+<li><a class="reference internal" href="#sql-relations-1-1">SQL Relations - 1 -&gt; 1</a></li>
+<li><a class="reference internal" href="#sql-relations">SQL Relations - ∞ -&gt; ∞</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sql-syntax">SQL Syntax</a><ul>
+<li><a class="reference internal" href="#syntactic-subsets">Syntactic Subsets</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day21/intro_to_sql.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

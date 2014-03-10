@@ -1,0 +1,423 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction to Web Frameworks &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 22 Lectures" href="index.html" />
+    <link rel="next" title="Assignments" href="../../assignments/index.html" />
+    <link rel="prev" title="Day 22 Lectures" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 22 Lectures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 22 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction-to-web-frameworks">
+<h1>Introduction to Web Frameworks<a class="headerlink" href="#introduction-to-web-frameworks" title="Permalink to this headline">¶</a></h1>
+<p>We&#8217;ve been at this for a couple of weeks now.  We&#8217;ve learned a great deal:</p>
+<ul class="simple">
+<li>Sockets, the TCP/IP Stack and Basic Networking Mechanics</li>
+<li>Web Protocols and the Importance of Clear Communication</li>
+<li>APIs and Consuming Data from The Web</li>
+<li>CGI and WSGI and Getting Information to Your Dynamic Applications</li>
+</ul>
+<p>Everything we do from here out will be based on tools built using these
+<em>foundational technologies</em>.</p>
+<p>Think of everything we do from here on out as sitting on top of WSGI</p>
+<p>This may not <em>actually</em> be true, but we will always be working at that level of
+abstraction.</p>
+<div class="section" id="frameworks">
+<h2>Frameworks<a class="headerlink" href="#frameworks" title="Permalink to this headline">¶</a></h2>
+<p>From Wikipedia:</p>
+<blockquote>
+<div>A web application framework (WAF) is a software framework that is designed
+to support the development of dynamic websites, web applications and web
+services. The framework aims to alleviate the overhead associated with
+common activities performed in Web development. For example, many
+frameworks provide libraries for database access, templating frameworks and
+session management, and they often promote code reuse</div></blockquote>
+<p>Great, but what does that really <em>mean</em>?</p>
+<p>Well, it means that a <em>framework</em> is something you use to build an <em>application</em>.</p>
+<p>A framework allows you to build different kinds of applications.</p>
+<p>A framework abstracts what needs to be abstracted, and allows control of the
+rest.</p>
+<p>Think back over the last weeks. In particular, think about last week and your
+first large-scale project.</p>
+<p>What were your pain points? Which bits do you wish you didn&#8217;t have to think
+about?</p>
+<div class="section" id="appropriate-abstractions">
+<h3>Appropriate Abstractions<a class="headerlink" href="#appropriate-abstractions" title="Permalink to this headline">¶</a></h3>
+<p>This last question is important when it comes to choosing a framework</p>
+<ul class="simple">
+<li>abstraction ∝ 1/freedom</li>
+<li>The more they choose, the less you can</li>
+<li><em>Every</em> framework makes choices in what to abstract</li>
+<li><em>Every</em> framework makes <em>different</em> choices</li>
+</ul>
+<p>One important lesson to keep in mind: <strong>Don&#8217;t Fight the Framework</strong></p>
+<p>There are scores of Python web frameworks (this is a partial list).</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="16%" />
+<col width="16%" />
+<col width="20%" />
+<col width="29%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Django</td>
+<td>Grok</td>
+<td>Pylons</td>
+<td>TurboGears</td>
+<td>web2py</td>
+</tr>
+<tr class="row-even"><td>Zope</td>
+<td>CubicWeb</td>
+<td>Enamel</td>
+<td>Gizmo(QP)</td>
+<td>Glashammer</td>
+</tr>
+<tr class="row-odd"><td>Karrigell</td>
+<td>Nagare</td>
+<td>notmm</td>
+<td>Porcupine</td>
+<td>QP</td>
+</tr>
+<tr class="row-even"><td>SkunkWeb</td>
+<td>Spyce</td>
+<td>Tipfy</td>
+<td>Tornado</td>
+<td>WebCore</td>
+</tr>
+<tr class="row-odd"><td>web.py</td>
+<td>Webware</td>
+<td>Werkzeug</td>
+<td>WHIFF</td>
+<td>XPRESS</td>
+</tr>
+<tr class="row-even"><td>AppWsgi</td>
+<td>Bobo</td>
+<td>Bo7le</td>
+<td>CherryPy</td>
+<td>circuits.web</td>
+</tr>
+<tr class="row-odd"><td>Paste</td>
+<td>PyWebLib</td>
+<td>WebStack</td>
+<td>Albatross</td>
+<td>Aquarium</td>
+</tr>
+<tr class="row-even"><td>Divmod</td>
+<td>Nevow</td>
+<td>Flask</td>
+<td>JOTWeb2</td>
+<td>Python Servlet</td>
+</tr>
+<tr class="row-odd"><td>Engine</td>
+<td>Pyramid</td>
+<td>Quixote</td>
+<td>Spiked</td>
+<td>weblayer</td>
+</tr>
+</tbody>
+</table>
+<p>Each of them has made choices about the appropriate level of abstraction. Each
+has made slightly different choices. Picking the right one is an important
+choice.</p>
+</div>
+<div class="section" id="choosing-a-framework">
+<h3>Choosing a Framework<a class="headerlink" href="#choosing-a-framework" title="Permalink to this headline">¶</a></h3>
+<p>Many folks will tell you &#8220;&lt;XYZ&gt; is the <strong>best</strong> framework&#8221;.</p>
+<p>In most cases, what they really mean is &#8220;I know how to use &lt;XYZ&gt;&#8221;</p>
+<p>In some cases, what they really mean is &#8220;&lt;XYZ&gt; fits my brain the best&#8221;</p>
+<p>What they usually forget is that everyone&#8217;s brain (and everyone&#8217;s use-case) is
+different.</p>
+<p>Cris&#8217; First Law of Frameworks: <strong>Pick the Right Tool for the Job</strong></p>
+<p>First Corollary:</p>
+<blockquote>
+<div>The right tool is the tool that allows you to finish the job quickly and
+correctly.</div></blockquote>
+<p>But how do you know which that one is?</p>
+<p>Cris&#8217; Second Law of Frameworks: <strong>You can&#8217;t know unless you try</strong></p>
+<p>So that&#8217;s what we&#8217;re going to do.  Over the next three weeks we&#8217;ll be trying
+out three of the top players in the Python web framework world.</p>
+<p>We&#8217;ll begin with the current king of the micro-framework class, <strong>Flask</strong>.</p>
+</div>
+</div>
+<div class="section" id="flask">
+<h2>Flask<a class="headerlink" href="#flask" title="Permalink to this headline">¶</a></h2>
+<p>Last night you walked through a quick introduction to the <em>Flask</em> web
+framework. You wrote a file that looked like this (at least at some point):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s">&#39;Hello World!&#39;</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>When you ran this file with your virtualenv Python executable, you should have
+seen something like this in your browser:</p>
+<a class="reference internal image-reference" href="../../_images/flask_hello.png"><img alt="../../_images/flask_hello.png" class="align-center" src="../../_images/flask_hello.png" style="width: 60%;" /></a>
+<div class="section" id="what-s-happening-here">
+<h3>What&#8217;s Happening Here?<a class="headerlink" href="#what-s-happening-here" title="Permalink to this headline">¶</a></h3>
+<p>Flask the framework provides a Python class called <cite>Flask</cite>. This class
+functions as a single <em>application</em> in the WSGI sense.</p>
+<p>We know a WSGI application must be a <em>callable</em> that takes the arguments
+<em>environ</em> and <em>start_response</em>.</p>
+<p>It has to call the <em>start_response</em> method, providing status and headers.</p>
+<p>And it has to return an <em>iterable</em> that represents the HTTP response body.</p>
+<p>In Python, an object is a <em>callable</em> if it has a <tt class="docutils literal"><span class="pre">__call__</span></tt> method.</p>
+<p>Take a moment to start up your <tt class="docutils literal"><span class="pre">flask_intro</span></tt> virtualenv and fire up a Python
+interpreter:</p>
+<div class="highlight-bash"><div class="highlight"><pre>heffalump:~ cewing<span class="nv">$ </span>workon flask_intro
+<span class="o">[</span>flask_intro<span class="o">]</span>
+heffalump:flask_intro cewing<span class="nv">$ </span>python
+Python 2.7.5 <span class="o">(</span>default, Aug 25 2013, 00:04:04<span class="o">)</span>
+<span class="o">[</span>GCC 4.2.1 Compatible Apple LLVM 5.0 <span class="o">(</span>clang-500.0.68<span class="o">)]</span> on darwin
+Type <span class="s2">&quot;help&quot;</span>, <span class="s2">&quot;copyright&quot;</span>, <span class="s2">&quot;credits&quot;</span> or <span class="s2">&quot;license&quot;</span> <span class="k">for </span>more information.
+&gt;&gt;&gt;
+</pre></div>
+</div>
+<p>Once there, import the <tt class="docutils literal"><span class="pre">flask</span></tt> package. Our <tt class="docutils literal"><span class="pre">app</span></tt> is an instance of the
+<tt class="docutils literal"><span class="pre">Flask</span></tt> class from this package.  Let&#8217;s go look that up and see what it does:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">flask</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">flask</span><span class="o">.</span><span class="n">__file__</span>
+<span class="go">&#39;/Users/cewing/virtualenvs/flask_intro/lib/python2.7/site-packages/flask/__init__.pyc&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Open that <tt class="docutils literal"><span class="pre">flask</span></tt> directory in your editor and open <tt class="docutils literal"><span class="pre">__init__.py</span></tt>:</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22</pre></div></td><td class="code"><div class="highlight"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    flask</span>
+<span class="sd">    ~~~~~</span>
+
+<span class="sd">    A microframework based on Werkzeug.  It&#39;s extensively documented</span>
+<span class="sd">    and follows best practice patterns.</span>
+
+<span class="sd">    :copyright: (c) 2011 by Armin Ronacher.</span>
+<span class="sd">    :license: BSD, see LICENSE for more details.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="s">&#39;0.10.1&#39;</span>
+
+<span class="c"># utilities we import from Werkzeug and Jinja2 that are unused</span>
+<span class="c"># in the module but are exported as public interface.</span>
+<span class="kn">from</span> <span class="nn">werkzeug.exceptions</span> <span class="kn">import</span> <span class="n">abort</span>
+<span class="kn">from</span> <span class="nn">werkzeug.utils</span> <span class="kn">import</span> <span class="n">redirect</span>
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Markup</span><span class="p">,</span> <span class="n">escape</span>
+
+<span class="kn">from</span> <span class="nn">.app</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">Config</span>
+</pre></div>
+</td></tr></table></div>
+<p>On line 21 you should see that <tt class="docutils literal"><span class="pre">Flask</span></tt> is imported into the global <tt class="docutils literal"><span class="pre">flask</span></tt>
+namespace from <tt class="docutils literal"><span class="pre">.app</span></tt>.  Open the <tt class="docutils literal"><span class="pre">app.py</span></tt> file to dig a bit further.</p>
+<p>Here&#8217;s the <tt class="docutils literal"><span class="pre">__call__</span></tt> method of the <tt class="docutils literal"><span class="pre">Flask</span></tt> class (lines 1834-36 in my
+version):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Shortcut for :attr:`wsgi_app`.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As you can see, it calls another method, called <tt class="docutils literal"><span class="pre">wsgi_app</span></tt>.  Let&#8217;s follow
+this down...</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The actual WSGI application.</span>
+<span class="sd">    ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_context</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="o">.</span><span class="n">push</span><span class="p">()</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_dispatch_request</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">e</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+    <span class="c">#...</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">response</span></tt> is another WSGI app.  <tt class="docutils literal"><span class="pre">Flask</span></tt> is actually <em>WSGI middleware</em>!</p>
+<p>Following this all the way down leads to a <tt class="docutils literal"><span class="pre">Response</span></tt> class from a package
+called <em>werkzeug</em>. Here&#8217;s the <tt class="docutils literal"><span class="pre">__call__</span></tt> method provided by that class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Process this response as WSGI application.</span>
+
+<span class="sd">    :param environ: the WSGI environment.</span>
+<span class="sd">    :param start_response: the response callable provided by the WSGI</span>
+<span class="sd">                           server.</span>
+<span class="sd">    :return: an application iterator</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">app_iter</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wsgi_response</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+    <span class="n">start_response</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">app_iter</span>
+</pre></div>
+</div>
+<p>Given the amount of time you&#8217;ve spent over the last week working on WSGI apps,
+this should look pretty familiar to you.</p>
+<p>All Python web frameworks that operate under the WSGI spec will do this same
+sort of thing.</p>
+<p>They have to do it.</p>
+<p>And these layers of abstraction allow you, the developer to focus only on the
+thing that really matters to you.</p>
+<p>Getting input from a request, and returning a response.</p>
+<p>In the case of <tt class="docutils literal"><span class="pre">Flask</span></tt> both the Request and the Response are actually
+instances of Python classes defined in the <tt class="docutils literal"><span class="pre">werkzeug</span></tt> package. These classes
+smooth over some of the complications of interacting with the raw WSGI
+<tt class="docutils literal"><span class="pre">environ</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="so-without-further-ado">
+<h2>So Without Further Ado<a class="headerlink" href="#so-without-further-ado" title="Permalink to this headline">¶</a></h2>
+<p>In addition to walking through a Flask intro last night you should also have
+completed a walkthrough of interacting with a PostgreSQL database using the
+<tt class="docutils literal"><span class="pre">psycopg2</span></tt> DBAPI wrapper.</p>
+<p>Today we are going to put those two items together and create the base for a
+tumblr-like microblog application.</p>
+<p>We&#8217;ll spend the next bit whiteboarding what is needed for that, and figuring
+out what we&#8217;ll need to know to get it going.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction to Web Frameworks</a><ul>
+<li><a class="reference internal" href="#frameworks">Frameworks</a><ul>
+<li><a class="reference internal" href="#appropriate-abstractions">Appropriate Abstractions</a></li>
+<li><a class="reference internal" href="#choosing-a-framework">Choosing a Framework</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#flask">Flask</a><ul>
+<li><a class="reference internal" href="#what-s-happening-here">What&#8217;s Happening Here?</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#so-without-further-ado">So Without Further Ado</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Day 22 Lectures</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../assignments/index.html"
+                        title="next chapter">Assignments</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day22/intro_to_frameworks.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../assignments/index.html" title="Assignments"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 22 Lectures"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 22 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

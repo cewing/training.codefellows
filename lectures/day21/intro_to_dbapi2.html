@@ -1,0 +1,384 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>A 20-minute introduction to DB-API2 &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 21 Lectures" href="index.html" />
+    <link rel="next" title="Day 22 Lectures" href="../day22/index.html" />
+    <link rel="prev" title="A 20-minute introduction to SQL" href="intro_to_sql.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../day22/index.html" title="Day 22 Lectures"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro_to_sql.html" title="A 20-minute introduction to SQL"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 21 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="a-20-minute-introduction-to-db-api2">
+<h1>A 20-minute introduction to DB-API2<a class="headerlink" href="#a-20-minute-introduction-to-db-api2" title="Permalink to this headline">¶</a></h1>
+<p><strong>An introduction to the standard interface for Pythonic database
+interactions.</strong></p>
+<div class="section" id="history">
+<h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
+<p>Despite the norms of SQL, individual databases have lots of differences.</p>
+<p>Programmers don&#8217;t want to have to think about implementation details for
+underlying systems.</p>
+<p>It would be nice to have a single API to hide these details.</p>
+<p>Any package implementing this API would then be interchangeable.</p>
+<p>Finalized in 1996, PEP 248 specified DB-API version 1.0 to fulfill this goal:</p>
+<blockquote>
+<div>&#8220;This API has been defined to encourage similarity between the Python
+modules that are used to access databases. By doing this, we hope to
+achieve a consistency leading to more easily understood modules, code that
+is generally more portable across databases, and a broader reach of
+database connectivity from Python.&#8221;</div></blockquote>
+<p>source: <a class="reference external" href="http://www.python.org/dev/peps/pep-0248/">http://www.python.org/dev/peps/pep-0248/</a></p>
+<p>By 2001, PEP 249 brought version 2.0 of the DB-API specification, with
+improvements:</p>
+<ul class="simple">
+<li>New column types were added to support all basic data types in &#8220;modern&#8221; SQL</li>
+<li>New API constants were added to help detect differences between
+implementations</li>
+<li>The semantics for calling stored procedures were clarified.</li>
+<li>Class-based exceptions were added to improve error handling possibilities</li>
+</ul>
+<p>Discussions are currently underway to push DB-API v3.0, particularly in light
+of the changes in Python 3.0</p>
+<p>source: <a class="reference external" href="http://www.python.org/dev/peps/pep-0249/">http://www.python.org/dev/peps/pep-0249/</a></p>
+<div class="section" id="specification-not-implementation">
+<h3>Specification, not Implementation<a class="headerlink" href="#specification-not-implementation" title="Permalink to this headline">¶</a></h3>
+<p>It is important to remember that PEP 249 is <strong>only a specification</strong>.</p>
+<p>There is no code or package for DB-API 2.0 on it&#8217;s own.</p>
+<p>Since 2.5, the Python Standard Library has provided a
+<a class="reference external" href="http://docs.python.org/2/library/sqlite3.html">reference implementation of the api</a>
+based on the SQLite3 RDBMS.</p>
+<p>Before version 2.5, this package was available as <tt class="docutils literal"><span class="pre">pysqlite</span></tt> (and it still
+is).</p>
+</div>
+</div>
+<div class="section" id="installing-implementations">
+<h2>Installing Implementations<a class="headerlink" href="#installing-implementations" title="Permalink to this headline">¶</a></h2>
+<p>To use the DB API with any database other than SQLite3, you must have an
+underlying API package available.</p>
+<p>Implementations are available for:</p>
+<ul class="simple">
+<li>PostgreSQL (<strong>psycopg2</strong>, txpostgres, ...)</li>
+<li>MySQL (<strong>mysql-python</strong>, PyMySQL, ...)</li>
+<li>MS SQL Server (<strong>adodbapi</strong>, pymssql, mxODBC, pyodbc, ...)</li>
+<li>Oracle (<strong>cx_Oracle</strong>, mxODBC, pyodbc, ...)</li>
+<li>and many more...</li>
+</ul>
+<p>source: <a class="reference external" href="http://wiki.python.org/moin/DatabaseInterfaces">http://wiki.python.org/moin/DatabaseInterfaces</a></p>
+<p>Most db api packages can be installed using typical Pythonic methods:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install psycopg2
+$ pip install mysql-python
+...
+</pre></div>
+</div>
+<div class="section" id="some-assembly-required">
+<h3>Some Assembly Required<a class="headerlink" href="#some-assembly-required" title="Permalink to this headline">¶</a></h3>
+<p>Most api packages will require that the development headers for the underlying
+database system be available. Without these, the C symbols required for
+communication with the db are not present and the wrapper cannot work.</p>
+<p><strong>Moreover</strong></p>
+<p>Some of the db api wrappers have special installation requirements.</p>
+<p>The MS SQL package runs only on Windows and requires <tt class="docutils literal"><span class="pre">pywin32</span></tt>. It is
+included in versions of <tt class="docutils literal"><span class="pre">pywin32</span></tt> since v211.</p>
+<p>The <tt class="docutils literal"><span class="pre">cx_Oracle</span></tt> package has binary installers, or can be installed from
+source using distutils:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python setup.py build
+$ python setup.py install
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="the-api">
+<h2>The API<a class="headerlink" href="#the-api" title="Permalink to this headline">¶</a></h2>
+<p><strong>What is in the DB API?</strong></p>
+<div class="section" id="globals">
+<h3>Globals<a class="headerlink" href="#globals" title="Permalink to this headline">¶</a></h3>
+<p>DB-API2 implementations provide the following global values:</p>
+<dl class="docutils">
+<dt><strong>apilevel</strong></dt>
+<dd>String constant indicating the api version (&#8220;1.0&#8221; or &#8220;2.0&#8221;)</dd>
+<dt><strong>threadsafety</strong></dt>
+<dd>Integer constant between 0 and 3 indicating the scope in which threads may
+safely be used</dd>
+<dt><strong>paramstyle</strong></dt>
+<dd>String contstant indicating the style of marker used for parameter
+substitution in SQL expressions</dd>
+</dl>
+<p>These can be used to tailor your program&#8217;s expectations.</p>
+</div>
+<div class="section" id="a-constructor">
+<h3>A Constructor<a class="headerlink" href="#a-constructor" title="Permalink to this headline">¶</a></h3>
+<p>DB API provides a constructor <tt class="docutils literal"><span class="pre">connect</span></tt>, which returns a <tt class="docutils literal"><span class="pre">Connection</span></tt>
+object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">connect</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This can be considered the entry point for the module. Once you&#8217;ve got a
+connection, everything else flows from there.</p>
+<p>The <em>parameters</em> required and accepted by the <tt class="docutils literal"><span class="pre">connect</span></tt> constructor will
+vary from implementation to implementation, since they are highly specific to
+the underlying database.</p>
+</div>
+<div class="section" id="a-connection">
+<h3>A Connection<a class="headerlink" href="#a-connection" title="Permalink to this headline">¶</a></h3>
+<p>Some of the methods of the <tt class="docutils literal"><span class="pre">connection</span></tt> may not be supported by all
+implementations:</p>
+<dl class="docutils">
+<dt><strong>.close()</strong></dt>
+<dd>Closes the connection to the database permanently.  Attempts to use the
+connection after calling this will raise a DB-API <tt class="docutils literal"><span class="pre">Error</span></tt>.</dd>
+<dt><strong>.commit()</strong></dt>
+<dd>explicitly commit any pending transactions to the databse.  The method
+should be a no-op if the underlying db does not support transactions.</dd>
+<dt><strong>.rollback()</strong></dt>
+<dd>This optional method causes a transaction to be rolled back to the
+starting point.  It may not be implemented everywhere.</dd>
+<dt><strong>.cursor()</strong></dt>
+<dd>returns a <tt class="docutils literal"><span class="pre">Cursor</span></tt> object which uses this <tt class="docutils literal"><span class="pre">Connection</span></tt>.</dd>
+</dl>
+</div>
+<div class="section" id="a-cursor-settings">
+<h3>A Cursor - settings<a class="headerlink" href="#a-cursor-settings" title="Permalink to this headline">¶</a></h3>
+<p>You can use a few values to control the rows returned by the cursor:</p>
+<dl class="docutils">
+<dt><strong>.arraysize</strong></dt>
+<dd>An integer which controls how many rows are returned at a time by
+<tt class="docutils literal"><span class="pre">.fetchmany</span></tt> (and optionally how many to send at a time with
+<tt class="docutils literal"><span class="pre">.executemany</span></tt>) Defaults to <tt class="docutils literal"><span class="pre">1</span></tt></dd>
+<dt><strong>.setinputsizes(sizes)</strong></dt>
+<dd>Used to set aside memory regions for paramters passed to an operation</dd>
+<dt><strong>.setoutputsize(size[, column])</strong></dt>
+<dd>Used to control buffer size for large columns returned by an operation
+(<tt class="docutils literal"><span class="pre">BLOB</span></tt> or <tt class="docutils literal"><span class="pre">LONG</span></tt> types, for example).</dd>
+</dl>
+<p>The final two methods may be implemented as no-ops</p>
+</div>
+<div class="section" id="a-cursor-operations">
+<h3>A Cursor - operations<a class="headerlink" href="#a-cursor-operations" title="Permalink to this headline">¶</a></h3>
+<p>The cursor should be used to run operations on the database:</p>
+<dl class="docutils">
+<dt><strong>.execute(operation[, parameters])</strong></dt>
+<dd>Prepares and then runs a database operation. Parameter style (seq or
+mapping) and markers are implementation specific (see <tt class="docutils literal"><span class="pre">paramstyle</span></tt>)</dd>
+<dt><strong>.executemany(operation[, seq_of_params])</strong></dt>
+<dd>Prepares and the runs an operations once for each set of parameters
+provided (this replaces the old v1 behavior of passing a seq to
+<tt class="docutils literal"><span class="pre">.execute</span></tt>).</dd>
+<dt><strong>.callproc(procname[, parameters])</strong></dt>
+<dd>Calls a stored DB procedure with the provided parameters. Returns a
+modified version of the provided parameters with <tt class="docutils literal"><span class="pre">output</span></tt> and
+<tt class="docutils literal"><span class="pre">input/output</span></tt> parameters replaced</dd>
+</dl>
+</div>
+<div class="section" id="a-cursor-attributes">
+<h3>A Cursor - attributes<a class="headerlink" href="#a-cursor-attributes" title="Permalink to this headline">¶</a></h3>
+<p>These attributes of <tt class="docutils literal"><span class="pre">Cursor</span></tt> can help you learn about the results of
+operations:</p>
+<dl class="docutils">
+<dt><strong>.rowcount</strong></dt>
+<dd>Tells how many rows have been returned or affected by the last
+operation. The number will be <tt class="docutils literal"><span class="pre">-1</span></tt> if no operation has been performed.</dd>
+<dt><strong>.description</strong></dt>
+<dd>Returns a sequence of 7-item sequences describing each of the columns in
+the result row(s) returned (None if no operation has been performed):</dd>
+</dl>
+<ul class="simple">
+<li>name</li>
+<li>type_code</li>
+<li>display_size (optional)</li>
+<li>internal_size (optional)</li>
+<li>precision (optional)</li>
+<li>scale (optional)</li>
+<li>null_ok (optional)</li>
+</ul>
+</div>
+<div class="section" id="a-cursor-results">
+<h3>A Cursor - results<a class="headerlink" href="#a-cursor-results" title="Permalink to this headline">¶</a></h3>
+<p>The return value <tt class="docutils literal"><span class="pre">.execute</span></tt> or <tt class="docutils literal"><span class="pre">.executemany</span></tt> is undefined and should not
+be used.  These methods are the way to get results after an operation:</p>
+<dl class="docutils">
+<dt><strong>.fetchone()</strong></dt>
+<dd>Returns the next row from a result set, and <tt class="docutils literal"><span class="pre">None</span></tt> when none remain.</dd>
+<dt><strong>.fetchmany([size=cursor.arraysize])</strong></dt>
+<dd>Returns a sequence of <em>size</em> rows (or fewer) from a result set. An empty
+sequence is returned when no rows remain. Defaults to <tt class="docutils literal"><span class="pre">arraysize</span></tt>.</dd>
+<dt><strong>.fetchall()</strong></dt>
+<dd>Returns all (remaining) rows from a result set.  This behavior <em>may</em> be
+affected by <tt class="docutils literal"><span class="pre">arraysize</span></tt>.</dd>
+</dl>
+<p>Note that each of these methods will raise a DB API <tt class="docutils literal"><span class="pre">Error</span></tt> if no operation
+has been performed (or if no result set was produced)</p>
+</div>
+<div class="section" id="data-types-constructors">
+<h3>Data Types &amp; Constructors<a class="headerlink" href="#data-types-constructors" title="Permalink to this headline">¶</a></h3>
+<p>The DB-API provides types and constructors for data:</p>
+<ul class="simple">
+<li><strong>Date(year, month, day)</strong> - constructs an object holding a date value</li>
+<li><strong>Time(hour, min, sec)</strong> - constructs an object holding a time value</li>
+<li><strong>Timestamp(y, m, d, h, min, s)</strong> - constructs an object holding a
+timestamp</li>
+</ul>
+<p>Each of the above has a corresponding <strong>&lt;name&gt;FromTicks(ticks)</strong> which
+returns the same type given a single integer argument (seconds since the
+<em>epoch</em>)</p>
+<ul class="simple">
+<li><strong>Binary(string)</strong> - constructs an object to hold long binary string
+data</li>
+<li><strong>STRING</strong> - a type to describe columns that hold string values
+(<tt class="docutils literal"><span class="pre">CHAR</span></tt>)</li>
+<li><strong>BINARY</strong> - a type to describe long binary columns (<tt class="docutils literal"><span class="pre">BLOB</span></tt>, <tt class="docutils literal"><span class="pre">RAW</span></tt>)</li>
+<li><strong>NUMBER</strong> - a type to describe numeric columns</li>
+<li><strong>DATETIME</strong> - a type to describe date/time/datetime columns</li>
+<li><strong>ROWID</strong> - a type to describe the <tt class="docutils literal"><span class="pre">Row</span> <span class="pre">ID</span></tt> column in a database</li>
+</ul>
+<p>SQL <tt class="docutils literal"><span class="pre">NULL</span></tt> values are represented by Python&#8217;s <tt class="docutils literal"><span class="pre">None</span></tt></p>
+</div>
+<div class="section" id="exceptions">
+<h3>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
+<p>The DB API specification requires implementations to create the following
+hierarchy of custom Exception classes:</p>
+<div class="highlight-python"><div class="highlight"><pre>StandardError
+├──Warning
+└──Error
+   ├──InterfaceError (a problem with the db api)
+   └──DatabaseError (a problem with the database)
+      ├──DataError (bad data, values out of range, etc.)
+      ├──OperationalError (the db has an issue out of our control)
+      ├──IntegrityError
+      ├──InternalError
+      ├──ProgrammingError (something wrong with the operation)
+      └──NotSupportedError (the operation is not supported)
+</pre></div>
+</div>
+<p>Aside from some custom extensions not required by the specification, that&#8217;s
+it.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">A 20-minute introduction to DB-API2</a><ul>
+<li><a class="reference internal" href="#history">History</a><ul>
+<li><a class="reference internal" href="#specification-not-implementation">Specification, not Implementation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#installing-implementations">Installing Implementations</a><ul>
+<li><a class="reference internal" href="#some-assembly-required">Some Assembly Required</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-api">The API</a><ul>
+<li><a class="reference internal" href="#globals">Globals</a></li>
+<li><a class="reference internal" href="#a-constructor">A Constructor</a></li>
+<li><a class="reference internal" href="#a-connection">A Connection</a></li>
+<li><a class="reference internal" href="#a-cursor-settings">A Cursor - settings</a></li>
+<li><a class="reference internal" href="#a-cursor-operations">A Cursor - operations</a></li>
+<li><a class="reference internal" href="#a-cursor-attributes">A Cursor - attributes</a></li>
+<li><a class="reference internal" href="#a-cursor-results">A Cursor - results</a></li>
+<li><a class="reference internal" href="#data-types-constructors">Data Types &amp; Constructors</a></li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="intro_to_sql.html"
+                        title="previous chapter">A 20-minute introduction to SQL</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../day22/index.html"
+                        title="next chapter">Day 22 Lectures</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day21/intro_to_dbapi2.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../day22/index.html" title="Day 22 Lectures"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="intro_to_sql.html" title="A 20-minute introduction to SQL"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 21 Lectures</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
