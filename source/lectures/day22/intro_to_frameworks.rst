@@ -20,7 +20,7 @@ abstraction.
 Frameworks
 ==========
 
-From Wikipedia::
+From Wikipedia:
 
     A web application framework (WAF) is a software framework that is designed
     to support the development of dynamic websites, web applications and web
