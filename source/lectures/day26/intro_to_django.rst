@@ -19,9 +19,7 @@ When you install Django into a virtualenv, it provides a utility script,
 Running this command will create a folder called 'mysite'.  It contains the
 following structure:
 
-.. code-block::
-
-    source
+.. code-block:: bash
 
     mysite
     ├── manage.py
@@ -67,7 +65,6 @@ When you look in the ``manage.py`` script Django created for you. You'll see
 this:
 
 .. code-block:: python
-    :class: small
 
     #!/usr/bin/env python
     import os
@@ -93,7 +90,7 @@ the tool you should use to run the development server:
 Django runs on port 8000 by default.  Once it starts, you can view a new
 project by loading ``http://localhost:8000/``.  You should see this:
 
-.. image:: img/django-start.png
+.. image:: /_static/django-start.png
     :align: center
     :width: 80%
 
@@ -621,7 +618,6 @@ database and then using the *dumpdata* manage.py command to create the fixture:
 Once a fixture exists, you can reference it in your TestCase subclasses:
 
 .. code-block:: python
-    :class: small
 
     from django.test import TestCase
     from django.contrib.auth.models import User
@@ -638,7 +634,6 @@ A Simple Customization
 A Django model object represents itself when displayed in the Django shell:
 
 .. code-block:: python
-    :class: small 
 
     >>> [p for p in Post.objects.all()]
     [<Post: Post object>, <Post: Post object>, 
@@ -699,5 +694,5 @@ changes to how the default functionality works.
 This is largely a matter of style and taste (and of budget).
 
 You will want to take a look at the
-`Django testing documentation <https://docs.djangoproject.com/en/1.6/topics/testing/>`.
+`Django testing documentation <https://docs.djangoproject.com/en/1.6/topics/testing/>`_.
 

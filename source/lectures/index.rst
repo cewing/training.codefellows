@@ -19,3 +19,4 @@ Contents:
    day14/index
    day21/index
    day22/index
+   day26/index
