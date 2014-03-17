@@ -307,12 +307,11 @@ Notice that the ``author_link`` function we just wrote returns HTML.  Like any
 good framework, Django will escape this HTML before displaying it.  You'll also
 need to let the admin know your HTML is safe:
 
-    .. code-block:: python
-        :class: small
+.. code-block:: python
 
-        def author_link(self, post):
-            #... method body
-        author_link.allow_tags = True #<- see that bit there?
+    def author_link(self, post):
+        #... method body
+    author_link.allow_tags = True #<- see that bit there?
 
 In Python, *everything* is an object. Even methods of classes.
 
@@ -322,7 +321,6 @@ create for ``list_display``.
 Another special attribute controls the column title used in the list page:
 
 .. code-block:: python
-    :class: small
     
     def author_link(self, post):
         #... method body
@@ -345,7 +343,6 @@ should be covered by tests. To test the admin, you first need a new
 TestClass:
 
 .. code-block:: python
-    :class: small
 
     # new imports
     from django.contrib.admin.sites import AdminSite
@@ -382,7 +379,6 @@ First, replace the ``'author'`` name in ``list_display`` with
 ``'author_link'``:
 
 .. code-block:: python
-    :class: small
     
     list_display = (..., 'author_link')
 
@@ -391,7 +387,6 @@ First, replace the ``'author'`` name in ``list_display`` with
     We also need to let the admin know our HTML is safe:
 
     .. code-block:: python
-        :class: small
 
         def author_link(self, post):
             #... method body
@@ -423,13 +418,12 @@ Once that is in place, all you need is one line added to the PostAdmin class
 definition:
 
     .. code-block:: python
-        :class: small
     
-        class PostAdmin(admin.ModelAdmin):
-            #... other options
-            inlines = [CategoryInlineAdmin, ]
-            
-            #... methods
+    class PostAdmin(admin.ModelAdmin):
+        #... other options
+        inlines = [CategoryInlineAdmin, ]
+        
+        #... methods
 
 The key is to define the inline *before* the model admin where you will use it
 so that the class is available when you reference it.  Otherwise you'll get
