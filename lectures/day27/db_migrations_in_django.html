@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Database Migrations with South &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="database-migrations-with-south">
+<h1>Database Migrations with <em>South</em><a class="headerlink" href="#database-migrations-with-south" title="Permalink to this headline">¶</a></h1>
+<p>In any non-trivial software project involving a database, the Database schema
+<em>will change over time</em>.</p>
+<p>This basic fact of life spurs the need for a tool to handle gracefully the
+problem of altering a database when you can have copies in production, on
+staging servers, and in developer&#8217;s local machines.</p>
+<p>You&#8217;ve seen how Django supports adding new tables to a database using the
+<tt class="docutils literal"><span class="pre">syncdb</span></tt> command. But this management command only creates tables that <em>do
+not yet exist</em>. It <strong>does not update tables</strong>.</p>
+<p>The <tt class="docutils literal"><span class="pre">sqlclear</span> <span class="pre">&lt;appname&gt;</span></tt> command will print the <tt class="docutils literal"><span class="pre">DROP</span> <span class="pre">TABLE</span></tt> statements to
+remove the tables for your app.</p>
+<p>And <tt class="docutils literal"><span class="pre">sql</span> <span class="pre">&lt;appname&gt;</span></tt> will show the <tt class="docutils literal"><span class="pre">CREATE</span> <span class="pre">TABLE</span></tt> statements, and you can work
+out the differences and update manually.</p>
+<p>But given existing data, multiple copies of the database and multiple
+developers working on different features simultaneously, that&#8217;s not a great
+recipe.</p>
+<p>Luckily, there is an app available for Django that helps with this: <tt class="docutils literal"><span class="pre">South</span></tt>.</p>
+<p>South allows you to incrementally update your database in a simplified way.</p>
+<p>South supports forward, backward and data migrations.</p>
+<p>South is <tt class="docutils literal"><span class="pre">Alembic</span></tt> for the Django ORM.</p>
+<div class="section" id="using-south">
+<h2>Using South<a class="headerlink" href="#using-south" title="Permalink to this headline">¶</a></h2>
+<p>South is so useful, that in Django 1.7 it will become part of the core
+distribution of Django.</p>
+<p>But now it is not.  You&#8217;ll need to add it, and set up your project to use it.</p>
+<p>Install South in the virtualenv you are using for your project:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>workon myproject
+<span class="o">(</span>myproject<span class="o">)</span><span class="nv">$ </span>pip install south
+...
+Successfully installed south
+Cleaning up...
+</pre></div>
+</div>
+<p>Like other Django apps, South provides models of its own.  You need to enable
+them.</p>
+<p>First, add <tt class="docutils literal"><span class="pre">south</span></tt> to the list of installed apps in <tt class="docutils literal"><span class="pre">settings.py</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="o">...</span>
+    <span class="s">&#39;south&#39;</span><span class="p">,</span> <span class="c">#&lt; -add this line</span>
+    <span class="s">&#39;myapp&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, run <tt class="docutils literal"><span class="pre">syncdb</span></tt> to pick up the tables it provides:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">(</span>myproject<span class="o">)</span><span class="nv">$ </span>python manage.py syncdb
+Syncing...
+Creating tables ...
+Creating table south_migrationhistory
+...
+
+Synced:
+ ...
+ &gt; south
+ &gt; myapp
+
+Not synced <span class="o">(</span>use migrations<span class="o">)</span>:
+ -
+<span class="o">(</span>use ./manage.py migrate to migrate these<span class="o">)</span>
+</pre></div>
+</div>
+<p>You might have noticed that the output from <tt class="docutils literal"><span class="pre">syncdb</span></tt> looks a bit different
+this time. This is because Django apps that use South do not use the normal
+<tt class="docutils literal"><span class="pre">syncdb</span></tt> command to initialize their SQL.</p>
+<p>Instead they use a new command that South provides: <tt class="docutils literal"><span class="pre">migrate</span></tt>.</p>
+<p>This command ensures that only incremental changes are made, rather than
+creating all of the SQL for an app every time.</p>
+<div class="section" id="enabling-south-for-an-app">
+<h3>Enabling South for an App<a class="headerlink" href="#enabling-south-for-an-app" title="Permalink to this headline">¶</a></h3>
+<p>If you notice, your app is still in the <tt class="docutils literal"><span class="pre">sync</span></tt> list. It has not been enabled
+to use South.  You&#8217;ll need to set up South for it.</p>
+<p>Adding South to an existing Django app is quite simple. The trick is to do it
+<strong>before</strong> you make any new changes to your models.  It is <strong>vitally
+important</strong> that your existing database schema exactly match your models,
+or things will go badly for you.</p>
+<p>If that&#8217;s all set, then simply use the <tt class="docutils literal"><span class="pre">convert_to_south</span></tt> management command,
+providing the name of your app as an argument:</p>
+<blockquote>
+<div><div class="highlight-bash"><div class="highlight"><pre><span class="o">(</span>djangoenv<span class="o">)</span><span class="nv">$ </span>python manage.py convert_to_south myapp
+...
+</pre></div>
+</div>
+</div></blockquote>
+<p>After running this command, South will automatically create a first migration
+for you that sets up tables looking exactly like what your app has now:</p>
+<div class="highlight-bash"><div class="highlight"><pre>myblog/
+├── __init__.py
+...
+├── migrations
+│   ├── 0001_initial.py
+│   ├── 0001_initial.pyc
+│   ├── __init__.py
+│   └── __init__.pyc
+├── models.py
+...
+</pre></div>
+</div>
+<p>South also automatically applies this first migration using the <tt class="docutils literal"><span class="pre">--fake</span></tt>
+argument, since the database is already in the proposed state.</p>
+</div>
+<div class="section" id="creating-migrations">
+<h3>Creating Migrations<a class="headerlink" href="#creating-migrations" title="Permalink to this headline">¶</a></h3>
+<p>After setting up migrations, you&#8217;ll make some changes to your database schema.
+To get these changes into your database, you have to add a migration.</p>
+<p>You use the <tt class="docutils literal"><span class="pre">schemamigration</span></tt> management command to do so:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">(</span>djangoenv<span class="o">)</span><span class="nv">$ </span>python manage.py schemamigration myapp --auto
+ + Added model myapp.OtherModel
+Created 0002_auto__add_othermodel.py. You can now apply this
+migration with: ./manage.py migrate myapp
+</pre></div>
+</div>
+</div>
+<div class="section" id="applying-migrations">
+<h3>Applying Migrations<a class="headerlink" href="#applying-migrations" title="Permalink to this headline">¶</a></h3>
+<p>And south, along with making the migration, helpfully tells us what to do next:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">(</span>djangoenv<span class="o">)</span><span class="nv">$ </span>python manage.py migrate myapp
+Running migrations <span class="k">for </span>myblog:
+ - Migrating forwards to 0002_auto__add_othermodel.
+ &gt; myapp:0002_auto__add_othermodel
+ - Loading initial data <span class="k">for </span>myapp.
+Installed 0 object<span class="o">(</span>s<span class="o">)</span> from 0 fixture<span class="o">(</span>s<span class="o">)</span>
+</pre></div>
+</div>
+<p>You can even look at the migration file you just applied,
+<tt class="docutils literal"><span class="pre">myapp/migrations/0002_auto__add_othermodel.py</span></tt> to see what happened.</p>
+<p><strong>An Important Note About South Migrations</strong></p>
+<p>When you look at the migration file, you&#8217;ll find that South schema migrations
+are in fact Python class objects. They have a <tt class="docutils literal"><span class="pre">forwards</span></tt> and <tt class="docutils literal"><span class="pre">backwards</span></tt>
+method that do what you might expect. But they also have a <tt class="docutils literal"><span class="pre">models</span></tt> attribute
+that represents the state the models in your app should be in when the
+migration is complete.</p>
+<p>When you have multiple developers working on a project, each of them creating
+migrations, it&#8217;s fairly easy to merge git branches and end up with successive
+database migrations that have <em>different</em> endpoint states.  This can cause
+problems with generating the next migration because South <em>does not introspect
+your database</em> to discover what really exists.</p>
+<p>I strongly encourage you to <a class="reference external" href="http://south.readthedocs.org/en/latest/tutorial/part5.html">read about team workflow</a> when working with
+South. In particular the documentation on using <em>empty migrations</em> to establish
+a fully correct ORM model after merging changes is quite important and useful.</p>
+</div>
+<div class="section" id="data-migrations">
+<h3>Data Migrations<a class="headerlink" href="#data-migrations" title="Permalink to this headline">¶</a></h3>
+<p>Another use for migrations is to alter data in an existing database.  South
+calls these types of migrations <em>data migrations</em> and provides an alternate
+method for creating them:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">(</span>djangoenv<span class="o">)</span><span class="nv">$ </span>python manage.py datamigration myapp some_data_changes
+</pre></div>
+</div>
+<p>This will create a new file in your <tt class="docutils literal"><span class="pre">migrations</span></tt> directory called
+&#8220;NNNN_some_data_changes.py&#8221;. As with a schemamigration file, this file will
+have a class instance that has a <tt class="docutils literal"><span class="pre">forwards</span></tt> and <tt class="docutils literal"><span class="pre">backwards</span></tt> method.</p>
+<p>You will have to write the code for your forwards migration, using the <tt class="docutils literal"><span class="pre">orm</span></tt>
+passed in to the argument to access your app models and the Django ORM query
+api to get hold of and update records.</p>
+<p>You can also write the <tt class="docutils literal"><span class="pre">backwards</span></tt> method.  But in some cases this type of
+reverse migration may be impossible (think of hashing passwords for the classic
+irreversable migration).  In that case, you can raise a Python exception like
+<tt class="docutils literal"><span class="pre">RuntimeError</span></tt>.</p>
+<p>Applying a data migration is accomplished in the same way as any other
+migration.  Simply use the <tt class="docutils literal"><span class="pre">migrate</span></tt> management command:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">(</span>djangoenv<span class="o">)</span><span class="nv">$ </span>python manage.py migrate myapp
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Database Migrations with <em>South</em></a><ul>
+<li><a class="reference internal" href="#using-south">Using South</a><ul>
+<li><a class="reference internal" href="#enabling-south-for-an-app">Enabling South for an App</a></li>
+<li><a class="reference internal" href="#creating-migrations">Creating Migrations</a></li>
+<li><a class="reference internal" href="#applying-migrations">Applying Migrations</a></li>
+<li><a class="reference internal" href="#data-migrations">Data Migrations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day27/db_migrations_in_django.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>

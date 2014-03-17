@@ -1,0 +1,469 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>The Django Admin &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="the-django-admin">
+<h1>The Django Admin<a class="headerlink" href="#the-django-admin" title="Permalink to this headline">¶</a></h1>
+<p>Django comes with:</p>
+<ul class="simple">
+<li>Persistence via the <em>Django ORM</em></li>
+<li>URL Mapping via <em>urlpatterns</em></li>
+<li>Templating via the <em>Django Template Language</em></li>
+<li>Caching with levels of configurability</li>
+<li>Internationalization via i18n hooks</li>
+<li>Form rendering and handling</li>
+<li>User authentication and authorization</li>
+</ul>
+<p>Pretty much everything you need to make a solid website quickly.</p>
+<p>Lots of frameworks offer some of these features, if not all.</p>
+<p>What is Django&#8217;s <em>killer feature</em></p>
+<p><strong>The Django Admin</strong></p>
+<p>The Django Admin works in concert with the Django ORM to provide automatic CRUD
+functionality. You write the models, it provides the UI.</p>
+<div class="section" id="the-pareto-principle">
+<h2>The Pareto Principle<a class="headerlink" href="#the-pareto-principle" title="Permalink to this headline">¶</a></h2>
+<p>The Django Admin is a great example of the Pareto Priciple, a.k.a. the 80/20
+rule:</p>
+<p><strong>80% of the problems can be solved by 20% of the effort</strong></p>
+<p>The converse also holds true:</p>
+<p><strong>Fixing the last 20% of the problems will take the remaining 80% of the
+effort.</strong></p>
+<div class="section" id="using-the-django-admin">
+<h3>Using the Django Admin<a class="headerlink" href="#using-the-django-admin" title="Permalink to this headline">¶</a></h3>
+<p>The Django Admin is, itself, an <em>app</em>, installed by default (as of 1.6).</p>
+<p>In earlier versions of Django, you might need to install it.  This is
+accomplished by adding it to the INSTALLED_APPS setting:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s">&#39;django.contrib.admin&#39;</span><span class="p">,</span> <span class="c"># &lt;- make sure it&#39;s there and uncommented</span>
+    <span class="c"># ...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>What we need now is to allow the admin to be seen through a web browser.</p>
+<p>To do that, you have to add URLs to your project.</p>
+</div>
+</div>
+<div class="section" id="django-url-resolution">
+<h2>Django URL Resolution<a class="headerlink" href="#django-url-resolution" title="Permalink to this headline">¶</a></h2>
+<p>You&#8217;ve seen how Flask resolves URLs using &#8220;routes&#8221;. Django too has a system for
+dispatching requests to code: the <em>urlconf</em>.</p>
+<ul class="simple">
+<li>A urlconf is an iterable of calls to the <tt class="docutils literal"><span class="pre">django.conf.urls.url</span></tt> function</li>
+<li>This function takes:<ul>
+<li>a regexp <em>rule</em>, representing the URL</li>
+<li>a <tt class="docutils literal"><span class="pre">callable</span></tt> to be invoked (or a name identifying one)</li>
+<li>an optional <em>name</em> kwarg, used to <em>reverse</em> the URL</li>
+<li>other optional arguments we will skip for now</li>
+</ul>
+</li>
+<li>The function returns a <em>resolver</em> that matches the request path to the
+callable</li>
+</ul>
+<p><strong>urlpatterns</strong></p>
+<p>I said above that a urlconf is an iterable. That iterable is generally built by
+calling the <tt class="docutils literal"><span class="pre">django.conf.urls.patterns</span></tt> function. It&#8217;s best to build it that
+way, but in reality, any iterable will do.</p>
+<p>However, the name you give this iterable is <strong>not flexible</strong>.</p>
+<p>Django builds a list of available urls by loading the urlconf named
+<tt class="docutils literal"><span class="pre">urlpatterns</span></tt> that it finds in the file named in <tt class="docutils literal"><span class="pre">settings.ROOT_URLCONF</span></tt>.</p>
+<p>You can build a urlconf by adding urls one at a time.  However many Django
+add-on <em>apps</em>, like the Django Admin, come with their own urlconf. For apps
+like this, it is standard to <em>include</em> the urls defind by these apps by rooting
+them at some path in your site.</p>
+<p>You can do this by using the <tt class="docutils literal"><span class="pre">django.conf.urls.include</span></tt> function as the
+callable in a <tt class="docutils literal"><span class="pre">url</span></tt> call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># ...</span>
+<span class="n">url</span><span class="p">(</span><span class="s">r&#39;^forum/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">&#39;random.forum.app.urls&#39;</span><span class="p">)),</span>
+<span class="c"># ...</span>
+</pre></div>
+</div>
+<p>We can use this to add <em>all</em> the URLs provided by the Django admin in one
+stroke. If you open the <tt class="docutils literal"><span class="pre">urls.py</span></tt> file in a project made by <tt class="docutils literal"><span class="pre">startproject</span></tt>
+you should find the following lines are already present:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span> <span class="c">#&lt;- make sure these two are</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">autodiscover</span><span class="p">()</span>             <span class="c">#&lt;- present and uncommented</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="o">...</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^admin/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span> <span class="c">#&lt;- and this</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now view the admin.  We&#8217;ll use the Django development server.</p>
+</div>
+<div class="section" id="viewing-the-admin">
+<h2>Viewing the Admin<a class="headerlink" href="#viewing-the-admin" title="Permalink to this headline">¶</a></h2>
+<p>In your terminal, use the <tt class="docutils literal"><span class="pre">runserver</span></tt> management command to start the
+development server:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">(</span>djangoenv<span class="o">)</span><span class="nv">$ </span>python manage.py runserver
+Validating models...
+
+0 errors found
+Django version 1.4.3, using settings <span class="s1">&#39;mysite.settings&#39;</span>
+Development server is running at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+</pre></div>
+</div>
+<p>Load <tt class="docutils literal"><span class="pre">http://localhost:8000/admin/</span></tt>.  You should see this:</p>
+<a class="reference internal image-reference" href="../../_images/django-admin-login.png"><img alt="../../_images/django-admin-login.png" class="align-center" src="../../_images/django-admin-login.png" style="width: 60%;" /></a>
+<p>You can log in with the name and password you created when you first ran
+<tt class="docutils literal"><span class="pre">syncdb</span></tt> for your project.  If you can&#8217;t remember that, you can always use
+the <tt class="docutils literal"><span class="pre">createsuperuser</span></tt> command to add a new superuser and use that one to log
+in.</p>
+<p>After logging in, you&#8217;ll be viewing the Django Admin <em>index</em>. The index page
+will have a visible section for each installed <em>app</em> that provides one or more
+<em>Models</em> registered with the admin. Each of these sections will provide a list
+of models registered.  You should see something like this:</p>
+<a class="reference internal image-reference" href="../../_images/admin_index.png"><img alt="../../_images/admin_index.png" class="align-center" src="../../_images/admin_index.png" style="width: 80%;" /></a>
+<p>Click on <tt class="docutils literal"><span class="pre">Users</span></tt>. Find yourself? Edit yourself, but <strong>don&#8217;t</strong> uncheck
+<tt class="docutils literal"><span class="pre">superuser</span></tt>.</p>
+</div>
+<div class="section" id="adding-models-to-the-admin">
+<h2>Adding Models to the Admin<a class="headerlink" href="#adding-models-to-the-admin" title="Permalink to this headline">¶</a></h2>
+<p>In order to use the Admin to interact with your models, you must register them.
+Django expects these registrations to take place in a file called <tt class="docutils literal"><span class="pre">admin.py</span></tt>.</p>
+<p>Find that file in your <em>app</em> and add code to register your model(s):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">your_app.models</span> <span class="kn">import</span> <span class="n">SomeModel</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">SomeModel</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When a model is registered with the Django Admin, new urls for interacting with
+it are automatically generated by the Django Admin urlconf.  Because we&#8217;ve used
+<tt class="docutils literal"><span class="pre">django.conf.urls.include</span></tt> to add <em>all</em> the admin urls to our project
+urlconf, there&#8217;s no further work needed.</p>
+<p>After registering your models, simple reload the admin index page. You should
+see a section for your app listed, and all your registered models listed in
+that section.</p>
+<div class="section" id="customizing-the-admin">
+<h3>Customizing the Admin<a class="headerlink" href="#customizing-the-admin" title="Permalink to this headline">¶</a></h3>
+<p>While the admin is quite nice in terms of what it gives you. It is built to
+fulfill that Pareto Principle. There are often modifications you need to make
+in order to get things just right.</p>
+<p>For example, consider a blogging app like the one we created in Flask. In such
+a system, a Post can be categorized. Where the Django Admin displays the UI for
+this will be dependent on which model holds the <tt class="docutils literal"><span class="pre">ManyToManyRelationship</span></tt>
+field for that connection.</p>
+<p>If you place that field on the <tt class="docutils literal"><span class="pre">Category</span></tt> object then you end up in a
+situation where you need to add Posts to Categories, rather than the more
+natural workflow of choosing Categories for Posts.</p>
+<p><a class="reference external" href="https://docs.djangoproject.com/en/1.6/ref/contrib/admin/">https://docs.djangoproject.com/en/1.6/ref/contrib/admin/</a></p>
+</div>
+</div>
+<div class="section" id="the-modeladmin-class">
+<h2>The ModelAdmin Class<a class="headerlink" href="#the-modeladmin-class" title="Permalink to this headline">¶</a></h2>
+<p>The key to customizing how a model is administered by the Django Admin is to
+create a customized sublcass of the <tt class="docutils literal"><span class="pre">django.contrib.admin.ModelAdmin</span></tt> class.</p>
+<p>Looking at the <tt class="docutils literal"><span class="pre">admin.py</span></tt> file generated for a Django app, you&#8217;ll see a few
+things of interest.</p>
+<ul class="simple">
+<li>The <tt class="docutils literal"><span class="pre">admin.site</span></tt> with which you register classes is a globally available
+instance of the <tt class="docutils literal"><span class="pre">Admin</span></tt> class.</li>
+<li>It is initialized at runtime automatically.</li>
+<li>It stores a registry of the models that are registered with it.</li>
+<li>Each call to <tt class="docutils literal"><span class="pre">admin.site.register</span></tt> adds a new model to the global <em>site</em>.</li>
+<li><tt class="docutils literal"><span class="pre">register</span></tt> takes two args: a <em>Model</em> subclass and an optional <em>ModelAdmin</em> subclass</li>
+<li>If you call it without the optional subclass, you get the default.</li>
+</ul>
+<p>Most usable admin functions and attributes are provided by the <tt class="docutils literal"><span class="pre">ModelAdmin</span></tt>
+class.</p>
+<p>For example, you can influence the tabular display of fields from your Model
+class by using the <tt class="docutils literal"><span class="pre">list_display</span></tt> attribute:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>class PostAdmin(admin.ModelAdmin):</dt>
+<dd><dl class="first last docutils">
+<dt>list_display = (&#8216;__unicode__&#8217;, &#8216;created_date&#8217;, &#8216;modified_date&#8217;,</dt>
+<dd>&#8216;published_date&#8217;, &#8216;author&#8217;)</dd>
+</dl>
+</dd>
+</dl>
+<p>admin.site.register(Post, PostAdmin)</p>
+</div></blockquote>
+<p>By adding or omitting fields from this tuple, you control what appears on the
+table listing all existing <tt class="docutils literal"><span class="pre">Post</span></tt> objects in your database.</p>
+<p>Pretty simple, eh?</p>
+<p>A Couple of things about the <tt class="docutils literal"><span class="pre">list_display</span></tt> option are important to know:</p>
+<dl class="class">
+<dt id="incremental">
+<em class="property">class </em><tt class="descname">incremental</tt><a class="headerlink" href="#incremental" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<ul class="simple">
+<li>The value you provide must be an iterable even if it has only one item</li>
+<li>Each item in the iterable becomes a column in the list</li>
+<li>The first item is the one that links to the change page for that object<ul>
+<li>That can be customized by the <tt class="docutils literal"><span class="pre">list_display_links</span></tt> option</li>
+</ul>
+</li>
+<li>Listed items can be field names or callables.</li>
+<li>Callables can be module-level functions, or methods on the ModelAdmin or
+Model</li>
+</ul>
+<p>As an example, you could use this <em>callable</em> to provide a link to the admin
+page for the User who is the author of a post, instead of just the user&#8217;s id.</p>
+<p>Your functionality might provide:</p>
+<ul class="simple">
+<li>The full name of the author, if present, otherwise the username.</li>
+<li>A link to the admin change form for that author.</li>
+</ul>
+<p>But where to add this code? The <tt class="docutils literal"><span class="pre">admin.py</span></tt> Module? On your custom ModelAdmin?
+On the Post Model?</p>
+<p>Let&#8217;s think about each of our two functionalities.</p>
+<ul class="simple">
+<li>The first could be useful in public listings</li>
+<li>The second is really only useful on the admin.</li>
+</ul>
+<p>This would tend to point to providing the first as a method on the Post model,
+and the second as a model admin callable.</p>
+<p>The first might look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="c"># ...</span>
+    <span class="k">def</span> <span class="nf">author_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">raw_name</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">last_name</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">raw_name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">username</span>
+        <span class="k">return</span> <span class="n">name</span>
+</pre></div>
+</div>
+<p>The second might appear this way in your custom ModelAdmin class in
+<tt class="docutils literal"><span class="pre">admin.py</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># add an import</span>
+<span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
+
+<span class="c"># and a method</span>
+<span class="k">class</span> <span class="nc">PostAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="c">#...</span>
+    <span class="k">def</span> <span class="nf">author_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">post</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">&#39;admin:auth_user_change&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">post</span><span class="o">.</span><span class="n">id</span><span class="p">,))</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">post</span><span class="o">.</span><span class="n">author_name</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;a href=&quot;</span><span class="si">%s</span><span class="s">&quot;&gt;</span><span class="si">%s</span><span class="s">&lt;/a&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Notice that the <tt class="docutils literal"><span class="pre">author_link</span></tt> function we just wrote returns HTML.  Like any
+good framework, Django will escape this HTML before displaying it.  You&#8217;ll also
+need to let the admin know your HTML is safe:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">author_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">post</span><span class="p">):</span>
+    <span class="c">#... method body</span>
+<span class="n">author_link</span><span class="o">.</span><span class="n">allow_tags</span> <span class="o">=</span> <span class="bp">True</span> <span class="c">#&lt;- see that bit there?</span>
+</pre></div>
+</div>
+<p>In Python, <em>everything</em> is an object. Even methods of classes.</p>
+<p>The Django admin uses special <em>method attributes</em> to control the methods you
+create for <tt class="docutils literal"><span class="pre">list_display</span></tt>.</p>
+<p>Another special attribute controls the column title used in the list page:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">author_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">post</span><span class="p">):</span>
+    <span class="c">#... method body</span>
+<span class="n">author_link</span><span class="o">.</span><span class="n">allow_tags</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">author_link</span><span class="o">.</span><span class="n">short_description</span> <span class="o">=</span> <span class="s">&quot;Author&quot;</span> <span class="c">#&lt;- add this</span>
+</pre></div>
+</div>
+<p>Finally, replace the <tt class="docutils literal"><span class="pre">'author'</span></tt> name in <tt class="docutils literal"><span class="pre">list_display</span></tt> with
+<tt class="docutils literal"><span class="pre">'author_link'</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="s">&#39;author_link&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing-admin-changes">
+<h2>Testing Admin Changes<a class="headerlink" href="#testing-admin-changes" title="Permalink to this headline">¶</a></h2>
+<p>Of course, any changes or customizations we make to default Admin behavior
+should be covered by tests. To test the admin, you first need a new
+TestClass:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># new imports</span>
+<span class="kn">from</span> <span class="nn">django.contrib.admin.sites</span> <span class="kn">import</span> <span class="n">AdminSite</span>
+<span class="kn">from</span> <span class="nn">myapp.admin</span> <span class="kn">import</span> <span class="n">PostAdmin</span>
+
+<span class="c"># new TestCase</span>
+<span class="k">class</span> <span class="nc">PostAdminTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="n">fixtures</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;some_initial_data.json&#39;</span><span class="p">,</span> <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">admin</span> <span class="o">=</span> <span class="n">AdminSite</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ma</span> <span class="o">=</span> <span class="n">PostAdmin</span><span class="p">(</span><span class="n">Post</span><span class="p">,</span> <span class="n">admin</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">author</span> <span class="ow">in</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">&#39;s title&quot;</span> <span class="o">%</span> <span class="n">author</span><span class="o">.</span><span class="n">username</span>
+            <span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">)</span>
+            <span class="n">post</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The key is instantiating both an <tt class="docutils literal"><span class="pre">AdminSite</span></tt> and a <tt class="docutils literal"><span class="pre">ModelAdmin</span></tt> to serve in
+your tests. Once that&#8217;s set, you can test methods of that ModelAdmin:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">test_author_link</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">expected_link_path</span> <span class="o">=</span> <span class="s">&#39;/admin/auth/user/</span><span class="si">%s</span><span class="s">&#39;</span>
+    <span class="k">for</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">expected_link_path</span> <span class="o">%</span> <span class="n">post</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">pk</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">author_link</span><span class="p">(</span><span class="n">post</span><span class="p">)</span> <span class="c"># &lt;- Using the admin here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">expected</span> <span class="ow">in</span> <span class="n">actual</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First, replace the <tt class="docutils literal"><span class="pre">'author'</span></tt> name in <tt class="docutils literal"><span class="pre">list_display</span></tt> with
+<tt class="docutils literal"><span class="pre">'author_link'</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="s">&#39;author_link&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="incremental container">
+<p>We also need to let the admin know our HTML is safe:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">author_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">post</span><span class="p">):</span>
+    <span class="c">#... method body</span>
+<span class="n">author_link</span><span class="o">.</span><span class="n">allow_tags</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="inline-admins">
+<h2>Inline Admins<a class="headerlink" href="#inline-admins" title="Permalink to this headline">¶</a></h2>
+<p>It would also be nice to add Categories to Posts when editing the latter,
+rather than having to do it the other way around.</p>
+<p>But there is no field on the <tt class="docutils literal"><span class="pre">Post</span></tt> model that would show Categories.=</p>
+<p>Django provides the concept of an <tt class="docutils literal"><span class="pre">inline</span></tt> form to allow adding objects that
+are related when there is no field available.</p>
+<p>In the Django Admin, these are created using subclasses of the <tt class="docutils literal"><span class="pre">InlineAdmin</span></tt>.</p>
+<p>For example, an inline admin to edit Categories in the context of a Post might
+look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CategoryInlineAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">TabularInline</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Category</span><span class="o">.</span><span class="n">posts</span><span class="o">.</span><span class="n">through</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Once that is in place, all you need is one line added to the PostAdmin class
+definition:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>class PostAdmin(admin.ModelAdmin):</dt>
+<dd><p class="first">#... other options
+inlines = [CategoryInlineAdmin, ]</p>
+<p class="last">#... methods</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The key is to define the inline <em>before</em> the model admin where you will use it
+so that the class is available when you reference it.  Otherwise you&#8217;ll get
+NameErrors.</p>
+<p>It&#8217;s even possible to remove the &#8216;posts&#8217; field from the Category object, so
+that if you are editing a category you can avoid having to see the posts to
+which it is related:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># create a custom model admin class</span>
+<span class="k">class</span> <span class="nc">CategoryAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">exclude</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;posts&#39;</span><span class="p">,</span> <span class="p">)</span>
+
+<span class="c"># and register Category to use it in the Admin</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Category</span><span class="p">,</span> <span class="n">CategoryAdmin</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There&#8217;s a <a class="reference external" href=".._Djangoadmin.:https://docs.djangoproject.com/en/1.6/ref/contrib/admin/">great deal more to learn</a> about the Django admin.  I encourage you
+to read the documentation and explore ways you can make the admin perform the
+way you&#8217;d like it to.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The Django Admin</a><ul>
+<li><a class="reference internal" href="#the-pareto-principle">The Pareto Principle</a><ul>
+<li><a class="reference internal" href="#using-the-django-admin">Using the Django Admin</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#django-url-resolution">Django URL Resolution</a></li>
+<li><a class="reference internal" href="#viewing-the-admin">Viewing the Admin</a></li>
+<li><a class="reference internal" href="#adding-models-to-the-admin">Adding Models to the Admin</a><ul>
+<li><a class="reference internal" href="#customizing-the-admin">Customizing the Admin</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-modeladmin-class">The ModelAdmin Class</a></li>
+<li><a class="reference internal" href="#testing-admin-changes">Testing Admin Changes</a></li>
+<li><a class="reference internal" href="#inline-admins">Inline Admins</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day27/django_admin.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
