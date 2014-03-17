@@ -226,7 +226,7 @@ class.
 For example, you can influence the tabular display of fields from your Model
 class by using the ``list_display`` attribute:
 
-    .. code-block:: python
+.. code-block:: python
 
     class PostAdmin(admin.ModelAdmin):
         list_display = ('__unicode__', 'created_date', 'modified_date',
@@ -240,8 +240,6 @@ table listing all existing ``Post`` objects in your database.
 Pretty simple, eh?
 
 A Couple of things about the ``list_display`` option are important to know:
-
-.. class:: incremental
 
 * The value you provide must be an iterable even if it has only one item 
 * Each item in the iterable becomes a column in the list 
