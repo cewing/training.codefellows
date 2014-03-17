@@ -70,8 +70,6 @@
 <p><strong>The Django Admin</strong></p>
 <p>The Django Admin works in concert with the Django ORM to provide automatic CRUD
 functionality. You write the models, it provides the UI.</p>
-<div class="section" id="the-pareto-principle">
-<h2>The Pareto Principle<a class="headerlink" href="#the-pareto-principle" title="Permalink to this headline">¶</a></h2>
 <p>The Django Admin is a great example of the Pareto Priciple, a.k.a. the 80/20
 rule:</p>
 <p><strong>80% of the problems can be solved by 20% of the effort</strong></p>
@@ -79,7 +77,7 @@ rule:</p>
 <p><strong>Fixing the last 20% of the problems will take the remaining 80% of the
 effort.</strong></p>
 <div class="section" id="using-the-django-admin">
-<h3>Using the Django Admin<a class="headerlink" href="#using-the-django-admin" title="Permalink to this headline">¶</a></h3>
+<h2>Using the Django Admin<a class="headerlink" href="#using-the-django-admin" title="Permalink to this headline">¶</a></h2>
 <p>The Django Admin is, itself, an <em>app</em>, installed by default (as of 1.6).</p>
 <p>In earlier versions of Django, you might need to install it.  This is
 accomplished by adding it to the INSTALLED_APPS setting:</p>
@@ -91,10 +89,8 @@ accomplished by adding it to the INSTALLED_APPS setting:</p>
 </div>
 <p>What we need now is to allow the admin to be seen through a web browser.</p>
 <p>To do that, you have to add URLs to your project.</p>
-</div>
-</div>
 <div class="section" id="django-url-resolution">
-<h2>Django URL Resolution<a class="headerlink" href="#django-url-resolution" title="Permalink to this headline">¶</a></h2>
+<h3>Django URL Resolution<a class="headerlink" href="#django-url-resolution" title="Permalink to this headline">¶</a></h3>
 <p>You&#8217;ve seen how Flask resolves URLs using &#8220;routes&#8221;. Django too has a system for
 dispatching requests to code: the <em>urlconf</em>.</p>
 <ul class="simple">
@@ -142,7 +138,7 @@ you should find the following lines are already present:</p>
 <p>We can now view the admin.  We&#8217;ll use the Django development server.</p>
 </div>
 <div class="section" id="viewing-the-admin">
-<h2>Viewing the Admin<a class="headerlink" href="#viewing-the-admin" title="Permalink to this headline">¶</a></h2>
+<h3>Viewing the Admin<a class="headerlink" href="#viewing-the-admin" title="Permalink to this headline">¶</a></h3>
 <p>In your terminal, use the <tt class="docutils literal"><span class="pre">runserver</span></tt> management command to start the
 development server:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="o">(</span>djangoenv<span class="o">)</span><span class="nv">$ </span>python manage.py runserver
@@ -169,7 +165,7 @@ of models registered.  You should see something like this:</p>
 <tt class="docutils literal"><span class="pre">superuser</span></tt>.</p>
 </div>
 <div class="section" id="adding-models-to-the-admin">
-<h2>Adding Models to the Admin<a class="headerlink" href="#adding-models-to-the-admin" title="Permalink to this headline">¶</a></h2>
+<h3>Adding Models to the Admin<a class="headerlink" href="#adding-models-to-the-admin" title="Permalink to this headline">¶</a></h3>
 <p>In order to use the Admin to interact with your models, you must register them.
 Django expects these registrations to take place in a file called <tt class="docutils literal"><span class="pre">admin.py</span></tt>.</p>
 <p>Find that file in your <em>app</em> and add code to register your model(s):</p>
@@ -186,8 +182,10 @@ urlconf, there&#8217;s no further work needed.</p>
 <p>After registering your models, simple reload the admin index page. You should
 see a section for your app listed, and all your registered models listed in
 that section.</p>
+</div>
+</div>
 <div class="section" id="customizing-the-admin">
-<h3>Customizing the Admin<a class="headerlink" href="#customizing-the-admin" title="Permalink to this headline">¶</a></h3>
+<h2>Customizing the Admin<a class="headerlink" href="#customizing-the-admin" title="Permalink to this headline">¶</a></h2>
 <p>While the admin is quite nice in terms of what it gives you. It is built to
 fulfill that Pareto Principle. There are often modifications you need to make
 in order to get things just right.</p>
@@ -199,10 +197,8 @@ field for that connection.</p>
 situation where you need to add Posts to Categories, rather than the more
 natural workflow of choosing Categories for Posts.</p>
 <p><a class="reference external" href="https://docs.djangoproject.com/en/1.6/ref/contrib/admin/">https://docs.djangoproject.com/en/1.6/ref/contrib/admin/</a></p>
-</div>
-</div>
 <div class="section" id="the-modeladmin-class">
-<h2>The ModelAdmin Class<a class="headerlink" href="#the-modeladmin-class" title="Permalink to this headline">¶</a></h2>
+<h3>The ModelAdmin Class<a class="headerlink" href="#the-modeladmin-class" title="Permalink to this headline">¶</a></h3>
 <p>The key to customizing how a model is administered by the Django Admin is to
 create a customized sublcass of the <tt class="docutils literal"><span class="pre">django.contrib.admin.ModelAdmin</span></tt> class.</p>
 <p>Looking at the <tt class="docutils literal"><span class="pre">admin.py</span></tt> file generated for a Django app, you&#8217;ll see a few
@@ -220,29 +216,17 @@ instance of the <tt class="docutils literal"><span class="pre">Admin</span></tt>
 class.</p>
 <p>For example, you can influence the tabular display of fields from your Model
 class by using the <tt class="docutils literal"><span class="pre">list_display</span></tt> attribute:</p>
-<blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PostAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;__unicode__&#39;</span><span class="p">,</span> <span class="s">&#39;created_date&#39;</span><span class="p">,</span> <span class="s">&#39;modified_date&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;published_date&#39;</span><span class="p">,</span> <span class="s">&#39;author&#39;</span><span class="p">)</span>
+
+<span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Post</span><span class="p">,</span> <span class="n">PostAdmin</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="docutils">
-<dt>class PostAdmin(admin.ModelAdmin):</dt>
-<dd><dl class="first last docutils">
-<dt>list_display = (&#8216;__unicode__&#8217;, &#8216;created_date&#8217;, &#8216;modified_date&#8217;,</dt>
-<dd>&#8216;published_date&#8217;, &#8216;author&#8217;)</dd>
-</dl>
-</dd>
-</dl>
-<p>admin.site.register(Post, PostAdmin)</p>
-</div></blockquote>
 <p>By adding or omitting fields from this tuple, you control what appears on the
 table listing all existing <tt class="docutils literal"><span class="pre">Post</span></tt> objects in your database.</p>
 <p>Pretty simple, eh?</p>
 <p>A Couple of things about the <tt class="docutils literal"><span class="pre">list_display</span></tt> option are important to know:</p>
-<dl class="class">
-<dt id="incremental">
-<em class="property">class </em><tt class="descname">incremental</tt><a class="headerlink" href="#incremental" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <ul class="simple">
 <li>The value you provide must be an iterable even if it has only one item</li>
 <li>Each item in the iterable becomes a column in the list</li>
@@ -321,7 +305,7 @@ create for <tt class="docutils literal"><span class="pre">list_display</span></t
 </div>
 </div>
 <div class="section" id="testing-admin-changes">
-<h2>Testing Admin Changes<a class="headerlink" href="#testing-admin-changes" title="Permalink to this headline">¶</a></h2>
+<h3>Testing Admin Changes<a class="headerlink" href="#testing-admin-changes" title="Permalink to this headline">¶</a></h3>
 <p>Of course, any changes or customizations we make to default Admin behavior
 should be covered by tests. To test the admin, you first need a new
 TestClass:</p>
@@ -367,7 +351,7 @@ your tests. Once that&#8217;s set, you can test methods of that ModelAdmin:</p>
 </div>
 </div>
 <div class="section" id="inline-admins">
-<h2>Inline Admins<a class="headerlink" href="#inline-admins" title="Permalink to this headline">¶</a></h2>
+<h3>Inline Admins<a class="headerlink" href="#inline-admins" title="Permalink to this headline">¶</a></h3>
 <p>It would also be nice to add Categories to Posts when editing the latter,
 rather than having to do it the other way around.</p>
 <p>But there is no field on the <tt class="docutils literal"><span class="pre">Post</span></tt> model that would show Categories.=</p>
@@ -409,6 +393,7 @@ to read the documentation and explore ways you can make the admin perform the
 way you&#8217;d like it to.</p>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -419,19 +404,18 @@ way you&#8217;d like it to.</p>
   <h3><a href="../../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">The Django Admin</a><ul>
-<li><a class="reference internal" href="#the-pareto-principle">The Pareto Principle</a><ul>
-<li><a class="reference internal" href="#using-the-django-admin">Using the Django Admin</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#using-the-django-admin">Using the Django Admin</a><ul>
 <li><a class="reference internal" href="#django-url-resolution">Django URL Resolution</a></li>
 <li><a class="reference internal" href="#viewing-the-admin">Viewing the Admin</a></li>
-<li><a class="reference internal" href="#adding-models-to-the-admin">Adding Models to the Admin</a><ul>
-<li><a class="reference internal" href="#customizing-the-admin">Customizing the Admin</a></li>
+<li><a class="reference internal" href="#adding-models-to-the-admin">Adding Models to the Admin</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#customizing-the-admin">Customizing the Admin</a><ul>
 <li><a class="reference internal" href="#the-modeladmin-class">The ModelAdmin Class</a></li>
 <li><a class="reference internal" href="#testing-admin-changes">Testing Admin Changes</a></li>
 <li><a class="reference internal" href="#inline-admins">Inline Admins</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
