@@ -23,10 +23,6 @@ What is Django's *killer feature*
 The Django Admin works in concert with the Django ORM to provide automatic CRUD
 functionality. You write the models, it provides the UI.
 
-
-The Pareto Principle
---------------------
-
 The Django Admin is a great example of the Pareto Priciple, a.k.a. the 80/20
 rule:
 
