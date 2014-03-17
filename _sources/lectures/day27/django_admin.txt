@@ -417,7 +417,7 @@ look like this:
 Once that is in place, all you need is one line added to the PostAdmin class
 definition:
 
-    .. code-block:: python
+.. code-block:: python
     
     class PostAdmin(admin.ModelAdmin):
         #... other options

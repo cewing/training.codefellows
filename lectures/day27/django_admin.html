@@ -23,7 +23,10 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Day 27 Lectures" href="index.html" />
+    <link rel="next" title="Database Migrations with South" href="db_migrations_in_django.html" />
+    <link rel="prev" title="Day 27 Lectures" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -32,7 +35,15 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="db_migrations_in_django.html" title="Database Migrations with South"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 27 Lectures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Day 27 Lectures</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -372,18 +383,13 @@ look like this:</p>
 </div>
 <p>Once that is in place, all you need is one line added to the PostAdmin class
 definition:</p>
-<blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PostAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+    <span class="c">#... other options</span>
+    <span class="n">inlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">CategoryInlineAdmin</span><span class="p">,</span> <span class="p">]</span>
+
+    <span class="c">#... methods</span>
 </pre></div>
 </div>
-<dl class="docutils">
-<dt>class PostAdmin(admin.ModelAdmin):</dt>
-<dd><p class="first">#... other options
-inlines = [CategoryInlineAdmin, ]</p>
-<p class="last">#... methods</p>
-</dd>
-</dl>
-</div></blockquote>
 <p>The key is to define the inline <em>before</em> the model admin where you will use it
 so that the class is available when you reference it.  Otherwise you&#8217;ll get
 NameErrors.</p>
@@ -430,6 +436,12 @@ way you&#8217;d like it to.</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Day 27 Lectures</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="db_migrations_in_django.html"
+                        title="next chapter">Database Migrations with <em>South</em></a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/lectures/day27/django_admin.txt"
@@ -458,7 +470,15 @@ way you&#8217;d like it to.</p>
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="db_migrations_in_django.html" title="Database Migrations with South"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Day 27 Lectures"
+             >previous</a> |</li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Lectures</a> &raquo;</li>
+          <li><a href="index.html" >Day 27 Lectures</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
