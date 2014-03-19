@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>An Introduction to Django Views &mdash; training.codefellows 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="training.codefellows 1.0 documentation" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="an-introduction-to-django-views">
+<h1>An Introduction to Django Views<a class="headerlink" href="#an-introduction-to-django-views" title="Permalink to this headline">¶</a></h1>
+<p>In Django, the code that builds a page that you can see is called a <em>view</em>.</p>
+<p>A <em>view</em> can be defined as a <em>callable</em> that takes a request and returns a
+response.</p>
+<p>This should sound pretty familiar to you. It is much like the way Flask defines
+views.  The biggest difference is that in Flask, the <tt class="docutils literal"><span class="pre">request</span></tt> is a <em>local
+global</em> you import, where in Django is is explicitly passed as an argument to
+the view callable.</p>
+<p>Classically, Django views were functions. Version 1.3 added support for
+Class-based Views (a class with a <tt class="docutils literal"><span class="pre">__call__</span></tt> method is a callable). We are
+going to start with functional views.</p>
+<div class="section" id="apps-as-urls">
+<h2>Apps as URLs<a class="headerlink" href="#apps-as-urls" title="Permalink to this headline">¶</a></h2>
+<p>An app (and the functionality it provides) project is defined by the urls a
+user can visit.</p>
+<p>We&#8217;ve talked already about Django <strong>urlconfs</strong> and how we can bolt <em>all</em> the
+urls that are provided by a single app into the root urlconf in our Django
+project.</p>
+<p>When you start work on the views for a new Django app, considering the
+architecture of your URLs can be a good way to envision the functionality of
+the app.</p>
+<p>In general, an <em>app</em> that serves any sort of views should contain its own
+urlconf. The <em>project</em> urlconf should <em>include</em> these where possible.</p>
+<p>You can start this process by adding urls to your app. To begin, you need to
+add a new <tt class="docutils literal"><span class="pre">urls.py</span></tt> file in your app package. You&#8217;ll create the URLs for your
+app here.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;myapp.views&#39;</span><span class="p">,</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;stub_view&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s">&quot;app_index&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="a-word-on-prefixes">
+<h3>A Word On Prefixes<a class="headerlink" href="#a-word-on-prefixes" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">patterns</span></tt> function takes a first argument called the <em>prefix</em>.</p>
+<p>When it is not the empty string, it is added to any view names in <tt class="docutils literal"><span class="pre">url()</span></tt>
+calls in the same call to <tt class="docutils literal"><span class="pre">patterns</span></tt>.</p>
+<p>In a root urlconf like the one in <tt class="docutils literal"><span class="pre">mysite</span></tt>, this isn&#8217;t too useful</p>
+<p>But in <tt class="docutils literal"><span class="pre">myapp.urls</span></tt> it allous you to refer to views by simple function name.</p>
+<p>This mean ther is no need to import every view function into <tt class="docutils literal"><span class="pre">urls.py</span></tt>. This
+can alleviate circular imports and reduce repetetive typing.</p>
+</div>
+<div class="section" id="stub-views">
+<h3>Stub Views<a class="headerlink" href="#stub-views" title="Permalink to this headline">¶</a></h3>
+<p>One of the techniques I use when writing Django apps is to create a simple view
+function that I can use in place of the <em>real</em> view functions I have yet to
+write. I call it a <em>stub</em> and it allows me to think about the architecture of
+my app as a whole before I commit any code to disk.</p>
+<p>Here&#8217;s an example that will print any args or kwargs the stub is called with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+
+<span class="k">def</span> <span class="nf">stub_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="s">&quot;Stub View</span><span class="se">\n\n</span><span class="s">&quot;</span>
+    <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">body</span> <span class="o">+=</span> <span class="s">&quot;Args:</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">body</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">body</span> <span class="o">+=</span> <span class="s">&quot;Kwargs:</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="n">body</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s">&quot;text/plain&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When you have such a view in place, you can use it as the view callable for any
+urls you create.  You&#8217;ll be able to load &#8220;pages&#8221; of your app in a browser and
+view information about how they were called. This can help you to find the best
+way to express the architecture you seek.</p>
+<p>As an example, consider a simple blog app, like the microblog we created for
+Flask. A simple url space for such an app might include:</p>
+<ul class="simple">
+<li>A page to view a list of blog posts</li>
+<li>A page to view a single blog post</li>
+<li>A page to allow adding a post</li>
+</ul>
+<p>A simple urlconf for such a set of views might look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">url</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;blogapp.views&#39;</span><span class="p">,</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;stub_view&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s">&quot;list_posts&quot;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^posts/(\d+)/$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;stub_view&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s">&quot;view_post&quot;</span><span class="p">),</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^posts/add/$&#39;</span><span class="p">,</span>
+        <span class="s">&#39;stub_view&#39;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s">&quot;add_post&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="capturing-path-data-in-urls">
+<h3>Capturing Path Data in URLs<a class="headerlink" href="#capturing-path-data-in-urls" title="Permalink to this headline">¶</a></h3>
+<p>Notice that for the view of a single post, you need to capture the id of the
+post. Django uses regular expression syntax to accomplish this.</p>
+<p>In the above urls, <tt class="docutils literal"><span class="pre">(\d+)</span></tt> captures one or more digits to serve as the
+post_id.</p>
+<p>You can also use a <em>named capture group</em> in a Django urlconf:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">r&#39;^posts/(?P&lt;post_id&gt;\d+)/$&#39;</span>
+</pre></div>
+</div>
+<p>How you declare a capture group in your url pattern regexp influences how it
+will be passed to the view callable. If you try to load the above &#8220;view_post&#8221;
+view using the <em>unnamed</em> capture group you&#8217;ll find that the id captured is
+passed to the view as a positional argument. If you use the <em>named</em> capture
+group, it becomes a keyword argument.</p>
+<p>In order for app urls to be found, you need to include them in your project
+urlconf:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="n">url</span><span class="p">(</span><span class="s">r&#39;^approot/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s">&#39;myapp.urls&#39;</span><span class="p">)),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Once you&#8217;ve done so, you&#8217;ll be able to view the urls for the new app relative
+to the &#8220;/approot/&#8221; base.</p>
+</div>
+</div>
+<div class="section" id="testing-views">
+<h2>Testing Views<a class="headerlink" href="#testing-views" title="Permalink to this headline">¶</a></h2>
+<p>In writing tests for views, it&#8217;s often nice to be able to have a few items to
+test. This can be a good use for the TestCase <tt class="docutils literal"><span class="pre">setUp</span></tt> method.</p>
+<p>Considerr, for example, a blog where people can view posts that have been
+published, but not those that have not.</p>
+<p>To test such a scenario, we might want to create a series of sample posts, some
+with a publication date and some without:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">FrontEndTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;test views provided in the front-end&quot;&quot;&quot;</span>
+    <span class="n">fixtures</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;some_fixture.json&#39;</span><span class="p">,</span> <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">utc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">author</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>
+            <span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Post </span><span class="si">%d</span><span class="s"> Title&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="s">&quot;foo&quot;</span><span class="p">,</span>
+                        <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="c"># publish the first five posts</span>
+                <span class="n">pubdate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedelta</span> <span class="o">*</span> <span class="n">count</span>
+                <span class="n">post</span><span class="o">.</span><span class="n">published_date</span> <span class="o">=</span> <span class="n">pubdate</span>
+            <span class="n">post</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then a test of the list view of the blog might look something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Class</span> <span class="n">FrontEndTestCase</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span> <span class="c"># already here</span>
+<span class="c"># ...</span>
+<span class="k">def</span> <span class="nf">test_list_only_published</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="s">&quot;Recent Posts&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s">&quot;Post </span><span class="si">%d</span><span class="s"> Title&quot;</span> <span class="o">%</span> <span class="n">count</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertNotContains</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that we also test to ensure that the unpublished posts are <em>not</em> visible.</p>
+</div>
+<div class="section" id="writing-views">
+<h2>Writing Views<a class="headerlink" href="#writing-views" title="Permalink to this headline">¶</a></h2>
+<p>Let&#8217;s consider for a moment a view that might make such a test pass. It would
+need to gather a list of posts that have been published and then pass them to a
+template to be rendered.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.template</span> <span class="kn">import</span> <span class="n">RequestContext</span><span class="p">,</span> <span class="n">loader</span>
+<span class="kn">from</span> <span class="nn">myapp.models</span> <span class="kn">import</span> <span class="n">Post</span>
+
+<span class="k">def</span> <span class="nf">list_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">published</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">published_date__exact</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">posts</span> <span class="o">=</span> <span class="n">published</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;-published_date&#39;</span><span class="p">)</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s">&#39;list.html&#39;</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s">&#39;posts&#39;</span><span class="p">:</span> <span class="n">posts</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s">&quot;text/html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There are a few steps here to look over.</p>
+<p><strong>Getting Data</strong></p>
+<p>First, you get the list of published posts, ordered by the reverse of the
+publication date:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">published</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">published_date__exact</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="n">posts</span> <span class="o">=</span> <span class="n">published</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;-published_date&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We begin by using the QuerySet API to fetch all the posts that have
+<tt class="docutils literal"><span class="pre">published_date</span></tt> set</p>
+<p>Remember from your understanding of the Django QuerySet API that at this point
+no query has actually been issued to the database.</p>
+<p><strong>Loading a Template</strong></p>
+<p>Next, you get a template using the loader provided by <tt class="docutils literal"><span class="pre">django.template</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">template</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s">&#39;list.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Django uses configuration to determine how to find templates. By default,
+Django looks in installed <em>apps</em> for a <tt class="docutils literal"><span class="pre">templates</span></tt> directory.</p>
+<p>It also provides a setting, <tt class="docutils literal"><span class="pre">TEMPLATE_DIRS</span></tt> to list specific directories.
+This allows you to set Django to look for templates in your <em>project</em> directory
+or other shared filesystem locations.</p>
+<p><strong>A word on Templates</strong></p>
+<p>Before we move on, a quick word about Django templates. You&#8217;ve seen Jinja2
+which was &#8220;inspired by Django&#8217;s templating system&#8221;. Basically, you already know
+how to write Django templates.</p>
+<p>The biggest difference is that Django templates <strong>do not</strong> allow any python
+expressions. The Django philosophy is to use the view to prepare data in
+whatever form is needed.</p>
+<p><strong>Context and Rendering Templates</strong></p>
+<p>Once the data is arranged you pass it in to the template for rendering by
+building a context.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">context</span> <span class="o">=</span> <span class="n">RequestContext</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s">&#39;posts&#39;</span><span class="p">:</span> <span class="n">posts</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">body</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Django&#8217;s RequestContext provides common bits, similar to the global context in
+Flask. The constructor for this class takes the incoming request as the first
+argument.</p>
+<p>You can add data of your own to that context so they can be used by the
+template. Simply pass a dictionary of additional keys and values as the second
+argument.</p>
+<p><strong>Returning a Response</strong></p>
+<p>Finally, we build an HttpResponse and return it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s">&quot;text/html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is, fundamentally, no different from the <tt class="docutils literal"><span class="pre">stub_view</span></tt> above.</p>
+<p><strong>Hooking up Views</strong></p>
+<p>Once the view function for a given URL endpoint is complete, you can connect it
+by providing it&#8217;s name in the <em>urlconf</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url</span><span class="p">(</span><span class="s">r&#39;^$&#39;</span><span class="p">,</span>
+    <span class="s">&#39;list_view&#39;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s">&quot;blog_index&quot;</span><span class="p">),</span>
+</pre></div>
+</div>
+<div class="section" id="common-patterns">
+<h3>Common Patterns<a class="headerlink" href="#common-patterns" title="Permalink to this headline">¶</a></h3>
+<p>This workflow is a common pattern in Django views:</p>
+<ul class="simple">
+<li>get a template from the loader</li>
+<li>build a context, usually using a RequestContext</li>
+<li>render the template</li>
+<li>return an HttpResponse</li>
+</ul>
+<p>So common in fact that Django provides two shortcuts for us to use:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">render(request,</span> <span class="pre">template[,</span> <span class="pre">ctx][,</span> <span class="pre">ctx_instance])</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">render_to_response(template[,</span> <span class="pre">ctx][,</span> <span class="pre">ctx_instance])</span></tt></li>
+</ul>
+<p>The difference between the two is that the former will use a RequestContext
+automatically. The latter will not. The RequestContext is important when you
+want access to things like the current user in your templates.</p>
+<p>Knowing these shortcuts allows you to replace most of your view with the
+<tt class="docutils literal"><span class="pre">render</span></tt> shortcut.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span> <span class="c"># &lt;- already there</span>
+
+<span class="c"># rewrite our view</span>
+<span class="k">def</span> <span class="nf">list_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">published</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">published_date__exact</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="n">posts</span> <span class="o">=</span> <span class="n">published</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;-published_date&#39;</span><span class="p">)</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;posts&#39;</span><span class="p">:</span> <span class="n">posts</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">&#39;list.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Remember though, all you did manually before is still happening. It&#8217;s just
+hidden behind the curtain.</p>
+</div>
+<div class="section" id="dealing-with-missing-data">
+<h3>Dealing with Missing Data<a class="headerlink" href="#dealing-with-missing-data" title="Permalink to this headline">¶</a></h3>
+<p>When providing views of individual items, it&#8217;s a common pattern to want to
+return a 404 response when the item asked for is not present.</p>
+<p>One of the features of the Django ORM is that all models raise a
+<tt class="docutils literal"><span class="pre">DoesNotExist</span></tt> exception if calling <tt class="docutils literal"><span class="pre">get</span></tt> returns nothing.</p>
+<p>This exception is actually an attribute of the Model you look for. There&#8217;s also
+an <tt class="docutils literal"><span class="pre">ObjectDoesNotExist</span></tt> for when you don&#8217;t know which model you have.</p>
+<p>You can use that fact to raise a Not Found exception:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
+
+<span class="k">def</span> <span class="nf">detail_view</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">post_id</span><span class="p">):</span>
+    <span class="n">published</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">published_date__exact</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">post</span> <span class="o">=</span> <span class="n">published</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">post_id</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Post</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">Http404</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;post&#39;</span><span class="p">:</span> <span class="n">post</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">&#39;detail.html&#39;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Django will handle the rest for you.</p>
+<p>You can test this type of scenario as well. Remember the front-end tests we
+considered above? Here&#8217;s a new one to add:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">test_details_only_published</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">):</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s">&quot;Post </span><span class="si">%d</span><span class="s"> Title&quot;</span> <span class="o">%</span> <span class="n">count</span>
+        <span class="n">post</span> <span class="o">=</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;/posts/</span><span class="si">%d</span><span class="s">/&#39;</span> <span class="o">%</span> <span class="n">post</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">404</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="class-based-views">
+<h2>Class Based Views<a class="headerlink" href="#class-based-views" title="Permalink to this headline">¶</a></h2>
+<p>Since Django 1.3 the idea of <em>class-based views</em> have grown more popular. I
+won&#8217;t cover them explicitly in this quick lecture, but you should
+<a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/class-based-views/">read more about them</a>.</p>
+<p>Personally, I still strongly prefer functional views when I can get away with
+them. The extra functionality supported by Django&#8217;s implementation of
+class-based views is (IMO) outweighed in most cases by the complexity of
+tracking where functionality comes from.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">An Introduction to Django Views</a><ul>
+<li><a class="reference internal" href="#apps-as-urls">Apps as URLs</a><ul>
+<li><a class="reference internal" href="#a-word-on-prefixes">A Word On Prefixes</a></li>
+<li><a class="reference internal" href="#stub-views">Stub Views</a></li>
+<li><a class="reference internal" href="#capturing-path-data-in-urls">Capturing Path Data in URLs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-views">Testing Views</a></li>
+<li><a class="reference internal" href="#writing-views">Writing Views</a><ul>
+<li><a class="reference internal" href="#common-patterns">Common Patterns</a></li>
+<li><a class="reference internal" href="#dealing-with-missing-data">Dealing with Missing Data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#class-based-views">Class Based Views</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/lectures/day28/django_views.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">training.codefellows 1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Cris Ewing.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.1.
+    </div>
+  </body>
+</html>
